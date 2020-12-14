@@ -20,5 +20,10 @@ npm run build
 npm run lint
 ```
 
+### Para inicializar o execute comando dentro do projeto GImoveisApi
+```
+docker-compose up
+```
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
