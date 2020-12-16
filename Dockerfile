@@ -1,7 +1,8 @@
 FROM vuejs/ci
-MAINTAINER Henrique Mariano
-COPY . /var/www
-WORKDIR /var/www
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+COPY package*.json ./
 RUN npm install
-ENTRYPOINT npm run serve
+COPY . .
 EXPOSE 8080
+CMD ["npm", "run", "serve"]
