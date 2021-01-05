@@ -1,7 +1,8 @@
 FROM vuejs/ci
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
-COPY . .
+COPY package*.json ./
 RUN npm install
+COPY . .
 EXPOSE 8080
 CMD ["npm", "run", "serve"]
