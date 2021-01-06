@@ -169,14 +169,12 @@ export default {
       }).catch(erro => {console.log(erro)})
     },
     onFiltered(filteredItems) {
-      // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length
       this.currentPage = 1
     },
     async editarCliente(id){
       await api.get('/cliente', {params:{idCliente:id}}).then(response => {
         this.cliente = response.data
-        this.cliente.data_nascimento =
         this.telefones = []
         for(let x = 0; x < response.data.numero_telefone.length; x++){
           let numero = response.data.numero_telefone[x]
