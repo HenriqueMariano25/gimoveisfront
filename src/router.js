@@ -3,6 +3,7 @@ import Router from 'vue-router'
 
 import Autenticacao from './routers/autenticacaoRouter'
 import Cliente from './routers/clienteRouter'
+import Usuario from './routers/usuarioRouter'
 
 Vue.use(Router)
 
@@ -14,7 +15,8 @@ const router = new Router({
         name: 'Home'
     },
         ...Autenticacao,
-        ...Cliente
+        ...Cliente,
+        ...Usuario
     ]
 })
 
