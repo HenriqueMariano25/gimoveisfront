@@ -1,66 +1,30 @@
 <template>
   <b-container fluid>
-    <b-row>
+<!--    <h1 style="position:absolute; top:0;">{{ alturaTela }}</h1>-->
+<!--    <h1 style="position:absolute; top:0;">{{ larguraTela }}</h1>-->
+    <b-row class="barraTopCliente " align-v="center">
       <b-col>
-        <vs-button color="#007bff" type="filled" icon="add" @click="mostrarModal">Adicionar cliente
-        </vs-button>
+        <h1 class="mb-1">Cadastro de Clientes</h1>
       </b-col>
-      <b-col lg="6" class="my-1">
-        <b-form-group
-            label="Buscar cliente"
-            label-for="filter-input"
-            label-cols-sm="3"
-            label-align-sm="right"
-            label-size="sm"
-            class="mb-0"
-        >
-          <b-input-group size="sm">
+      <b-col class="my-1" cols="3">
+        <b-form-group class="mb-0">
+          <b-input-group>
+            <template #prepend>
+              <b-input-group-text><b-icon icon="search"></b-icon></b-input-group-text>
+            </template>
             <b-form-input
                 id="filter-input"
                 v-model="filter"
                 type="search"
                 placeholder="Ex: João da Silva"
             ></b-form-input>
-
-            <b-input-group-append>
-              <b-button :disabled="!filter" @click="filter = ''">Limpar</b-button>
-            </b-input-group-append>
           </b-input-group>
         </b-form-group>
       </b-col>
-      <b-col class="my-1">
-        <b-pagination
-            v-model="currentPage"
-            :total-rows="totalRows"
-            :per-page="perPage"
-            align="right"
-            class="my-0"
-            first-text="Primeira"
-            last-text="Última"
-        ></b-pagination>
-      </b-col>
-      <b-col sm="5" md="auto" class="my-1">
-        <b-form-group
-            label="Por pagina"
-            label-for="per-page-select"
-            label-cols-sm="auto"
-            label-cols-md="auto"
-            label-cols-lg="auto"
-            label-align-sm="right"
-            label-size="sm"
-            align="right"
-        >
-          <b-form-select
-              id="per-page-select"
-              v-model="perPage"
-              :options="pageOptions"
-              size="sm"
-          ></b-form-select>
-        </b-form-group>
-      </b-col>
     </b-row>
-
-    <!-- Main table element -->
+    <!-- Main table element
+    stacked="md"
+    -->
     <b-table
         :items="items"
         :fields="fields"
@@ -71,10 +35,17 @@
         :sort-by.sync="sortBy"
         :sort-desc.sync="sortDesc"
         :sort-direction="sortDirection"
-        stacked="md"
         show-empty
         small
-        @filtered="onFiltered">
+        fixed
+        @filtered="onFiltered"
+        striped
+        hover
+        outlined
+        :sticky-header="alturaTela"
+        no-border-collapse
+        @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)"
+    >
       <template #cell(nome)="row" >
         <p class="tr-cliente">{{row.item.nome}}</p>
       </template>
@@ -84,15 +55,14 @@
       <template #cell(cpf_cnpj)="row" >
         <p class="tr-cliente">{{row.item.cpf_cnpj}}</p>
       </template>
-      <template #cell(detalhes)="row">
-        <vs-button color="dark" type="flat" @click="row.toggleDetails"
-                   :icon="row.detailsShowing ? 'expand_less' : 'expand_more' "></vs-button>
+      <template #cell(status)="row">
+        <p class="tr-cliente">{{row.item.status}}</p>
       </template>
       <template #cell(editar)="row">
         <vs-button type="flat" color="dark"  @click="editarClienteModal(row.item.id)" icon="edit"></vs-button>
       </template>
       <template #cell(deletar)="row">
-        <vs-button type="flat" color="danger"  @click="activePrompt = true" icon="delete"></vs-button>
+        <vs-button type="flat" color="dark"  @click="activePrompt = true" icon="delete"></vs-button>
         <vs-prompt
             @cancel="val=''"
             @accept="deletarCliente(row.item)"
@@ -110,8 +80,8 @@
 
       <template #row-details="row">
         <b-card>
-          <p>Endereço: {{ row.item.rua }} n° {{ row.item.numero }}, {{ row.item.bairro }}, {{ row.item.cidade }},
-            {{ row.item.estado }}</p>
+          <p>Rua: {{ row.item.rua }},{{ row.item.numero }} | Bairro: {{ row.item.bairro }} | Cidade: {{ row.item.cidade }} |
+            Estado: {{ row.item.estado }}</p>
           <p>Complemento: {{ row.item.complemento }}</p>
           <p>Identidade: {{ row.item.identidade }}</p>
           <p>Data de Nascimento: {{ row.item.data_nascimento }}</p>
@@ -126,12 +96,48 @@
         </b-card>
       </template>
     </b-table>
+    <b-row>
 
+      <b-col class="" cols="auto">
+        <b-pagination
+            v-model="currentPage"
+            :total-rows="totalRows"
+            :per-page="perPage"
+            align="left"
+            class="my-0"
+            first-text="Primeira"
+            last-text="Última"
+        ></b-pagination>
+      </b-col>
+      <b-col sm="5" md="auto" class="">
+        <b-form-group
+            label="Por pagina"
+            label-for="per-page-select"
+            label-cols-sm="auto"
+            label-cols-md="auto"
+            label-cols-lg="auto"
+            label-align-sm="right"
+            label-size="sm"
+            align="left"
+        >
+          <b-form-select
+              id="per-page-select"
+              v-model="perPage"
+              :options="pageOptions"
+              size="sm"
+          ></b-form-select>
+        </b-form-group>
+      </b-col>
+      <b-col class="ml-auto" cols="auto" >
+        <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal" >Adicionar
+        </vs-button>
+      </b-col>
+    </b-row>
     <!--  Fim da tabela-->
     <modal name="hello-world" width="60%" height="auto" :scrollable="true" :click-to-close="false">
       <h1 class="text-center">Cadastrar cliente</h1>
       <b-row>
-        <b-col cols="7">
+        <b-col cols="5">
           <vs-input label-placeholder="Nome*" v-model="cliente.nome" class="input-personalizado"
                     val-icon-danger="clear" danger-text="Campo obrigatorio" :danger="cliente.nome.length < 1"/>
         </b-col>
@@ -143,6 +149,12 @@
         </b-col>
         <b-col class="input-nascimento" cols="3">
           <vs-input label="Data de Nascimento" v-model="cliente.data_nascimento" type="date"/>
+        </b-col>
+        <b-col cols="2">
+          <vs-select placeholder="Selecione" label-placeholder="Selecione" label="Status"
+                     v-model="cliente.status">
+            <vs-select-item :key="index" :value="item.id" :text="item.descricao" v-for="(item,index) in tiposStatus"/>
+          </vs-select>
         </b-col>
       </b-row>
       <b-row>
@@ -209,7 +221,7 @@
               </vs-select>
             </b-col>
             <b-col cols="2" class="text-center botao-deletar-telefone">
-              <vs-button type="filled" icon="clear" color="danger" class="botao-salvar botao-adicionar-telefone"
+              <vs-button type="flat" icon="delete" color="dark" class="botao-salvar botao-adicionar-telefone"
                          @click="removerTelefone(index)"/>
             </b-col>
           </b-row>
@@ -234,7 +246,7 @@
           <vs-button v-if="editar == true" color="#007bff" type="filled" icon="edit" class="botao-salvar"
                      @click="editarCliente">Editar
           </vs-button>
-          <vs-button v-else color="#007bff" type="filled" icon="add" class="botao-salvar" @click="cadastrarCliente">
+          <vs-button v-else color="#007bff" type="filled" icon="save" class="botao-salvar" @click="cadastrarCliente">
             Salvar
           </vs-button>
         </b-col>
@@ -251,6 +263,8 @@ import api from '../../services/api'
 export default {
   data() {
     return {
+      alturaTela: `${(window.innerWidth / 3).toString()}px`,
+      larguraTela: window.innerHeight,
       popupCadastrarCliente: false,
       editarClientePopup: false,
       items: [],
@@ -258,14 +272,14 @@ export default {
         {key: 'nome', label: 'Nome', sortable: true},
         {key: 'email', label: 'Email', sortable: true, class: 'text-center'},
         {key: 'cpf_cnpj', label: 'CPF ou CNPJ', sortable: true,},
-        {key: 'detalhes', label: 'Detalhes'},
+        {key: 'status', label: 'Status'},
         {key: 'editar', label: 'Editar'},
         {key: 'deletar', label: 'Deletar'},
       ],
       totalRows: 1,
       currentPage: 1,
-      perPage: 10,
-      pageOptions: [10, 25, 50, 100],
+      perPage: 25,
+      pageOptions: [25, 50, 100],
       sortBy: '',
       sortDesc: false,
       sortDirection: 'asc',
@@ -291,10 +305,12 @@ export default {
         data_nascimento: "",
         estado_civil: "",
         numero: "",
+        status:"",
       },
       telefones: [{id: "", numero: "", tipo: ""}],
       activePrompt: false,
       tiposTelefone: [],
+      tiposStatus:[],
       editar:false
     }
   },
@@ -312,6 +328,13 @@ export default {
     this.buscarEstadosCivis()
   },
   methods: {
+    teste(row){
+      console.log('oiiiii')
+      console.log(row)
+      row._showDetails()
+      // console.log(record)
+      // console.log(index)
+    },
     async buscarEstadosCivis() {
       await api.get('/estados_civis').then(response => {
         this.estadoCivil = response.data
@@ -348,7 +371,7 @@ export default {
           let id = response.data.id_telefone[x]
           this.telefones.push({id: id, numero: numero, tipo: tipo})
         }
-        this.$modal.show('hello-world')
+        this.mostrarModal()
         this.editar = true
       })
     },
@@ -379,9 +402,17 @@ export default {
         this.tiposTelefone = response.data
       })
     },
+    async buscarTipoStatus() {
+      await api.get('/cliente/tipos_status').then(response => {
+        console.log(response.data)
+        this.tiposStatus = response.data
+      })
+    },
+
     mostrarModal() {
       this.$modal.show('hello-world')
       this.buscarTipoTelefones()
+      this.buscarTipoStatus()
     },
     esconderModal() {
       this.$modal.hide('hello-world');
@@ -528,5 +559,19 @@ export default {
 }
 .botao-deletar-telefone{
   margin-top:12px;
+}
+.testee{
+  background-color: red;
+  position:fixed;
+  bottom:0;
+  width:100%
+}
+.barraTopCliente{
+  border:1px solid rgb(220,220,220);
+  padding:0;
+  margin:0;
+  margin-bottom:10px;
+  border-radius: 10px;
+  box-shadow: 5px 5px 20px rgb(200,200,200);
 }
 </style>
