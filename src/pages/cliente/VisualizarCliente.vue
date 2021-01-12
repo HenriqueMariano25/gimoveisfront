@@ -102,7 +102,7 @@
         </b-table>
       </b-col>
     </b-row>
-    <b-row class="barra-navegacao-bottom">
+    <b-row class="divider-personalizado">
       <b-col class="" cols="auto">
         <b-pagination
             v-model="currentPage"
@@ -139,8 +139,8 @@
       </b-col>
     </b-row>
     <!--  Fim da tabela-->
-    <modal name="hello-world" width="60%" height="auto" :scrollable="true" :click-to-close="false">
-      <h1 class="text-center">Cadastrar cliente</h1>
+    <modal name="hello-world" width="60%" height="auto" :scrollable="true" :click-to-close="false" class="modal-adicionando-cliente">
+      <h3>Adicionando cliente</h3>
       <b-row>
         <b-col cols="5">
           <vs-input label-placeholder="Nome*" v-model="cliente.nome" class="input-personalizado"
@@ -211,6 +211,29 @@
           <vs-input label-placeholder="Referência" v-model="cliente.referencia" class="input-personalizado" required/>
         </b-col>
       </b-row>
+      <b-row>
+        <b-col>
+          <b-form-group
+              id="textarea"
+              label="Observação"
+              label-for="input-1"
+          >
+          <b-form-textarea
+              id="textarea"
+              v-model="cliente.observacao"
+              rows="3"
+              max-rows="6"
+          ></b-form-textarea>
+          </b-form-group>
+        </b-col>
+      </b-row>
+      <b-row class="divider-personalizado">
+        <b-col cols="auto">
+          <vs-button type="filled" icon="add_ic_call" class="botao-salvar botao-adicionar-telefone" color="#5498ff"
+                     @click.prevent="adicionarTelefone()">Adicionar telefone
+          </vs-button>
+        </b-col>
+      </b-row>
       <b-row class="campos-telefone">
         <b-col cols="6" v-for="(telefone, index) in telefones" :key="index">
           <b-row>
@@ -226,33 +249,24 @@
               </vs-select>
             </b-col>
             <b-col cols="2" class="text-center botao-deletar-telefone">
-              <vs-button type="flat" icon="delete" color="dark" class="botao-salvar botao-adicionar-telefone"
+              <vs-button type="flat" icon="delete" color="dark" class="botao-salvar"
                          @click="removerTelefone(index)"/>
             </b-col>
           </b-row>
         </b-col>
-
       </b-row>
-      <b-row>
-        <b-col>
-          <vs-button type="filled" icon="add_ic_call" class="botao-salvar botao-adicionar-telefone" color="#696969"
-                     @click.prevent="adicionarTelefone()">Mais
-            telefone
-          </vs-button>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <vs-button color="danger" type="filled" icon="clear" class="botao-salvar" @click="esconderModal">
-            Cancelar
-          </vs-button>
-        </b-col>
-        <b-col>
-          <vs-button v-if="editar == true" color="#007bff" type="filled" icon="edit" class="botao-salvar"
+      <b-row align-h="end">
+        <b-col cols="2">
+          <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="edit" class="botao-salvar"
                      @click="editarCliente">Editar
           </vs-button>
-          <vs-button v-else color="#007bff" type="filled" icon="save" class="botao-salvar" @click="cadastrarCliente">
+          <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar" @click="cadastrarCliente">
             Salvar
+          </vs-button>
+        </b-col>
+        <b-col cols="2">
+          <vs-button color="#707070" type="filled" icon="clear" class="botao-salvar" @click="esconderModal">
+            Cancelar
           </vs-button>
         </b-col>
 
@@ -311,6 +325,7 @@ export default {
         estado_civil: "",
         numero: "",
         status: "",
+        observacao:""
       },
       telefones: [{id: "", numero: "", tipo: ""}],
       activePrompt: false,
@@ -333,13 +348,6 @@ export default {
     this.buscarEstadosCivis()
   },
   methods: {
-    teste(row) {
-      console.log('oiiiii')
-      console.log(row)
-      row._showDetails()
-      // console.log(record)
-      // console.log(index)
-    },
     async buscarEstadosCivis() {
       await api.get('/estados_civis').then(response => {
         this.estadoCivil = response.data
@@ -555,9 +563,9 @@ export default {
 }
 
 .vm--modal {
-  margin-top: 10px;
-  bottom: 10px;
-  padding: 10px;
+  margin-top:-20px !important;
+  bottom: 25px;
+  padding: 25px;
 }
 
 .tr-cliente {
@@ -569,14 +577,6 @@ export default {
 .botao-deletar-telefone {
   margin-top: 12px;
 }
-
-.testee {
-  background-color: red;
-  position: fixed;
-  bottom: 0;
-  width: 100%
-}
-
 .barraTopCliente {
   border: 1px solid rgb(220, 220, 220);
   padding: 0;
@@ -595,8 +595,11 @@ export default {
 .col-tabela-clientes{
   padding-top: 15px;
 }
-.barra-navegacao-bottom{
+.divider-personalizado{
   border-top: 1px solid rgb(200,200,200);
   padding-top: 10px;
+}
+.botao-adicionar-telefone{
+  margin-bottom: 8px;
 }
 </style>
