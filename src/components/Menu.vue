@@ -9,132 +9,132 @@
             <span class="nav-text">Home</span>
           </router-link>
         </li>
-        <li class="has-subnav a-sem-href">
-          <a>
-            <i class="fa fa-list fa-2x"></i>
-            <span class="nav-text">Cadastros</span>
-          </a>
-          <ul class="">
+<!--        <li class="has-subnav a-sem-href">-->
+<!--          <a>-->
+<!--            <i class="fa fa-list fa-2x"></i>-->
+<!--            <span class="nav-text">Cadastros</span>-->
+<!--          </a>-->
+<!--          <ul class="">-->
             <li class="has-subnav">
               <router-link to="/visualizar/cliente">
-                <i class="fa fa-folder-open fa-2x"></i>
+                <b-icon icon="person-plus-fill" class="icone-bootstrap-menu"></b-icon>
                 <span class="nav-text">
                   Clientes
                 </span>
               </router-link>
             </li>
-            <li class="has-subnav">
-              <a href="#">
-                <i class="fa fa-folder-open fa-2x"></i>
-                <span class="nav-text">
-                  Pages
-                </span>
-              </a>
-            </li>
-            <li class="has-subnav">
-              <a href="#">
-                <i class="fa fa-folder-open fa-2x"></i>
-                <span class="nav-text">
-                  Pages
-                </span>
-              </a>
-            </li>
-          </ul>
-        </li>
-        <li class="has-subnav">
-          <a href="#">
-            <i class="fa fa-list fa-2x"></i>
-            <span class="nav-text">
-              Forms
-            </span>
-          </a>
-        </li>
-        <li class="has-subnav">
-          <a href="#">
-            <i class="fa fa-folder-open fa-2x"></i>
-            <span class="nav-text">
-              Pages
-            </span>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <i class="fa fa-bar-chart-o fa-2x"></i>
-            <span class="nav-text">
-              Graphs and Statistics
-            </span>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <i class="fa fa-font fa-2x"></i>
-            <span class="nav-text">
-              Quotes
-            </span>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <i class="fa fa-table fa-2x"></i>
-            <span class="nav-text">
-              Tables
-            </span>
-          </a>
-          <ul class="">
-            <li class="has-subnav">
-              <a href="#">
-                <i class="fa fa-folder-open fa-2x"></i>
-                <span class="nav-text">
-                  Pages
-                </span>
-              </a>
-            </li>
-            <li class="has-subnav">
-              <a href="#">
-                <i class="fa fa-folder-open fa-2x"></i>
-                <span class="nav-text">
-                  Pages
-                </span>
-              </a>
-            </li>
-            <li class="has-subnav">
-              <a href="#">
-                <i class="fa fa-folder-open fa-2x"></i>
-                <span class="nav-text">
-                  Pages
-                </span>
-              </a>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <a href="#">
-            <i class="fa fa-map-marker fa-2x"></i>
-            <span class="nav-text">
-              Maps
-            </span>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <i class="fa fa-info fa-2x"></i>
-            <span class="nav-text">
-              Documentation
-            </span>
-          </a>
-        </li>
+<!--            <li class="has-subnav">-->
+<!--              <a href="#">-->
+<!--                <i class="fa fa-folder-open fa-2x"></i>-->
+<!--                <span class="nav-text">-->
+<!--                  Pages-->
+<!--                </span>-->
+<!--              </a>-->
+<!--            </li>-->
+<!--            <li class="has-subnav">-->
+<!--              <a href="#">-->
+<!--                <i class="fa fa-folder-open fa-2x"></i>-->
+<!--                <span class="nav-text">-->
+<!--                  Pages-->
+<!--                </span>-->
+<!--              </a>-->
+<!--            </li>-->
+<!--          </ul>-->
+<!--        </li>-->
+<!--        <li class="has-subnav">-->
+<!--          <a href="#">-->
+<!--            <i class="fa fa-list fa-2x"></i>-->
+<!--            <span class="nav-text">-->
+<!--              Forms-->
+<!--            </span>-->
+<!--          </a>-->
+<!--        </li>-->
+<!--        <li class="has-subnav">-->
+<!--          <a href="#">-->
+<!--            <i class="fa fa-folder-open fa-2x"></i>-->
+<!--            <span class="nav-text">-->
+<!--              Pages-->
+<!--            </span>-->
+<!--          </a>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--          <a href="#">-->
+<!--            <i class="fa fa-bar-chart-o fa-2x"></i>-->
+<!--            <span class="nav-text">-->
+<!--              Graphs and Statistics-->
+<!--            </span>-->
+<!--          </a>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--          <a href="#">-->
+<!--            <i class="fa fa-font fa-2x"></i>-->
+<!--            <span class="nav-text">-->
+<!--              Quotes-->
+<!--            </span>-->
+<!--          </a>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--          <a href="#">-->
+<!--            <i class="fa fa-table fa-2x"></i>-->
+<!--            <span class="nav-text">-->
+<!--              Tables-->
+<!--            </span>-->
+<!--          </a>-->
+<!--          <ul class="">-->
+<!--            <li class="has-subnav">-->
+<!--              <a href="#">-->
+<!--                <i class="fa fa-folder-open fa-2x"></i>-->
+<!--                <span class="nav-text">-->
+<!--                  Pages-->
+<!--                </span>-->
+<!--              </a>-->
+<!--            </li>-->
+<!--            <li class="has-subnav">-->
+<!--              <a href="#">-->
+<!--                <i class="fa fa-folder-open fa-2x"></i>-->
+<!--                <span class="nav-text">-->
+<!--                  Pages-->
+<!--                </span>-->
+<!--              </a>-->
+<!--            </li>-->
+<!--            <li class="has-subnav">-->
+<!--              <a href="#">-->
+<!--                <i class="fa fa-folder-open fa-2x"></i>-->
+<!--                <span class="nav-text">-->
+<!--                  Pages-->
+<!--                </span>-->
+<!--              </a>-->
+<!--            </li>-->
+<!--          </ul>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--          <a href="#">-->
+<!--            <i class="fa fa-map-marker fa-2x"></i>-->
+<!--            <span class="nav-text">-->
+<!--              Maps-->
+<!--            </span>-->
+<!--          </a>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--          <a href="#">-->
+<!--            <i class="fa fa-info fa-2x"></i>-->
+<!--            <span class="nav-text">-->
+<!--              Documentation-->
+<!--            </span>-->
+<!--          </a>-->
+<!--        </li>-->
       </ul>
 
-      <ul class="logout">
-        <li>
-          <a href="#">
-            <i class="fa fa-power-off fa-2x"></i>
-            <span class="nav-text">
-              Logout
-            </span>
-          </a>
-        </li>
-      </ul>
+<!--      <ul class="logout">-->
+<!--        <li>-->
+<!--          <a href="#">-->
+<!--            <i class="fa fa-power-off fa-2x"></i>-->
+<!--            <span class="nav-text">-->
+<!--              Logout-->
+<!--            </span>-->
+<!--          </a>-->
+<!--        </li>-->
+<!--      </ul>-->
     </nav>
   </div>
 </template>
@@ -316,5 +316,15 @@ nav.main-menu li.active > a,
 }
 .a-sem-href:hover{
   color: #fff !important;
+}
+.icone-bootstrap-menu{
+  font-size: 8px;
+  width: 60px;
+  height: 30px;
+  position: relative;
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+  padding-top: 5px;
 }
 </style>

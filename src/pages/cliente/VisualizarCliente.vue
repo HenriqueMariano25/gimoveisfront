@@ -1,7 +1,7 @@
 <template>
   <b-container fluid>
-<!--    <h1 style="position:absolute; top:0;">{{ alturaTela }}</h1>-->
-<!--    <h1 style="position:absolute; top:0;">{{ larguraTela }}</h1>-->
+    <!--    <h1 style="position:absolute; top:0;">{{ alturaTela }}</h1>-->
+    <!--    <h1 style="position:absolute; top:0;">{{ larguraTela }}</h1>-->
     <b-row class="barraTopCliente " align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Clientes</h1>
@@ -10,7 +10,9 @@
         <b-form-group class="mb-0">
           <b-input-group>
             <template #prepend>
-              <b-input-group-text><b-icon icon="search"></b-icon></b-input-group-text>
+              <b-input-group-text>
+                <b-icon icon="search"></b-icon>
+              </b-input-group-text>
             </template>
             <b-form-input
                 id="filter-input"
@@ -25,79 +27,82 @@
     <!-- Main table element
     stacked="md"
     -->
-    <b-table
-        :items="items"
-        :fields="fields"
-        :current-page="currentPage"
-        :per-page="perPage"
-        :filter="filter"
-        :filter-included-fields="filterOn"
-        :sort-by.sync="sortBy"
-        :sort-desc.sync="sortDesc"
-        :sort-direction="sortDirection"
-        show-empty
-        small
-        fixed
-        @filtered="onFiltered"
-        striped
-        hover
-        outlined
-        :sticky-header="alturaTela"
-        no-border-collapse
-        @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)"
-    >
-      <template #cell(nome)="row" >
-        <p class="tr-cliente">{{row.item.nome}}</p>
-      </template>
-      <template #cell(email)="row" >
-        <p class="tr-cliente">{{row.item.email}}</p>
-      </template>
-      <template #cell(cpf_cnpj)="row" >
-        <p class="tr-cliente">{{row.item.cpf_cnpj}}</p>
-      </template>
-      <template #cell(status)="row">
-        <p class="tr-cliente">{{row.item.status}}</p>
-      </template>
-      <template #cell(editar)="row">
-        <vs-button type="flat" color="dark"  @click="editarClienteModal(row.item.id)" icon="edit"></vs-button>
-      </template>
-      <template #cell(deletar)="row">
-        <vs-button type="flat" color="dark"  @click="activePrompt = true" icon="delete"></vs-button>
-        <vs-prompt
-            @cancel="val=''"
-            @accept="deletarCliente(row.item)"
-            accept-text="Deletar"
-            cancel-text="Cancelar"
-            color="danger"
-            title="Deletar cliente"
-            :active.sync="activePrompt">
-          <div class="con-exemple-prompt">
-            <p>Tem certeza que deseja excluir o cliente {{ row.item.nome }} ?</p>
-          </div>
-        </vs-prompt>
-      </template>
+    <b-row class="tabela-clientes">
+      <b-col class="col-tabela-clientes">
+        <b-table
+            :items="items"
+            :fields="fields"
+            :current-page="currentPage"
+            :per-page="perPage"
+            :filter="filter"
+            :filter-included-fields="filterOn"
+            :sort-by.sync="sortBy"
+            :sort-desc.sync="sortDesc"
+            :sort-direction="sortDirection"
+            show-empty
+            small
+            fixed
+            @filtered="onFiltered"
+            striped
+            hover
+            outlined
+            :sticky-header="alturaTela"
+            no-border-collapse
+            @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
+          <template #cell(nome)="row">
+            <p class="tr-cliente">{{ row.item.nome }}</p>
+          </template>
+          <template #cell(email)="row">
+            <p class="tr-cliente">{{ row.item.email }}</p>
+          </template>
+          <template #cell(cpf_cnpj)="row">
+            <p class="tr-cliente">{{ row.item.cpf_cnpj }}</p>
+          </template>
+          <template #cell(status)="row">
+            <p class="tr-cliente">{{ row.item.status }}</p>
+          </template>
+          <template #cell(editar)="row">
+            <vs-button type="flat" color="dark" @click="editarClienteModal(row.item.id)" icon="edit"></vs-button>
+          </template>
+          <template #cell(deletar)="row">
+            <vs-button type="flat" color="dark" @click="activePrompt = true" icon="delete"></vs-button>
+            <vs-prompt
+                @cancel="val=''"
+                @accept="deletarCliente(row.item)"
+                accept-text="Deletar"
+                cancel-text="Cancelar"
+                color="danger"
+                title="Deletar cliente"
+                :active.sync="activePrompt">
+              <div class="con-exemple-prompt">
+                <p>Tem certeza que deseja excluir o cliente {{ row.item.nome }} ?</p>
+              </div>
+            </vs-prompt>
+          </template>
 
 
-      <template #row-details="row">
-        <b-card>
-          <p>Rua: {{ row.item.rua }},{{ row.item.numero }} | Bairro: {{ row.item.bairro }} | Cidade: {{ row.item.cidade }} |
-            Estado: {{ row.item.estado }}</p>
-          <p>Complemento: {{ row.item.complemento }}</p>
-          <p>Identidade: {{ row.item.identidade }}</p>
-          <p>Data de Nascimento: {{ row.item.data_nascimento }}</p>
-          <p>Estado Civil: {{ row.item.estado_civil }}</p>
-          <p>Referência: {{ row.item.referencia }}</p>
+          <template #row-details="row">
+            <b-card>
+              <p>Rua: {{ row.item.rua }},{{ row.item.numero }} | Bairro: {{ row.item.bairro }} | Cidade:
+                {{ row.item.cidade }} |
+                Estado: {{ row.item.estado }}</p>
+              <p>Complemento: {{ row.item.complemento }}</p>
+              <p>Identidade: {{ row.item.identidade }}</p>
+              <p>Data de Nascimento: {{ row.item.data_nascimento }}</p>
+              <p>Estado Civil: {{ row.item.estado_civil }}</p>
+              <p>Referência: {{ row.item.referencia }}</p>
 
-          <p>Telefones:</p>
-          <ul v-for="(telefone, index) in row.item.numero_telefone" :key="index">
+              <p>Telefones:</p>
+              <ul v-for="(telefone, index) in row.item.numero_telefone" :key="index">
 
-            <li>{{ telefone }}</li>
-          </ul>
-        </b-card>
-      </template>
-    </b-table>
-    <b-row>
-
+                <li>{{ telefone }}</li>
+              </ul>
+            </b-card>
+          </template>
+        </b-table>
+      </b-col>
+    </b-row>
+    <b-row class="barra-navegacao-bottom">
       <b-col class="" cols="auto">
         <b-pagination
             v-model="currentPage"
@@ -128,8 +133,8 @@
           ></b-form-select>
         </b-form-group>
       </b-col>
-      <b-col class="ml-auto" cols="auto" >
-        <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal" >Adicionar
+      <b-col class="ml-auto" cols="auto">
+        <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal">Adicionar
         </vs-button>
       </b-col>
     </b-row>
@@ -206,9 +211,9 @@
           <vs-input label-placeholder="Referência" v-model="cliente.referencia" class="input-personalizado" required/>
         </b-col>
       </b-row>
-      <b-row class="campos-telefone" >
+      <b-row class="campos-telefone">
         <b-col cols="6" v-for="(telefone, index) in telefones" :key="index">
-          <b-row >
+          <b-row>
             <b-col cols="5">
               <vs-input label-placeholder="Numero de telefone" v-model="telefone.numero"
                         class="input-personalizado"/>
@@ -305,13 +310,13 @@ export default {
         data_nascimento: "",
         estado_civil: "",
         numero: "",
-        status:"",
+        status: "",
       },
       telefones: [{id: "", numero: "", tipo: ""}],
       activePrompt: false,
       tiposTelefone: [],
-      tiposStatus:[],
-      editar:false
+      tiposStatus: [],
+      editar: false
     }
   },
   computed: {
@@ -328,7 +333,7 @@ export default {
     this.buscarEstadosCivis()
   },
   methods: {
-    teste(row){
+    teste(row) {
       console.log('oiiiii')
       console.log(row)
       row._showDetails()
@@ -360,7 +365,6 @@ export default {
     },
 
 
-
     async editarClienteModal(id) {
       await api.get('/cliente', {params: {idCliente: id}}).then(response => {
         this.cliente = response.data
@@ -381,7 +385,10 @@ export default {
           this.cliente[key] = null
         }
       }
-      await api.post(`/cliente/editar/${this.cliente.id}`, {data: this.cliente, telefones: this.telefones}).then(response => {
+      await api.post(`/cliente/editar/${this.cliente.id}`, {
+        data: this.cliente,
+        telefones: this.telefones
+      }).then(response => {
         let nomeCliente = response.data[0].nome
         this.$vs.notify({
           text: `Cliente editado com sucesso: ${nomeCliente} !`,
@@ -423,7 +430,7 @@ export default {
       Object.keys(this.cliente).forEach(key => {
         this.cliente[key] = ""
       })
-      this.telefones = [{numero:"", tipo:""}]
+      this.telefones = [{numero: "", tipo: ""}]
     },
     adicionarTelefone() {
       this.telefones.push({
@@ -431,11 +438,11 @@ export default {
         tipo: ''
       })
     },
-    removerTelefone(index){
-      this.telefones.splice(index,1)
+    removerTelefone(index) {
+      this.telefones.splice(index, 1)
     },
     async cadastrarCliente() {
-      if(this.validarCamposObrigatorio()){
+      if (this.validarCamposObrigatorio()) {
         for (let key in this.cliente) {
           if (this.cliente[key] == "") {
             this.cliente[key] = null
@@ -456,10 +463,10 @@ export default {
         })
       }
     },
-    validarCamposObrigatorio(){
-      if(this.cliente['nome'] == "" || this.cliente['email'] == "" || this.cliente['rua'] == "" ||
+    validarCamposObrigatorio() {
+      if (this.cliente['nome'] == "" || this.cliente['email'] == "" || this.cliente['rua'] == "" ||
           this.cliente['cidade'] == "" || this.cliente['bairro'] == "" || this.cliente['estado'] == "" ||
-          this.cliente['cpf_cnpj'] == "" || this.cliente['numero'] == "" || this.cliente['cep'] == ""){
+          this.cliente['cpf_cnpj'] == "" || this.cliente['numero'] == "" || this.cliente['cep'] == "") {
         this.$vs.notify({
           text: `Campos obrigatorios vazio.`,
           position: 'top-center',
@@ -468,33 +475,33 @@ export default {
           icon: 'check_circle_outline'
         })
         return false
-      }else{
+      } else {
         return true
       }
     },
-    atribuirCep(dados){
-      if(dados.bairro != ""){
+    atribuirCep(dados) {
+      if (dados.bairro != "") {
         this.cliente['bairro'] = dados.bairro
       }
-      if(dados.localidade != ""){
+      if (dados.localidade != "") {
         this.cliente.cidade = dados.localidade
       }
-      if(dados.uf != ""){
+      if (dados.uf != "") {
         this.cliente.estado = dados.uf
       }
-      if(dados.complemento != ""){
+      if (dados.complemento != "") {
         this.cliente.complemento = dados.complemento
       }
-      if(dados.logradouro != ""){
+      if (dados.logradouro != "") {
         this.cliente.rua = dados.logradouro
       }
     }
 
 
   },
-  watch:{
-    'cliente.cep': function(cep){
-      if(cep.length == 8){
+  watch: {
+    'cliente.cep': function (cep) {
+      if (cep.length == 8) {
         api.get(`/cliente/consultar_cep/${cep}`).then(response => {
           this.atribuirCep(response.data)
         })
@@ -547,31 +554,49 @@ export default {
   margin: 0;
 }
 
-.vm--modal{
-  margin-top:10px;
-  bottom:10px;
+.vm--modal {
+  margin-top: 10px;
+  bottom: 10px;
   padding: 10px;
 }
-.tr-cliente{
+
+.tr-cliente {
   margin-top: 6px;
   margin-bottom: 0px;
   /*margin: 0;*/
 }
-.botao-deletar-telefone{
-  margin-top:12px;
+
+.botao-deletar-telefone {
+  margin-top: 12px;
 }
-.testee{
+
+.testee {
   background-color: red;
-  position:fixed;
-  bottom:0;
-  width:100%
+  position: fixed;
+  bottom: 0;
+  width: 100%
 }
-.barraTopCliente{
-  border:1px solid rgb(220,220,220);
-  padding:0;
-  margin:0;
-  margin-bottom:10px;
+
+.barraTopCliente {
+  border: 1px solid rgb(220, 220, 220);
+  padding: 0;
+  margin: 0;
+  margin-bottom: 10px;
   border-radius: 10px;
-  box-shadow: 5px 5px 20px rgb(200,200,200);
+  box-shadow: 5px 5px 20px rgb(200, 200, 200);
+}
+
+.tabela-clientes {
+  background-color: white;
+  margin:0;
+  padding: 0;
+  margin-bottom: 10px;
+}
+.col-tabela-clientes{
+  padding-top: 15px;
+}
+.barra-navegacao-bottom{
+  border-top: 1px solid rgb(200,200,200);
+  padding-top: 10px;
 }
 </style>
