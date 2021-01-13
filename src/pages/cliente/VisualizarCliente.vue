@@ -141,10 +141,10 @@
     <!--  Fim da tabela-->
     <modal name="hello-world" width="60%" height="auto" :scrollable="true" :click-to-close="false" class="modal-adicionando-cliente">
       <h3>Adicionando cliente</h3>
-      <b-row>
+      <b-row align-v="center">
         <b-col cols="5">
           <vs-input label-placeholder="Nome*" v-model="cliente.nome" class="input-personalizado"
-                    val-icon-danger="clear" danger-text="Campo obrigatorio" :danger="cliente.nome.length < 1"/>
+                    />
         </b-col>
         <b-col cols="2">
           <vs-select placeholder="Selecione" label-placeholder="Selecione" label="Estado civil"
@@ -152,8 +152,8 @@
             <vs-select-item :key="index" :value="item.id" :text="item.descricao" v-for="(item,index) in estadoCivil"/>
           </vs-select>
         </b-col>
-        <b-col class="input-nascimento" cols="3">
-          <vs-input label="Data de Nascimento" v-model="cliente.data_nascimento" type="date"/>
+        <b-col  cols="3">
+          <vs-input label="Data de Nascimento" v-model="cliente.data_nascimento" type="date" class="input-nascimento"/>
         </b-col>
         <b-col cols="2">
           <vs-select placeholder="Selecione" label-placeholder="Selecione" label="Status"
@@ -164,12 +164,10 @@
       </b-row>
       <b-row>
         <b-col cols="6">
-          <vs-input label-placeholder="Email*" v-model="cliente.email" class="input-personalizado"
-                    val-icon-danger="clear" danger-text="Campo obrigatorio" :danger="cliente.email.length < 1"/>
+          <vs-input label-placeholder="Email*" v-model="cliente.email" class="input-personalizado"/>
         </b-col>
         <b-col cols="3">
-          <vs-input label-placeholder="CPF ou CNPJ*" v-model="cliente.cpf_cnpj" class="input-personalizado"
-                    val-icon-danger="clear" danger-text="Campo obrigatorio" :danger="cliente.cpf_cnpj.length < 1"/>
+          <vs-input label-placeholder="CPF ou CNPJ*" v-model="cliente.cpf_cnpj" class="input-personalizado"/>
         </b-col>
         <b-col cols="3">
           <vs-input label-placeholder="Identidade" v-model="cliente.identidade" class="input-personalizado"/>
@@ -177,16 +175,13 @@
       </b-row>
       <b-row>
         <b-col cols="2">
-          <vs-input label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado"
-                    val-icon-danger="clear" danger-text="Campo obrigatorio" :danger="cliente.cep.length < 1"/>
+          <vs-input label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado"/>
         </b-col>
         <b-col cols="5">
-          <vs-input label-placeholder="Rua*" v-model="cliente.rua" class="input-personalizado"
-                    val-icon-danger="clear" danger-text="Campo obrigatorio" :danger="cliente.rua.length < 1"/>
+          <vs-input label-placeholder="Rua*" v-model="cliente.rua" class="input-personalizado"/>
         </b-col>
         <b-col cols="2">
-          <vs-input label-placeholder="Número*" v-model="cliente.numero" class="input-personalizado"
-                    val-icon-danger="clear" danger-text="Campo obrigatorio" :danger="cliente.numero.length < 1"/>
+          <vs-input label-placeholder="Número*" v-model="cliente.numero" class="input-personalizado"/>
         </b-col>
         <b-col cols="3">
           <vs-input label-placeholder="Complemento" v-model="cliente.complemento" class="input-personalizado"/>
@@ -194,16 +189,13 @@
       </b-row>
       <b-row>
         <b-col>
-          <vs-input label-placeholder="Bairro*" v-model="cliente.bairro" class="input-personalizado"
-                    val-icon-danger="clear" danger-text="Campo obrigatorio" :danger="cliente.bairro.length < 1"/>
+          <vs-input label-placeholder="Bairro*" v-model="cliente.bairro" class="input-personalizado"/>
         </b-col>
         <b-col>
-          <vs-input label-placeholder="Cidade*" v-model="cliente.cidade" class="input-personalizado"
-                    val-icon-danger="clear" danger-text="Campo obrigatorio" :danger="cliente.cidade.length < 1"/>
+          <vs-input label-placeholder="Cidade*" v-model="cliente.cidade" class="input-personalizado"/>
         </b-col>
-        <b-col>
-          <vs-input label-placeholder="UF*" v-model="cliente.estado" class="input-personalizado"
-                    val-icon-danger="clear" danger-text="Campo obrigatorio" :danger="cliente.estado.length < 1"/>
+        <b-col cols="2">
+          <vs-input label-placeholder="UF*" v-model="cliente.estado" class="input-personalizado" maxlength="2"/>
         </b-col>
       </b-row>
       <b-row>
@@ -542,7 +534,8 @@ export default {
 }
 
 .input-nascimento {
-  margin-top: -6px;
+  margin-top: -6px !important;
+  margin-bottom: 10px !important;
 }
 
 .vs-con-input-label {
@@ -556,6 +549,7 @@ export default {
 .con-select {
   width: 100%;
   margin-top: -6px;
+  margin-bottom: 10px;
 }
 
 .vs-select--label {
