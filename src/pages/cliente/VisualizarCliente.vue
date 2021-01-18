@@ -65,19 +65,7 @@
             <vs-button type="flat" color="dark" @click="editarClienteModal(row.item.id)" icon="edit"></vs-button>
           </template>
           <template #cell(deletar)="row">
-            <vs-button type="flat" color="dark" @click="activePrompt = true" icon="delete"></vs-button>
-            <vs-prompt
-                @cancel="val=''"
-                @accept="deletarCliente(row.item)"
-                accept-text="Deletar"
-                cancel-text="Cancelar"
-                color="danger"
-                title="Deletar cliente"
-                :active.sync="activePrompt">
-              <div class="con-exemple-prompt">
-                <p>Tem certeza que deseja excluir o cliente {{ row.item.nome }} ?</p>
-              </div>
-            </vs-prompt>
+            <vs-button type="flat" color="dark" @click="deletarClienteModal(row.item)" icon="delete"></vs-button>
           </template>
 
 
@@ -139,27 +127,42 @@
       </b-col>
     </b-row>
     <!--  Fim da tabela-->
-    <modal name="hello-world" width="60%" height="auto" :scrollable="true" :click-to-close="false" class="modal-adicionando-cliente">
+    <modal name="hello-world" width="60%" height="auto" :scrollable="true" :click-to-close="false"
+           class="modal-adicionando-cliente">
       <h3>Adicionando cliente</h3>
       <b-row align-v="center">
         <b-col cols="5">
           <vs-input label-placeholder="Nome*" v-model="cliente.nome" class="input-personalizado"
-                    />
+          />
         </b-col>
         <b-col cols="2">
-          <vs-select placeholder="Selecione" label-placeholder="Selecione" label="Estado civil"
-                     v-model="cliente.estado_civil">
-            <vs-select-item :key="index" :value="item.id" :text="item.descricao" v-for="(item,index) in estadoCivil"/>
-          </vs-select>
+          <b-form-group id="select-cliente" label="Estado Civil">
+            <b-form-select v-model="cliente.estado_civil" :options="estadosCivis" value-field="id" text-field="descricao">
+              <template #first>
+                <b-form-select-option  :value="null">Escolha uma opção</b-form-select-option>
+              </template>
+            </b-form-select>
+          </b-form-group>
+<!--          <vs-select placeholder="Selecione" label-placeholder="Selecione" label="Estado civil"-->
+<!--                     v-model="cliente.estado_civil">-->
+<!--            <vs-select-item :key="index" :value="item.id" :text="item.descricao" v-for="(item,index) in estadoCivil"/>-->
+<!--          </vs-select>-->
         </b-col>
-        <b-col  cols="3">
+        <b-col cols="3">
           <vs-input label="Data de Nascimento" v-model="cliente.data_nascimento" type="date" class="input-nascimento"/>
         </b-col>
         <b-col cols="2">
-          <vs-select placeholder="Selecione" label-placeholder="Selecione" label="Status"
-                     v-model="cliente.status">
-            <vs-select-item :key="index" :value="item.id" :text="item.descricao" v-for="(item,index) in tiposStatus"/>
-          </vs-select>
+          <b-form-group id="select-cliente" label="Status">
+            <b-form-select v-model="cliente.status" :options="tiposStatus" value-field="id" text-field="descricao">
+              <template #first>
+                <b-form-select-option  :value="null">Escolha uma opção</b-form-select-option>
+              </template>
+            </b-form-select>
+          </b-form-group>
+<!--          <vs-select placeholder="Selecione" label-placeholder="Selecione" label="Status"-->
+<!--                     v-model="cliente.status">-->
+<!--            <vs-select-item :key="index" :value="item.id" :text="item.descricao" v-for="(item,index) in tiposStatus"/>-->
+<!--          </vs-select>-->
         </b-col>
       </b-row>
       <b-row>
@@ -167,15 +170,15 @@
           <vs-input label-placeholder="Email*" v-model="cliente.email" class="input-personalizado"/>
         </b-col>
         <b-col cols="3">
-          <vs-input label-placeholder="CPF ou CNPJ*" v-model="cliente.cpf_cnpj" class="input-personalizado"/>
+          <vs-input onKeyDown="if(this.value.length==15 && event.keyCode!=8) return false;" type="number" label-placeholder="CPF ou CNPJ*" v-model="cliente.cpf_cnpj" class="input-personalizado"/>
         </b-col>
         <b-col cols="3">
-          <vs-input label-placeholder="Identidade" v-model="cliente.identidade" class="input-personalizado"/>
+          <vs-input onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" type="number" label-placeholder="Identidade" v-model="cliente.identidade" class="input-personalizado"/>
         </b-col>
       </b-row>
       <b-row>
         <b-col cols="2">
-          <vs-input label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado"/>
+          <vs-input type="number" label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado"/>
         </b-col>
         <b-col cols="5">
           <vs-input label-placeholder="Rua*" v-model="cliente.rua" class="input-personalizado"/>
@@ -210,12 +213,12 @@
               label="Observação"
               label-for="input-1"
           >
-          <b-form-textarea
-              id="textarea"
-              v-model="cliente.observacao"
-              rows="3"
-              max-rows="6"
-          ></b-form-textarea>
+            <b-form-textarea
+                id="textarea"
+                v-model="cliente.observacao"
+                rows="3"
+                max-rows="6"
+            ></b-form-textarea>
           </b-form-group>
         </b-col>
       </b-row>
@@ -234,11 +237,18 @@
                         class="input-personalizado"/>
             </b-col>
             <b-col cols="5">
-              <vs-select placeholder="Selecione" label-placeholder="Selecione" label="Tipo de número"
-                         v-model="telefone.tipo">
-                <vs-select-item :key="index" :value="item.id" :text="item.descricao"
-                                v-for="(item,index) in tiposTelefone"/>
-              </vs-select>
+              <b-form-group id="select-cliente" label="Status">
+                <b-form-select v-model="telefone.tipo" :options="tiposTelefone" value-field="id" text-field="descricao">
+                  <template #first>
+                    <b-form-select-option  :value="null">Escolha uma opção</b-form-select-option>
+                  </template>
+                </b-form-select>
+              </b-form-group>
+<!--              <vs-select placeholder="Selecione" label-placeholder="Selecione" label="Tipo de número"-->
+<!--                         v-model="telefone.tipo">-->
+<!--                <vs-select-item :key="index" :value="item.id" :text="item.descricao"-->
+<!--                                v-for="(item,index) in tiposTelefone"/>-->
+<!--              </vs-select>-->
             </b-col>
             <b-col cols="2" class="text-center botao-deletar-telefone">
               <vs-button type="flat" icon="delete" color="dark" class="botao-salvar"
@@ -276,8 +286,6 @@ export default {
     return {
       alturaTela: `${(window.innerWidth / 3).toString()}px`,
       larguraTela: window.innerHeight,
-      popupCadastrarCliente: false,
-      editarClientePopup: false,
       items: [],
       fields: [
         {key: 'nome', label: 'Nome', sortable: true},
@@ -296,11 +304,6 @@ export default {
       sortDirection: 'asc',
       filter: null,
       filterOn: [],
-      infoModal: {
-        id: 'info-modal',
-        title: '',
-        content: ''
-      },
       cliente: {
         nome: "",
         rua: "",
@@ -314,35 +317,23 @@ export default {
         referencia: "",
         cep: "",
         data_nascimento: "",
-        estado_civil: "",
+        estado_civil: null,
         numero: "",
-        status: "",
-        observacao:""
+        status: null,
+        observacao: ""
       },
       telefones: [{id: "", numero: "", tipo: ""}],
-      activePrompt: false,
       tiposTelefone: [],
       tiposStatus: [],
-      editar: false
+      editar: false,
+      estadosCivis: []
     }
   },
-  computed: {
-    sortOptions() {
-      return this.fields
-          .filter(f => f.sortable)
-          .map(f => {
-            return {text: f.label, value: f.key}
-          })
-    },
-  },
-  async mounted() {
-    this.buscarClientes()
-    this.buscarEstadosCivis()
-  },
+
   methods: {
     async buscarEstadosCivis() {
       await api.get('/estados_civis').then(response => {
-        this.estadoCivil = response.data
+        this.estadosCivis = response.data
       })
     },
     async buscarClientes() {
@@ -358,9 +349,23 @@ export default {
       this.currentPage = 1
     },
     async deletarCliente(cliente) {
-      await api.delete(`/cliente/deletar/${cliente.id}`).then(response => {
-        console.log(response)
+      await api.delete(`/cliente/deletar/${cliente.id}`).then(() => {
         this.buscarClientes()
+      })
+    },
+    deletarClienteModal(cliente) {
+      this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar o cliente: ${cliente.nome} ?`, {
+        title: 'Deletar cliente',
+        buttonSize: 'sm',
+        okTitle: 'Deletar',
+        cancelTitle: 'Cancelar',
+        okVariant: 'danger',
+        footerClass: 'p-2',
+        centered: true
+      }).then(value => {
+        if (value) {
+          this.deletarCliente(cliente)
+        }
       })
     },
 
@@ -380,38 +385,39 @@ export default {
       })
     },
     async editarCliente() {
-      for (let key in this.cliente) {
-        if (this.cliente[key] == "") {
-          this.cliente[key] = null
+      if (this.validarCamposObrigatorio()) {
+        let variaveisString = ['data_nascimento', 'identidade', 'status', 'estado_civil']
+        for (let key in variaveisString) {
+          if (this.cliente[variaveisString[key]] == "") {
+            this.cliente[variaveisString[key]] = null
+          }
         }
-      }
-      await api.post(`/cliente/editar/${this.cliente.id}`, {
-        data: this.cliente,
-        telefones: this.telefones
-      }).then(response => {
-        let nomeCliente = response.data[0].nome
-        this.$vs.notify({
-          text: `Cliente editado com sucesso: ${nomeCliente} !`,
-          position: 'top-center',
-          color: 'warning',
-          time: 6000,
-          icon: 'check_circle_outline'
+        await api.post(`/cliente/editar/${this.cliente.id}`, {
+          data: this.cliente,
+          telefones: this.telefones
+        }).then(response => {
+          let nomeCliente = response.data[0].nome
+          this.$vs.notify({
+            text: `Cliente editado com sucesso: ${nomeCliente} !`,
+            position: 'top-center',
+            color: 'warning',
+            time: 6000,
+            icon: 'check_circle_outline'
+          })
+          this.buscarClientes()
+          this.limparModal()
+          this.esconderModal()
         })
-        this.buscarClientes()
-        this.limparModal()
-        this.esconderModal()
-      })
+      }
     },
 
     async buscarTipoTelefones() {
       await api.get('/tipos_telefones').then(response => {
-        console.log(response)
         this.tiposTelefone = response.data
       })
     },
     async buscarTipoStatus() {
       await api.get('/cliente/tipos_status').then(response => {
-        console.log(response.data)
         this.tiposStatus = response.data
       })
     },
@@ -431,6 +437,8 @@ export default {
         this.cliente[key] = ""
       })
       this.telefones = [{numero: "", tipo: ""}]
+      this.cliente.status = null
+      this.cliente.estado_civil = null
     },
     adicionarTelefone() {
       this.telefones.push({
@@ -443,9 +451,10 @@ export default {
     },
     async cadastrarCliente() {
       if (this.validarCamposObrigatorio()) {
-        for (let key in this.cliente) {
-          if (this.cliente[key] == "") {
-            this.cliente[key] = null
+        let variaveisString = ['data_nascimento', 'identidade', 'status', 'estado_civil']
+        for( let key in variaveisString){
+          if(this.cliente[variaveisString[key]] == ""){
+            this.cliente[variaveisString[key]] = null
           }
         }
         await api.post('/cliente/cadastrar', {data: this.cliente, telefones: this.telefones}).then(response => {
@@ -496,8 +505,6 @@ export default {
         this.cliente.rua = dados.logradouro
       }
     }
-
-
   },
   watch: {
     'cliente.cep': function (cep) {
@@ -507,8 +514,11 @@ export default {
         })
       }
     }
-  }
-
+  },
+  async mounted() {
+    this.buscarClientes()
+    this.buscarEstadosCivis()
+  },
 }
 </script>
 <style>
@@ -557,7 +567,7 @@ export default {
 }
 
 .vm--modal {
-  margin-top:-20px !important;
+  margin-top: -20px !important;
   bottom: 25px;
   padding: 25px;
 }
@@ -565,12 +575,12 @@ export default {
 .tr-cliente {
   margin-top: 6px;
   margin-bottom: 0px;
-  /*margin: 0;*/
 }
 
 .botao-deletar-telefone {
   margin-top: 12px;
 }
+
 .barraTopCliente {
   border: 1px solid rgb(220, 220, 220);
   padding: 0;
@@ -582,18 +592,35 @@ export default {
 
 .tabela-clientes {
   background-color: white;
-  margin:0;
+  margin: 0;
   padding: 0;
   margin-bottom: 10px;
 }
-.col-tabela-clientes{
+
+.col-tabela-clientes {
   padding-top: 15px;
 }
-.divider-personalizado{
-  border-top: 1px solid rgb(200,200,200);
+
+.divider-personalizado {
+  border-top: 1px solid rgb(200, 200, 200);
   padding-top: 10px;
 }
-.botao-adicionar-telefone{
+
+.botao-adicionar-telefone {
   margin-bottom: 8px;
 }
+
+.material-icons {
+  z-index: 0;
+}
+#select-cliente__BV_label_{
+  margin:0;
+  padding:0;
+  color:rgb(110,110,110);
+  font-size: 12px;
+}
+#select-cliente{
+  margin-bottom: 10px;
+}
+
 </style>

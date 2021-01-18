@@ -9,132 +9,140 @@
             <span class="nav-text">Home</span>
           </router-link>
         </li>
-<!--        <li class="has-subnav a-sem-href">-->
-<!--          <a>-->
-<!--            <i class="fa fa-list fa-2x"></i>-->
-<!--            <span class="nav-text">Cadastros</span>-->
-<!--          </a>-->
-<!--          <ul class="">-->
-            <li class="has-subnav">
-              <router-link to="/visualizar/cliente">
-                <b-icon icon="person-plus-fill" class="icone-bootstrap-menu"></b-icon>
-                <span class="nav-text">
+        <!--        <li class="has-subnav a-sem-href">-->
+        <!--          <a>-->
+        <!--            <i class="fa fa-list fa-2x"></i>-->
+        <!--            <span class="nav-text">Cadastros</span>-->
+        <!--          </a>-->
+        <!--          <ul class="">-->
+        <li class="has-subnav">
+          <router-link to="/visualizar/cliente">
+            <b-icon icon="person-plus-fill" class="icone-bootstrap-menu"></b-icon>
+            <span class="nav-text">
                   Clientes
                 </span>
-              </router-link>
-            </li>
-<!--            <li class="has-subnav">-->
-<!--              <a href="#">-->
-<!--                <i class="fa fa-folder-open fa-2x"></i>-->
-<!--                <span class="nav-text">-->
-<!--                  Pages-->
-<!--                </span>-->
-<!--              </a>-->
-<!--            </li>-->
-<!--            <li class="has-subnav">-->
-<!--              <a href="#">-->
-<!--                <i class="fa fa-folder-open fa-2x"></i>-->
-<!--                <span class="nav-text">-->
-<!--                  Pages-->
-<!--                </span>-->
-<!--              </a>-->
-<!--            </li>-->
-<!--          </ul>-->
-<!--        </li>-->
-<!--        <li class="has-subnav">-->
-<!--          <a href="#">-->
-<!--            <i class="fa fa-list fa-2x"></i>-->
-<!--            <span class="nav-text">-->
-<!--              Forms-->
-<!--            </span>-->
-<!--          </a>-->
-<!--        </li>-->
-<!--        <li class="has-subnav">-->
-<!--          <a href="#">-->
-<!--            <i class="fa fa-folder-open fa-2x"></i>-->
-<!--            <span class="nav-text">-->
-<!--              Pages-->
-<!--            </span>-->
-<!--          </a>-->
-<!--        </li>-->
-<!--        <li>-->
-<!--          <a href="#">-->
-<!--            <i class="fa fa-bar-chart-o fa-2x"></i>-->
-<!--            <span class="nav-text">-->
-<!--              Graphs and Statistics-->
-<!--            </span>-->
-<!--          </a>-->
-<!--        </li>-->
-<!--        <li>-->
-<!--          <a href="#">-->
-<!--            <i class="fa fa-font fa-2x"></i>-->
-<!--            <span class="nav-text">-->
-<!--              Quotes-->
-<!--            </span>-->
-<!--          </a>-->
-<!--        </li>-->
-<!--        <li>-->
-<!--          <a href="#">-->
-<!--            <i class="fa fa-table fa-2x"></i>-->
-<!--            <span class="nav-text">-->
-<!--              Tables-->
-<!--            </span>-->
-<!--          </a>-->
-<!--          <ul class="">-->
-<!--            <li class="has-subnav">-->
-<!--              <a href="#">-->
-<!--                <i class="fa fa-folder-open fa-2x"></i>-->
-<!--                <span class="nav-text">-->
-<!--                  Pages-->
-<!--                </span>-->
-<!--              </a>-->
-<!--            </li>-->
-<!--            <li class="has-subnav">-->
-<!--              <a href="#">-->
-<!--                <i class="fa fa-folder-open fa-2x"></i>-->
-<!--                <span class="nav-text">-->
-<!--                  Pages-->
-<!--                </span>-->
-<!--              </a>-->
-<!--            </li>-->
-<!--            <li class="has-subnav">-->
-<!--              <a href="#">-->
-<!--                <i class="fa fa-folder-open fa-2x"></i>-->
-<!--                <span class="nav-text">-->
-<!--                  Pages-->
-<!--                </span>-->
-<!--              </a>-->
-<!--            </li>-->
-<!--          </ul>-->
-<!--        </li>-->
-<!--        <li>-->
-<!--          <a href="#">-->
-<!--            <i class="fa fa-map-marker fa-2x"></i>-->
-<!--            <span class="nav-text">-->
-<!--              Maps-->
-<!--            </span>-->
-<!--          </a>-->
-<!--        </li>-->
-<!--        <li>-->
-<!--          <a href="#">-->
-<!--            <i class="fa fa-info fa-2x"></i>-->
-<!--            <span class="nav-text">-->
-<!--              Documentation-->
-<!--            </span>-->
-<!--          </a>-->
-<!--        </li>-->
+          </router-link>
+        </li>
+        <li class="has-subnav">
+          <router-link to="/visualizar/usuario">
+            <b-icon icon="person-badge" class="icone-bootstrap-menu"></b-icon>
+            <span class="nav-text">
+                  Usuários
+                </span>
+          </router-link>
+        </li>
+        <!--            <li class="has-subnav">-->
+        <!--              <a href="#">-->
+        <!--                <i class="fa fa-folder-open fa-2x"></i>-->
+        <!--                <span class="nav-text">-->
+        <!--                  Pages-->
+        <!--                </span>-->
+        <!--              </a>-->
+        <!--            </li>-->
+        <!--            <li class="has-subnav">-->
+        <!--              <a href="#">-->
+        <!--                <i class="fa fa-folder-open fa-2x"></i>-->
+        <!--                <span class="nav-text">-->
+        <!--                  Pages-->
+        <!--                </span>-->
+        <!--              </a>-->
+        <!--            </li>-->
+        <!--          </ul>-->
+        <!--        </li>-->
+        <!--        <li class="has-subnav">-->
+        <!--          <a href="#">-->
+        <!--            <i class="fa fa-list fa-2x"></i>-->
+        <!--            <span class="nav-text">-->
+        <!--              Forms-->
+        <!--            </span>-->
+        <!--          </a>-->
+        <!--        </li>-->
+        <!--        <li class="has-subnav">-->
+        <!--          <a href="#">-->
+        <!--            <i class="fa fa-folder-open fa-2x"></i>-->
+        <!--            <span class="nav-text">-->
+        <!--              Pages-->
+        <!--            </span>-->
+        <!--          </a>-->
+        <!--        </li>-->
+        <!--        <li>-->
+        <!--          <a href="#">-->
+        <!--            <i class="fa fa-bar-chart-o fa-2x"></i>-->
+        <!--            <span class="nav-text">-->
+        <!--              Graphs and Statistics-->
+        <!--            </span>-->
+        <!--          </a>-->
+        <!--        </li>-->
+        <!--        <li>-->
+        <!--          <a href="#">-->
+        <!--            <i class="fa fa-font fa-2x"></i>-->
+        <!--            <span class="nav-text">-->
+        <!--              Quotes-->
+        <!--            </span>-->
+        <!--          </a>-->
+        <!--        </li>-->
+        <!--        <li>-->
+        <!--          <a href="#">-->
+        <!--            <i class="fa fa-table fa-2x"></i>-->
+        <!--            <span class="nav-text">-->
+        <!--              Tables-->
+        <!--            </span>-->
+        <!--          </a>-->
+        <!--          <ul class="">-->
+        <!--            <li class="has-subnav">-->
+        <!--              <a href="#">-->
+        <!--                <i class="fa fa-folder-open fa-2x"></i>-->
+        <!--                <span class="nav-text">-->
+        <!--                  Pages-->
+        <!--                </span>-->
+        <!--              </a>-->
+        <!--            </li>-->
+        <!--            <li class="has-subnav">-->
+        <!--              <a href="#">-->
+        <!--                <i class="fa fa-folder-open fa-2x"></i>-->
+        <!--                <span class="nav-text">-->
+        <!--                  Pages-->
+        <!--                </span>-->
+        <!--              </a>-->
+        <!--            </li>-->
+        <!--            <li class="has-subnav">-->
+        <!--              <a href="#">-->
+        <!--                <i class="fa fa-folder-open fa-2x"></i>-->
+        <!--                <span class="nav-text">-->
+        <!--                  Pages-->
+        <!--                </span>-->
+        <!--              </a>-->
+        <!--            </li>-->
+        <!--          </ul>-->
+        <!--        </li>-->
+        <!--        <li>-->
+        <!--          <a href="#">-->
+        <!--            <i class="fa fa-map-marker fa-2x"></i>-->
+        <!--            <span class="nav-text">-->
+        <!--              Maps-->
+        <!--            </span>-->
+        <!--          </a>-->
+        <!--        </li>-->
+        <!--        <li>-->
+        <!--          <a href="#">-->
+        <!--            <i class="fa fa-info fa-2x"></i>-->
+        <!--            <span class="nav-text">-->
+        <!--              Documentation-->
+        <!--            </span>-->
+        <!--          </a>-->
+        <!--        </li>-->
       </ul>
 
-<!--      <ul class="logout">-->
-<!--        <li>-->
-<!--          <a href="#">-->
-<!--            <i class="fa fa-power-off fa-2x"></i>-->
-<!--            <span class="nav-text">-->
-<!--              Logout-->
-<!--            </span>-->
-<!--          </a>-->
-<!--        </li>-->
-<!--      </ul>-->
+      <!--      <ul class="logout">-->
+      <!--        <li>-->
+      <!--          <a href="#">-->
+      <!--            <i class="fa fa-power-off fa-2x"></i>-->
+      <!--            <span class="nav-text">-->
+      <!--              Logout-->
+      <!--            </span>-->
+      <!--          </a>-->
+      <!--        </li>-->
+      <!--      </ul>-->
     </nav>
   </div>
 </template>
@@ -291,33 +299,35 @@ nav.main-menu li.active > a,
   font-style: normal;
   font-weight: 300;
   src: local("Titillium WebLight"), local("TitilliumWeb-Light"),
-    url(http://themes.googleusercontent.com/static/fonts/titilliumweb/v2/anMUvcNT0H1YN4FII8wpr24bNCNEoFTpS2BTjF6FB5E.woff)
-      format("woff");
+  url(http://themes.googleusercontent.com/static/fonts/titilliumweb/v2/anMUvcNT0H1YN4FII8wpr24bNCNEoFTpS2BTjF6FB5E.woff) format("woff");
 }
 
-.main-menu ul li ul{
-  overflow:hidden;
-  background:#000;
-  color:#fff;
-  height:0;
+.main-menu ul li ul {
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  height: 0;
   padding: 0 18px;
   -webkit-transition: all .5s ease;
   -moz-transition: all .5s ease;
   transition: all .5s ease;
 }
-.main-menu ul li:hover ul,.main-menu ul li.over ul {
-  height:auto;
+
+.main-menu ul li:hover ul, .main-menu ul li.over ul {
+  height: auto;
   padding: 24px 18px;
 }
 
-.a-sem-href{
+.a-sem-href {
   color: #999 !important;
   text-decoration: none;
 }
-.a-sem-href:hover{
+
+.a-sem-href:hover {
   color: #fff !important;
 }
-.icone-bootstrap-menu{
+
+.icone-bootstrap-menu {
   font-size: 8px;
   width: 60px;
   height: 30px;
