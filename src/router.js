@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import Autenticacao from './routers/autenticacaoRouter'
 import Cliente from './routers/clienteRouter'
 import Usuario from './routers/usuarioRouter'
+import Imovel from  './routers/imovelRouter'
 
 Vue.use(Router)
 
@@ -16,7 +17,8 @@ const router = new Router({
     },
         ...Autenticacao,
         ...Cliente,
-        ...Usuario
+        ...Usuario,
+        ...Imovel
     ]
 })
 

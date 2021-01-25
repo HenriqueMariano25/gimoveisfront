@@ -50,11 +50,14 @@ export default {
       await api.post('/autenticacao/login', {usuario:this.usuario, senha: this.senha}).then(response => {
         let usuario = response.data['usuario']
         let token = response.data['Authorization']
+        let dolar = response.data['dolar']
 
         this.$store.commit('DEFINIR_USUARIO_LOGADO', {
           token: token,
           usuario: usuario,
+          dolar: dolar
         })
+        console.log(this.$store)
         this.$router.push({name: 'home'})
       }).catch(erro => {
         console.log(erro.response.data.erro)

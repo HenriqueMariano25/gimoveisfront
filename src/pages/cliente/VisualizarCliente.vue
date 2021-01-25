@@ -139,14 +139,10 @@
           <b-form-group id="select-cliente" label="Estado Civil">
             <b-form-select v-model="cliente.estado_civil" :options="estadosCivis" value-field="id" text-field="descricao">
               <template #first>
-                <b-form-select-option  :value="null">Escolha uma opção</b-form-select-option>
+                <b-form-select-option  :value="null">Selecione</b-form-select-option>
               </template>
             </b-form-select>
           </b-form-group>
-<!--          <vs-select placeholder="Selecione" label-placeholder="Selecione" label="Estado civil"-->
-<!--                     v-model="cliente.estado_civil">-->
-<!--            <vs-select-item :key="index" :value="item.id" :text="item.descricao" v-for="(item,index) in estadoCivil"/>-->
-<!--          </vs-select>-->
         </b-col>
         <b-col cols="3">
           <vs-input label="Data de Nascimento" v-model="cliente.data_nascimento" type="date" class="input-nascimento"/>
@@ -155,14 +151,10 @@
           <b-form-group id="select-cliente" label="Status">
             <b-form-select v-model="cliente.status" :options="tiposStatus" value-field="id" text-field="descricao">
               <template #first>
-                <b-form-select-option  :value="null">Escolha uma opção</b-form-select-option>
+                <b-form-select-option  :value="null">Selecione</b-form-select-option>
               </template>
             </b-form-select>
           </b-form-group>
-<!--          <vs-select placeholder="Selecione" label-placeholder="Selecione" label="Status"-->
-<!--                     v-model="cliente.status">-->
-<!--            <vs-select-item :key="index" :value="item.id" :text="item.descricao" v-for="(item,index) in tiposStatus"/>-->
-<!--          </vs-select>-->
         </b-col>
       </b-row>
       <b-row>
@@ -240,7 +232,7 @@
               <b-form-group id="select-cliente" label="Status">
                 <b-form-select v-model="telefone.tipo" :options="tiposTelefone" value-field="id" text-field="descricao">
                   <template #first>
-                    <b-form-select-option  :value="null">Escolha uma opção</b-form-select-option>
+                    <b-form-select-option  :value="null">Selecione</b-form-select-option>
                   </template>
                 </b-form-select>
               </b-form-group>
@@ -282,6 +274,7 @@
 import api from '../../services/api'
 
 export default {
+  name: "VisualizarCliente",
   data() {
     return {
       alturaTela: `${(window.innerWidth / 3).toString()}px`,
@@ -307,6 +300,7 @@ export default {
       cliente: {
         nome: "",
         rua: "",
+        cep: "",
         bairro: "",
         cidade: "",
         estado: "",
@@ -315,14 +309,13 @@ export default {
         identidade: "",
         email: "",
         referencia: "",
-        cep: "",
         data_nascimento: "",
         estado_civil: null,
         numero: "",
         status: null,
         observacao: ""
       },
-      telefones: [{id: "", numero: "", tipo: ""}],
+      telefones: [{id: "", numero: "", tipo: null}],
       tiposTelefone: [],
       tiposStatus: [],
       editar: false,

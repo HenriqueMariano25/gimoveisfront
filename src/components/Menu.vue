@@ -31,6 +31,14 @@
                 </span>
           </router-link>
         </li>
+        <li class="has-subnav">
+          <router-link to="/visualizar/imovel">
+            <b-icon icon="house-fill" class="icone-bootstrap-menu"></b-icon>
+            <span class="nav-text">
+                  Imóveis
+                </span>
+          </router-link>
+        </li>
         <!--            <li class="has-subnav">-->
         <!--              <a href="#">-->
         <!--                <i class="fa fa-folder-open fa-2x"></i>-->

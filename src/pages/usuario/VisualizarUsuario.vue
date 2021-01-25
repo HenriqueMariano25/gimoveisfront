@@ -134,7 +134,7 @@
           <b-form-group id="select-permissao" label="Permissão">
             <b-form-select v-model="usuario.permissao" :options="tiposPermissoes">
               <template #first>
-                <b-form-select-option :value="null">Escolha uma opção</b-form-select-option>
+                <b-form-select-option :value="null">Selecione</b-form-select-option>
               </template>
             </b-form-select>
           </b-form-group>
