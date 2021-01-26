@@ -28,6 +28,9 @@
     <b-row class="tabela-usuarios">
       <b-col class="col-tabela-usuarios">
         <b-table
+            bordered
+            head-variant="dark"
+            sort-icon-left
             :items="items"
             :fields="fields"
             :current-page="currentPage"
@@ -39,7 +42,6 @@
             :sort-direction="sortDirection"
             show-empty
             small
-            fixed
             @filtered="onFiltered"
             striped
             hover
@@ -173,7 +175,7 @@ export default {
       items: [],
       fields: [
         {key: 'nome', label: 'Nome do Operador', sortable: true},
-        {key: 'email', label: 'Email', sortable: true, class: 'text-center'},
+        {key: 'email', label: 'Email', sortable: true},
         {key: 'usuario', label: 'Usuário', sortable: true,},
         {key: 'permissao', label: 'Nivel de permissão'},
         {key: 'editar', label: 'Editar'},

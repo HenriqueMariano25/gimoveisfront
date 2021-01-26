@@ -30,6 +30,9 @@
     <b-row class="tabela-clientes">
       <b-col class="col-tabela-clientes">
         <b-table
+            bordered
+            head-variant="dark"
+            sort-icon-left
             :items="items"
             :fields="fields"
             :current-page="currentPage"
@@ -85,6 +88,9 @@
 
                 <li>{{ telefone }}</li>
               </ul>
+              <vs-button color="#5498ff" type="filled" icon="work" @click="mostrarModalContratos(row.item)">Contratos
+              </vs-button>
+              button
             </b-card>
           </template>
         </b-table>
@@ -170,7 +176,7 @@
       </b-row>
       <b-row>
         <b-col cols="2">
-          <vs-input type="number" label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado"/>
+          <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado"/>
         </b-col>
         <b-col cols="5">
           <vs-input label-placeholder="Rua*" v-model="cliente.rua" class="input-personalizado"/>
@@ -266,6 +272,73 @@
 
       </b-row>
     </modal>
+    <modal name="contratos-cliente" width="60%" height="auto" :scrollable="true"
+           class="modal-adicionando-cliente">
+
+      <b-row>
+        <b-col>
+          <h6>Contratos de: {{ cliente.nome }} </h6>
+        </b-col>
+      </b-row>
+      <b-row class="tabela-contratos-clientes">
+        <b-col class="col-tabela-contratos-clientes">
+          <b-table
+
+              :fields="fieldsContratos"
+              :current-page="currentPage"
+              :per-page="perPage"
+              :filter="filter"
+              :filter-included-fields="filterOn"
+              :sort-by.sync="sortBy"
+              :sort-desc.sync="sortDesc"
+              :sort-direction="sortDirection"
+              show-empty
+              small
+              fixed
+              @filtered="onFiltered"
+              striped
+              hover
+              outlined
+              no-border-collapse>
+          </b-table>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col>
+          <h6>Parcelas do contrato: 1234</h6>
+        </b-col>
+      </b-row>
+      <b-row class="tabela-parcelas-clientes">
+        <b-col class="col-tabela-parcelas-clientes">
+          <b-table
+
+              :fields="fieldsParcelas"
+              :current-page="currentPage"
+              :per-page="perPage"
+              :filter="filter"
+              :filter-included-fields="filterOn"
+              :sort-by.sync="sortBy"
+              :sort-desc.sync="sortDesc"
+              :sort-direction="sortDirection"
+              show-empty
+              small
+              fixed
+              @filtered="onFiltered"
+              striped
+              hover
+              outlined
+              no-border-collapse>
+          </b-table>
+        </b-col>
+      </b-row>
+      <b-row align-h="end">
+        <b-col cols="2">
+          <vs-button color="#707070" type="filled" icon="arrow_back" class="botao-salvar" @click="esconderModalContratos">
+            Sair
+          </vs-button>
+        </b-col>
+      </b-row>
+    </modal>
   </b-container>
 </template>
 
@@ -282,11 +355,25 @@ export default {
       items: [],
       fields: [
         {key: 'nome', label: 'Nome', sortable: true},
-        {key: 'email', label: 'Email', sortable: true, class: 'text-center'},
+        {key: 'email', label: 'Email', sortable: true},
         {key: 'cpf_cnpj', label: 'CPF ou CNPJ', sortable: true,},
         {key: 'status', label: 'Status'},
         {key: 'editar', label: 'Editar'},
         {key: 'deletar', label: 'Deletar'},
+      ],
+      fieldsContratos: [
+        {key:'id', label: 'Contrato'},
+        {key:'nome', label: 'Imóvel'},
+        {key:'data_inicio', label: 'Data de Início'},
+        {key:'vencimeno', label: 'Vencimento'},
+        {key:'status', label: 'Status'},
+        {key:'status'},
+      ],
+      fieldsParcelas:[
+        {key: 'valor', label: 'Valor'},
+        {key: 'vencimento', label: 'Vencimento'},
+        {key: 'status', label: 'Status'},
+        {key: 'status'},
       ],
       totalRows: 1,
       currentPage: 1,
@@ -400,6 +487,15 @@ export default {
           this.buscarClientes()
           this.limparModal()
           this.esconderModal()
+        }).catch(erro => {
+
+          this.$vs.notify({
+            text: `${erro.response.data.erro}`,
+            position: 'top-center',
+            color: 'danger',
+            time: 4000,
+            icon: 'check_circle_outline'
+          })
         })
       }
     },
@@ -424,6 +520,13 @@ export default {
       this.$modal.hide('hello-world');
       this.limparModal()
       this.editar = false
+    },
+    mostrarModalContratos(cliente){
+      this.cliente = cliente
+      this.$modal.show('contratos-cliente')
+    },
+    esconderModalContratos(){
+      this.$modal.hide('contratos-cliente')
     },
     limparModal() {
       Object.keys(this.cliente).forEach(key => {
@@ -462,6 +565,14 @@ export default {
           })
           this.buscarClientes()
           this.limparModal()
+        }).catch(erro => {
+          this.$vs.notify({
+            text: `${erro.response.data.erro}`,
+            position: 'top-center',
+            color: 'danger',
+            time: 40000,
+            icon: 'check_circle_outline'
+          })
         })
       }
     },
@@ -482,6 +593,12 @@ export default {
       }
     },
     atribuirCep(dados) {
+      this.cliente.bairro = ""
+      this.cliente.cidade = ""
+      this.cliente.uf = ""
+      this.cliente.complemento = ""
+      this.cliente.rua = ""
+      this.cliente.numero = ""
       if (dados.bairro != "") {
         this.cliente['bairro'] = dados.bairro
       }

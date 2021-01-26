@@ -28,6 +28,12 @@
     <b-row class="tabela-clientes">
       <b-col class="col-tabela-clientes">
         <b-table
+            bordered
+            head-variant="dark"
+            sort-icon-left
+            primary-key="nome"
+            id="tabela-imovel"
+            :tbody-transition-props="transProps"
             :items="items"
             :fields="fields"
             :current-page="currentPage"
@@ -44,14 +50,14 @@
             striped
             hover
             outlined
-            :sticky-header="alturaTela"
+            sticky-header
             no-border-collapse
             @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
           <template #cell(nome)="row">
             <p class="tr-cliente">{{ row.item.nome }}</p>
           </template>
-          <template #cell(email)="row">
-            <p class="tr-cliente">{{ row.item.email }}</p>
+          <template #cell(rua)="row">
+            <p class="tr-cliente">{{ row.item.rua }}</p>
           </template>
           <template #cell(cpf_cnpj)="row">
             <p class="tr-cliente">{{ row.item.cpf_cnpj }}</p>
@@ -88,42 +94,44 @@
         </b-table>
       </b-col>
     </b-row>
-    <b-row class="divider-personalizado">
-      <b-col class="" cols="auto">
-        <b-pagination
-            v-model="currentPage"
-            :total-rows="totalRows"
-            :per-page="perPage"
-            align="left"
-            class="my-0"
-            first-text="Primeira"
-            last-text="Última"
-        ></b-pagination>
-      </b-col>
-      <b-col sm="5" md="auto" class="">
-        <b-form-group
-            label="Por pagina"
-            label-for="per-page-select"
-            label-cols-sm="auto"
-            label-cols-md="auto"
-            label-cols-lg="auto"
-            label-align-sm="right"
-            label-size="sm"
-            align="left"
-        >
-          <b-form-select
-              id="per-page-select"
-              v-model="perPage"
-              :options="pageOptions"
-              size="sm"
-          ></b-form-select>
-        </b-form-group>
-      </b-col>
-      <b-col class="ml-auto" cols="auto">
-        <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal">Adicionar
-        </vs-button>
-      </b-col>
-    </b-row>
+    <b-container class="divider-personalizados">
+      <b-row>
+        <b-col class="" cols="auto">
+          <b-pagination
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="perPage"
+              align="left"
+              class="my-0"
+              first-text="Primeira"
+              last-text="Última"
+          ></b-pagination>
+        </b-col>
+        <b-col sm="5" md="auto" class="">
+          <b-form-group
+              label="Por pagina"
+              label-for="per-page-select"
+              label-cols-sm="auto"
+              label-cols-md="auto"
+              label-cols-lg="auto"
+              label-align-sm="right"
+              label-size="sm"
+              align="left"
+          >
+            <b-form-select
+                id="per-page-select"
+                v-model="perPage"
+                :options="pageOptions"
+                size="sm"
+            ></b-form-select>
+          </b-form-group>
+        </b-col>
+        <b-col class="ml-auto" cols="auto">
+          <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal">Adicionar
+          </vs-button>
+        </b-col>
+      </b-row>
+    </b-container>
     <!--  Fim da tabela-->
     <modal name="hello-world" width="60%" height="auto" :scrollable="true" :click-to-close="false"
            class="modal-adicionando-cliente">
@@ -137,14 +145,14 @@
             </b-col>
             <b-col cols="5">
               <vs-input label-placeholder="Proprietário*" v-model="imovel.proprietario" class="input-personalizado"/>
-<!--              <b-form-group id="select-tipo-imovel" label="Proprietário*" class="select-personalizado">-->
-<!--                <b-form-select v-model="imovel.proprietario" :options="estadosCivis" value-field="id"-->
-<!--                               text-field="descricao">-->
-<!--                  <template #first>-->
-<!--                    <b-form-select-option :value="null">Selecione</b-form-select-option>-->
-<!--                  </template>-->
-<!--                </b-form-select>-->
-<!--              </b-form-group>-->
+              <!--              <b-form-group id="select-tipo-imovel" label="Proprietário*" class="select-personalizado">-->
+              <!--                <b-form-select v-model="imovel.proprietario" :options="estadosCivis" value-field="id"-->
+              <!--                               text-field="descricao">-->
+              <!--                  <template #first>-->
+              <!--                    <b-form-select-option :value="null">Selecione</b-form-select-option>-->
+              <!--                  </template>-->
+              <!--                </b-form-select>-->
+              <!--              </b-form-group>-->
             </b-col>
             <b-col>
               <b-form-group id="select-cliente" label="Status" class="select-personalizado">
@@ -179,7 +187,7 @@
           </b-row>
           <b-row>
             <b-col cols="2">
-              <vs-input type="number" label-placeholder="CEP*" v-model="imovel.cep" class="input-personalizado"/>
+              <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" label-placeholder="CEP*" v-model="imovel.cep" class="input-personalizado"/>
             </b-col>
             <b-col cols="5">
               <vs-input label-placeholder="Rua*" v-model="imovel.rua" class="input-personalizado"/>
@@ -255,9 +263,12 @@
               </vs-button>
             </b-col>
           </b-row>
-          <b-row >
+          <b-row>
             <b-col class="col-tabela-clientes">
               <b-table
+                  bordered
+                  head-variant="dark"
+                  sort-icon-left
                   :items="itemsContratoClientes"
                   :fields="cabecalhosDespesas"
                   :current-page="currentPage"
@@ -296,6 +307,9 @@
           <b-row>
             <b-col class="tabelas-contrato">
               <b-table
+                  bordered
+                  head-variant="dark"
+                  sort-icon-left
                   :items="itemsContratoClientes"
                   :fields="cabecalhosContratosClientes"
                   :current-page="currentPage"
@@ -325,6 +339,9 @@
           <b-row>
             <b-col class="tabelas-contrato">
               <b-table
+                  bordered
+                  head-variant="dark"
+                  sort-icon-left
                   :items="itemsContratoClientes"
                   :fields="cabecalhosContratosParcelas"
                   :current-page="currentPage"
@@ -377,20 +394,24 @@ export default {
   name: "VisualizarImovel",
   data() {
     return {
-      alturaTela: `${(window.innerWidth / 3).toString()}px`,
-      larguraTela: window.innerHeight,
+      larguraTela: `${(window.innerWidth).toString()}px`,
+      alturaTela: `${(window.innerHeight).toString()}px`,
       items: [],
       itemsContratoClientes: [],
+      transProps: {
+        // Transition name
+        name: 'flip-list'
+      },
       fields: [
         {key: 'nome', label: 'Nome', sortable: true},
-        {key: 'rua', label: 'Rua', sortable: true, class: 'text-center'},
-        {key: 'status', label: 'Status'},
+        {key: 'rua', label: 'Rua', sortable: true},
+        {key: 'status', label: 'Status', sortable: true},
         {key: 'editar', label: 'Editar'},
         {key: 'deletar', label: 'Deletar'},
       ],
       cabecalhosDespesas: [
         {key: 'categoria', label: 'Categoria', sortable: true},
-        {key: 'descricao', label: 'Descricao', sortable: true, class: 'text-center'},
+        {key: 'descricao', label: 'Descricao', sortable: true},
         {key: 'data', label: 'Data', sortable: true,},
         {key: 'vencimento', label: 'Vencimento'},
         {key: 'tipo', label: 'Tipo'},
@@ -399,19 +420,16 @@ export default {
       ],
       cabecalhosContratosClientes: [
         {key: 'contrato', label: 'Contrato', sortable: true},
-        {key: 'cliente', label: 'Cliente', sortable: true, class: 'text-center'},
+        {key: 'cliente', label: 'Cliente', sortable: true},
         {key: 'data_inicio', label: 'Data de início', sortable: true,},
         {key: 'vencimento', label: 'Vencimento'},
         {key: 'status', label: 'Status'},
-        {key: 'editar', label: 'Editar'},
-        {key: 'deletar', label: 'Deletar'},
       ],
       cabecalhosContratosParcelas: [
         {key: 'valor', label: 'Valor', sortable: true},
         {key: 'vencimento', label: 'Vencimento'},
         {key: 'status', label: 'Status'},
         {key: 'editar', label: 'Editar'},
-        {key: 'deletar', label: 'Deletar'},
       ],
       totalRows: 1,
       currentPage: 1,
@@ -423,7 +441,7 @@ export default {
       filter: null,
       filterOn: [],
       imovel: {
-        id:"",
+        id: "",
         nome: "",
         proprietario: "",
         status: null,
@@ -435,7 +453,7 @@ export default {
         bairro: "",
         cidade: "",
         estado: "",
-        numero:"",
+        numero: "",
         complemento: "",
         identidade: "",
         data_aquisicao: "",
@@ -460,7 +478,7 @@ export default {
         this.tiposStatus = response.data
       })
     },
-    async buscarTiposImoveis(){
+    async buscarTiposImoveis() {
       await api.get('/imovel/tipos_imoveis').then(response => {
         this.tiposImoveis = response.data
       })
@@ -500,7 +518,7 @@ export default {
 
 
     async editarImovelModal(imovel) {
-      await api.get(`/imovel/`,{params:{id:imovel.id}}).then(response => {
+      await api.get(`/imovel/`, {params: {id: imovel.id}}).then(response => {
         console.log(response.data)
         this.imovel = response.data[0]
         this.editar = true
@@ -598,6 +616,12 @@ export default {
       }
     },
     atribuirCep(dados) {
+      this.imovel.bairro = ""
+      this.imovel.cidade = ""
+      this.imovel.uf = ""
+      this.imovel.complemento = ""
+      this.imovel.rua = ""
+      this.imovel.numero = ""
       if (dados.bairro != "") {
         this.imovel['bairro'] = dados.bairro
       }
@@ -623,7 +647,7 @@ export default {
         })
       }
     },
-    'imovel.valor_atual': function(valor){
+    'imovel.valor_atual': function (valor) {
       let dolar = this.$store.state.dolar
       this.imovel.valor_dolar = parseFloat(valor * dolar).toFixed(2)
     }
@@ -715,9 +739,11 @@ export default {
   padding-top: 15px;
 }
 
-.divider-personalizado {
+.divider-personalizados {
   border-top: 1px solid rgb(200, 200, 200);
   padding-top: 10px;
+  position: fixed;
+  bottom: 5px;
 }
 
 .botao-adicionar-telefone {
@@ -738,11 +764,17 @@ export default {
   color: rgb(110, 110, 110);
   font-size: 12px;
 }
-.tabelas-contrato{
+
+.tabelas-contrato {
   padding-top: 0;
 }
-.p-contratos{
-  margin:0;
+
+.p-contratos {
+  margin: 0;
+}
+
+table#tabela-imovel .flip-list-move {
+  transition: transform 0.4s;
 }
 
 </style>
