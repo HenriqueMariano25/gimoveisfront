@@ -235,7 +235,7 @@
                         class="input-personalizado"/>
             </b-col>
             <b-col cols="5">
-              <b-form-group id="select-cliente" label="Status">
+              <b-form-group id="select-cliente" label="Tipo telefone">
                 <b-form-select v-model="telefone.tipo" :options="tiposTelefone" value-field="id" text-field="descricao">
                   <template #first>
                     <b-form-select-option  :value="null">Selecione</b-form-select-option>
@@ -539,7 +539,7 @@ export default {
     adicionarTelefone() {
       this.telefones.push({
         numero: '',
-        tipo: ''
+        tipo: null
       })
     },
     removerTelefone(index) {

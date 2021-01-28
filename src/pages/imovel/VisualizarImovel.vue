@@ -83,12 +83,6 @@
               <p>Data de Nascimento: {{ row.item.data_nascimento }}</p>
               <p>Estado Civil: {{ row.item.estado_civil }}</p>
               <p>Referência: {{ row.item.referencia }}</p>
-
-              <p>Telefones:</p>
-              <ul v-for="(telefone, index) in row.item.numero_telefone" :key="index">
-
-                <li>{{ telefone }}</li>
-              </ul>
             </b-card>
           </template>
         </b-table>
@@ -133,7 +127,7 @@
       </b-row>
     </b-container>
     <!--  Fim da tabela-->
-    <modal name="hello-world" width="60%" height="auto" :scrollable="true" :click-to-close="false"
+    <modal name="modal-imovel" width="60%" height="auto" :scrollable="true" :click-to-close="false"
            class="modal-adicionando-cliente">
       <h3>Adicionando imóvel</h3>
       <b-tabs content-class="mt-3">
@@ -145,18 +139,10 @@
             </b-col>
             <b-col cols="5">
               <vs-input label-placeholder="Proprietário*" v-model="imovel.proprietario" class="input-personalizado"/>
-              <!--              <b-form-group id="select-tipo-imovel" label="Proprietário*" class="select-personalizado">-->
-              <!--                <b-form-select v-model="imovel.proprietario" :options="estadosCivis" value-field="id"-->
-              <!--                               text-field="descricao">-->
-              <!--                  <template #first>-->
-              <!--                    <b-form-select-option :value="null">Selecione</b-form-select-option>-->
-              <!--                  </template>-->
-              <!--                </b-form-select>-->
-              <!--              </b-form-group>-->
             </b-col>
             <b-col>
               <b-form-group id="select-cliente" label="Status" class="select-personalizado">
-                <b-form-select v-model="imovel.status" :options="tiposStatus" value-field="id"
+                <b-form-select v-model="imovel.id_status" :options="tiposStatus" value-field="id"
                                text-field="descricao">
                   <template #first>
                     <b-form-select-option :value="null">Selecione</b-form-select-option>
@@ -252,6 +238,38 @@
             <b-col>
               <vs-input type="number" label-placeholder="N° cliente água" v-model="imovel.numero_cliente_agua"
                         class="input-personalizado"/>
+            </b-col>
+          </b-row>
+        </b-tab>
+        <b-tab title="Cômodos">
+          <b-row>
+            <b-col cols="auto">
+              <vs-button type="filled" icon="add" class="botao-salvar botao-adicionar-comodo" color="#5498ff"
+                         @click.prevent="adicionarComodo()">Adicionar comôdo
+              </vs-button>
+            </b-col>
+          </b-row>
+          <b-row class="campos-comodos">
+            <b-col cols="6" v-for="(comodo, index) in comodos" :key="index">
+              <b-row>
+                <b-col cols="5">
+                  <vs-input label-placeholder="Quantidade" v-model="comodo.quantidade"
+                            class="input-personalizado"/>
+                </b-col>
+                <b-col cols="5">
+                  <b-form-group id="select-comodo" label="Status">
+                    <b-form-select v-model="comodo.tipo" :options="tiposComodos" value-field="id" text-field="descricao">
+                      <template #first>
+                        <b-form-select-option :value="null">Selecione</b-form-select-option>
+                      </template>
+                    </b-form-select>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="2" class="text-center botao-deletar-comodo">
+                  <vs-button type="flat" icon="delete" color="dark" class="botao-salvar"
+                             @click="removerComodo(index)"/>
+                </b-col>
+              </b-row>
             </b-col>
           </b-row>
         </b-tab>
@@ -444,7 +462,8 @@ export default {
         id: "",
         nome: "",
         proprietario: "",
-        status: null,
+        status: "",
+        id_status: null,
         inscricao_municipal: "",
         funesbom: "",
         tipo_imovel: null,
@@ -468,6 +487,8 @@ export default {
       },
       tiposStatus: [],
       tiposImoveis: [],
+      tiposComodos:[],
+      comodos: [{id: "", quantidade: 0, tipo: null}],
       editar: false
     }
   },
@@ -489,6 +510,12 @@ export default {
         this.totalRows = this.items.length
       }).catch(erro => {
         console.log(erro)
+      })
+    },
+    async buscarTiposComodos(){
+      await api.get('/imoveis/tipo_comodo').then(response => {
+        console.log(response)
+        this.tiposComodos = response.data
       })
     },
     onFiltered(filteredItems) {
@@ -519,8 +546,16 @@ export default {
 
     async editarImovelModal(imovel) {
       await api.get(`/imovel/`, {params: {id: imovel.id}}).then(response => {
-        console.log(response.data)
+        this.comodos = []
         this.imovel = response.data[0]
+        console.log(this.imovel)
+        for (let x = 0; x < this.imovel.quantidade.length; x++) {
+          let quantidade = this.imovel.quantidade[x]
+          let tipo = this.imovel.tipo_comodo[x]
+          let id = this.imovel.id_comodo[x]
+          this.comodos.push({id: id, quantidade: quantidade, tipo: tipo})
+        }
+
         this.editar = true
         this.mostrarModal()
 
@@ -536,6 +571,7 @@ export default {
         // }
         await api.post(`/imovel/editar/${this.imovel.id}`, {
           data: this.imovel,
+          comodos: this.comodos
         }).then(response => {
           let nomeImovel = response.data[0].nome
           this.$vs.notify({
@@ -552,19 +588,13 @@ export default {
       }
     },
 
-    async buscarTipoTelefones() {
-      await api.get('/tipos_telefones').then(response => {
-        this.tiposTelefone = response.data
-      })
-    },
-
     mostrarModal() {
-      this.$modal.show('hello-world')
-      this.buscarTipoTelefones()
-      this.buscarTipoStatus()
+      this.$modal.show('modal-imovel')
+      this.buscarTiposStatus()
+      this.buscarTiposComodos()
     },
     esconderModal() {
-      this.$modal.hide('hello-world');
+      this.$modal.hide('modal-imovel');
       this.limparModal()
       this.editar = false
     },
@@ -572,7 +602,7 @@ export default {
       Object.keys(this.imovel).forEach(key => {
         this.imovel[key] = ""
       })
-      this.imovel.status = null
+      this.imovel.id_status = null
       this.imovel.tipo_imovel = null
     },
     async cadastrarImovel() {
@@ -583,7 +613,7 @@ export default {
         //     this.cliente[variaveisString[key]] = null
         //   }
         // }
-        await api.post('/imovel/cadastrar', {data: this.imovel}).then(response => {
+        await api.post('/imovel/cadastrar', {data: this.imovel, comodos: this.comodos}).then(response => {
           let nomeImovel = response.data[0].nome
           console.log(nomeImovel)
           this.esconderModal()
@@ -637,7 +667,16 @@ export default {
       if (dados.logradouro != "") {
         this.imovel.rua = dados.logradouro
       }
-    }
+    },
+    adicionarComodo(){
+      this.comodos.push({
+        quantidade: 0,
+        tipo: null
+      })
+    },
+    removerComodo(index) {
+      this.comodos.splice(index, 1)
+    },
   },
   watch: {
     'imovel.cep': function (cep) {
@@ -654,7 +693,6 @@ export default {
   },
   async mounted() {
     this.buscarImoveis()
-    this.buscarTiposStatus()
     this.buscarTiposImoveis()
   },
 }
@@ -670,8 +708,7 @@ export default {
   margin-top: 5px;
 }
 
-.botao-fiador {
-  width: 100%;
+.botao-adicionar-comodo{
   margin-bottom: 10px;
 }
 
@@ -715,10 +752,6 @@ export default {
   margin-bottom: 0px;
 }
 
-.botao-deletar-telefone {
-  margin-top: 12px;
-}
-
 .barraTopCliente {
   border: 1px solid rgb(220, 220, 220);
   padding: 0;
@@ -744,10 +777,6 @@ export default {
   padding-top: 10px;
   position: fixed;
   bottom: 5px;
-}
-
-.botao-adicionar-telefone {
-  margin-bottom: 8px;
 }
 
 .material-icons {
