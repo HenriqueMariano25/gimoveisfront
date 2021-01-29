@@ -179,7 +179,7 @@
       </b-row>
       <b-row align-h="end">
         <b-col cols="2">
-          <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="edit" class="botao-salvar"
+          <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="save" class="botao-salvar"
                      @click="editarResponsavel">Salvar
           </vs-button>
           <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar" @click="cadastrarResponsavel">
@@ -285,7 +285,6 @@ export default {
     async editarResponsavelModal(id) {
       await api.get('/responsavel', {params: {idResponsavel: id}}).then(response => {
         this.responsavel = response.data[0]
-        console.log(this.responsavel)
         this.mostrarModal()
         this.editar = true
       })

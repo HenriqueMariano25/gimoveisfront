@@ -41,9 +41,9 @@
         </li>
         <li class="has-subnav">
           <router-link to="/visualizar/responsavel">
-            <b-icon icon="house-fill" class="icone-bootstrap-menu"></b-icon>
+            <b-icon icon="people-fill" class="icone-bootstrap-menu"></b-icon>
             <span class="nav-text">
-                  Responsável
+                  Responsáveis
                 </span>
           </router-link>
         </li>

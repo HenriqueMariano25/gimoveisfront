@@ -145,8 +145,8 @@
       </b-row>
       <b-row align-h="end">
         <b-col cols="2">
-          <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="edit" class="botao-salvar"
-                     @click="editarUsuario">Editar
+          <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="save" class="botao-salvar"
+                     @click="editarUsuario">Salvar
           </vs-button>
           <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar" @click="cadastrarUsuario">
             Salvar

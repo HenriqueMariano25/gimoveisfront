@@ -79,7 +79,7 @@
                 Estado: {{ row.item.estado }}</p>
               <p>Complemento: {{ row.item.complemento }}</p>
               <p>Identidade: {{ row.item.identidade }}</p>
-              <p>Data de Nascimento: {{ row.item.data_nascimento }}</p>
+              <p>Data de Nascimento: {{ row.item.data_formatada }}</p>
               <p>Estado Civil: {{ row.item.estado_civil }}</p>
               <p>Referência: {{ row.item.referencia }}</p>
 
@@ -136,129 +136,130 @@
     <modal name="hello-world" width="60%" height="auto" :scrollable="true" :click-to-close="false"
            class="modal-adicionando-cliente">
       <h3>Adicionando cliente</h3>
-      <b-row align-v="center">
-        <b-col cols="5">
-          <vs-input label-placeholder="Nome*" v-model="cliente.nome" class="input-personalizado"
-          />
-        </b-col>
-        <b-col cols="2">
-          <b-form-group id="select-cliente" label="Estado Civil">
-            <b-form-select v-model="cliente.estado_civil" :options="estadosCivis" value-field="id" text-field="descricao">
-              <template #first>
-                <b-form-select-option  :value="null">Selecione</b-form-select-option>
-              </template>
-            </b-form-select>
-          </b-form-group>
-        </b-col>
-        <b-col cols="3">
-          <vs-input label="Data de Nascimento" v-model="cliente.data_nascimento" type="date" class="input-nascimento"/>
-        </b-col>
-        <b-col cols="2">
-          <b-form-group id="select-cliente" label="Status">
-            <b-form-select v-model="cliente.status" :options="tiposStatus" value-field="id" text-field="descricao">
-              <template #first>
-                <b-form-select-option  :value="null">Selecione</b-form-select-option>
-              </template>
-            </b-form-select>
-          </b-form-group>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="6">
-          <vs-input label-placeholder="Email*" v-model="cliente.email" class="input-personalizado"/>
-        </b-col>
-        <b-col cols="3">
-          <vs-input onKeyDown="if(this.value.length==15 && event.keyCode!=8) return false;" type="number" label-placeholder="CPF ou CNPJ*" v-model="cliente.cpf_cnpj" class="input-personalizado"/>
-        </b-col>
-        <b-col cols="3">
-          <vs-input onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" type="number" label-placeholder="Identidade" v-model="cliente.identidade" class="input-personalizado"/>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="2">
-          <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado"/>
-        </b-col>
-        <b-col cols="5">
-          <vs-input label-placeholder="Rua*" v-model="cliente.rua" class="input-personalizado"/>
-        </b-col>
-        <b-col cols="2">
-          <vs-input label-placeholder="Número*" v-model="cliente.numero" class="input-personalizado"/>
-        </b-col>
-        <b-col cols="3">
-          <vs-input label-placeholder="Complemento" v-model="cliente.complemento" class="input-personalizado"/>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <vs-input label-placeholder="Bairro*" v-model="cliente.bairro" class="input-personalizado"/>
-        </b-col>
-        <b-col>
-          <vs-input label-placeholder="Cidade*" v-model="cliente.cidade" class="input-personalizado"/>
-        </b-col>
-        <b-col cols="2">
-          <vs-input label-placeholder="UF*" v-model="cliente.estado" class="input-personalizado" maxlength="2"/>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <vs-input label-placeholder="Referência" v-model="cliente.referencia" class="input-personalizado" required/>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <b-form-group
-              id="textarea"
-              label="Observação"
-              label-for="input-1"
-          >
-            <b-form-textarea
-                id="textarea"
-                v-model="cliente.observacao"
-                rows="3"
-                max-rows="6"
-            ></b-form-textarea>
-          </b-form-group>
-        </b-col>
-      </b-row>
-      <b-row class="divider-personalizado">
-        <b-col cols="auto">
-          <vs-button type="filled" icon="add_ic_call" class="botao-salvar botao-adicionar-telefone" color="#5498ff"
-                     @click.prevent="adicionarTelefone()">Adicionar telefone
-          </vs-button>
-        </b-col>
-      </b-row>
-      <b-row class="campos-telefone">
-        <b-col cols="6" v-for="(telefone, index) in telefones" :key="index">
-          <b-row>
+      <b-tabs content-class="mt-3">
+        <b-tab title="Dados gerais" active>
+          <b-row align-v="center">
             <b-col cols="5">
-              <vs-input label-placeholder="Numero de telefone" v-model="telefone.numero"
-                        class="input-personalizado"/>
+              <vs-input label-placeholder="Nome*" v-model="cliente.nome" class="input-personalizado"
+              />
             </b-col>
-            <b-col cols="5">
-              <b-form-group id="select-cliente" label="Tipo telefone">
-                <b-form-select v-model="telefone.tipo" :options="tiposTelefone" value-field="id" text-field="descricao">
+            <b-col cols="2">
+              <b-form-group id="select-cliente" label="Estado Civil">
+                <b-form-select v-model="cliente.estado_civil" :options="estadosCivis" value-field="id" text-field="descricao">
                   <template #first>
                     <b-form-select-option  :value="null">Selecione</b-form-select-option>
                   </template>
                 </b-form-select>
               </b-form-group>
-<!--              <vs-select placeholder="Selecione" label-placeholder="Selecione" label="Tipo de número"-->
-<!--                         v-model="telefone.tipo">-->
-<!--                <vs-select-item :key="index" :value="item.id" :text="item.descricao"-->
-<!--                                v-for="(item,index) in tiposTelefone"/>-->
-<!--              </vs-select>-->
             </b-col>
-            <b-col cols="2" class="text-center botao-deletar-telefone">
-              <vs-button type="flat" icon="delete" color="dark" class="botao-salvar"
-                         @click="removerTelefone(index)"/>
+            <b-col cols="3">
+              <vs-input label="Data de Nascimento" v-model="cliente.data_nascimento" type="date" class="input-nascimento"/>
+            </b-col>
+            <b-col cols="2">
+              <b-form-group id="select-cliente" label="Status">
+                <b-form-select v-model="cliente.status" :options="tiposStatus" value-field="id" text-field="descricao">
+                  <template #first>
+                    <b-form-select-option  :value="null">Selecione</b-form-select-option>
+                  </template>
+                </b-form-select>
+              </b-form-group>
             </b-col>
           </b-row>
-        </b-col>
-      </b-row>
+          <b-row>
+            <b-col cols="6">
+              <vs-input label-placeholder="Email*" v-model="cliente.email" class="input-personalizado"/>
+            </b-col>
+            <b-col cols="3">
+              <vs-input onKeyDown="if(this.value.length==15 && event.keyCode!=8) return false;" type="number" label-placeholder="CPF ou CNPJ*" v-model="cliente.cpf_cnpj" class="input-personalizado"/>
+            </b-col>
+            <b-col cols="3">
+              <vs-input onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" type="number" label-placeholder="Identidade" v-model="cliente.identidade" class="input-personalizado"/>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="2">
+              <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado"/>
+            </b-col>
+            <b-col cols="5">
+              <vs-input label-placeholder="Rua*" v-model="cliente.rua" class="input-personalizado"/>
+            </b-col>
+            <b-col cols="2">
+              <vs-input label-placeholder="Número*" v-model="cliente.numero" class="input-personalizado"/>
+            </b-col>
+            <b-col cols="3">
+              <vs-input label-placeholder="Complemento" v-model="cliente.complemento" class="input-personalizado"/>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <vs-input label-placeholder="Bairro*" v-model="cliente.bairro" class="input-personalizado"/>
+            </b-col>
+            <b-col>
+              <vs-input label-placeholder="Cidade*" v-model="cliente.cidade" class="input-personalizado"/>
+            </b-col>
+            <b-col cols="2">
+              <vs-input label-placeholder="UF*" v-model="cliente.estado" class="input-personalizado" maxlength="2"/>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <vs-input label-placeholder="Referência" v-model="cliente.referencia" class="input-personalizado" required/>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <b-form-group
+                  id="textarea"
+                  label="Observação"
+                  label-for="input-1"
+              >
+                <b-form-textarea
+                    id="textarea"
+                    v-model="cliente.observacao"
+                    rows="3"
+                    max-rows="6"
+                ></b-form-textarea>
+              </b-form-group>
+            </b-col>
+          </b-row>
+        </b-tab>
+        <b-tab title="Telefones">
+          <b-row>
+            <b-col cols="auto">
+              <vs-button type="filled" icon="add_ic_call" class="botao-salvar botao-adicionar-telefone" color="#5498ff"
+                         @click.prevent="adicionarTelefone()">Adicionar telefone
+              </vs-button>
+            </b-col>
+          </b-row>
+          <b-row class="campos-telefone">
+            <b-col cols="6" v-for="(telefone, index) in telefones" :key="index">
+              <b-row>
+                <b-col cols="5">
+                  <vs-input label-placeholder="Numero de telefone" v-model="telefone.numero"
+                            class="input-personalizado"/>
+                </b-col>
+                <b-col cols="5">
+                  <b-form-group id="select-cliente" label="Tipo telefone">
+                    <b-form-select v-model="telefone.tipo" :options="tiposTelefone" value-field="id" text-field="descricao">
+                      <template #first>
+                        <b-form-select-option  :value="null">Selecione</b-form-select-option>
+                      </template>
+                    </b-form-select>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="2" class="text-center botao-deletar-telefone">
+                  <vs-button type="flat" icon="delete" color="dark" class="botao-salvar"
+                             @click="removerTelefone(index)"/>
+                </b-col>
+              </b-row>
+            </b-col>
+          </b-row>
+        </b-tab>
+      </b-tabs>
       <b-row align-h="end">
         <b-col cols="2">
-          <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="edit" class="botao-salvar"
-                     @click="editarCliente">Editar
+          <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="save" class="botao-salvar"
+                     @click="editarCliente">Salvar
           </vs-button>
           <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar" @click="cadastrarCliente">
             Salvar
@@ -709,11 +710,6 @@ export default {
 
 .col-tabela-clientes {
   padding-top: 15px;
-}
-
-.divider-personalizado {
-  border-top: 1px solid rgb(200, 200, 200);
-  padding-top: 10px;
 }
 
 .botao-adicionar-telefone {
