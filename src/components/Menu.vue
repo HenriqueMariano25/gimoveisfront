@@ -36,6 +36,7 @@
             <b-icon icon="house-fill" class="icone-bootstrap-menu"></b-icon>
             <span class="nav-text">
                   Imóveis
+
                 </span>
           </router-link>
         </li>
@@ -44,6 +45,14 @@
             <b-icon icon="people-fill" class="icone-bootstrap-menu"></b-icon>
             <span class="nav-text">
                   Responsáveis
+                </span>
+          </router-link>
+        </li>
+        <li class="has-subnav">
+          <router-link to="/visualizar/contrato">
+            <b-icon icon="briefcase-fill" class="icone-bootstrap-menu"></b-icon>
+            <span class="nav-text">
+                  Contratos
                 </span>
           </router-link>
         </li>

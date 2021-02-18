@@ -1,6 +1,6 @@
 <template>
   <b-container fluid>
-    <b-row class="barraTopCliente " align-v="center">
+    <b-row class="barra-top-imovel " align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Imóveis</h1>
       </b-col>
@@ -13,71 +13,80 @@
               </b-input-group-text>
             </template>
             <b-form-input
-                id="filter-input"
-                v-model="filter"
-                type="search"
-                placeholder="Ex: João da Silva"
+              id="filter-input"
+              v-model="filter"
+              type="search"
+              placeholder="Ex: João da Silva"
             ></b-form-input>
           </b-input-group>
         </b-form-group>
       </b-col>
     </b-row>
-    <!-- Main table element
-    stacked="md"
-    -->
-    <b-row class="tabela-clientes">
-      <b-col class="col-tabela-clientes">
+    <b-row class="tabela-imoveis">
+      <b-col class="col-tabela-imoveis">
         <b-table
-            bordered
-            head-variant="dark"
-            sort-icon-left
-            primary-key="nome"
-            id="tabela-imovel"
-            :tbody-transition-props="transProps"
-            :items="items"
-            :fields="fields"
-            :current-page="currentPage"
-            :per-page="perPage"
-            :filter="filter"
-            :filter-included-fields="filterOn"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="sortDesc"
-            :sort-direction="sortDirection"
-            show-empty
-            small
-            fixed
-            @filtered="onFiltered"
-            striped
-            hover
-            outlined
-            sticky-header
-            no-border-collapse
-            @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
+          bordered
+          head-variant="dark"
+          sort-icon-left
+          primary-key="nome"
+          id="tabela-imovel"
+          :tbody-transition-props="transProps"
+          :items="items"
+          :fields="fields"
+          :current-page="currentPage"
+          :per-page="perPage"
+          :filter="filter"
+          :filter-included-fields="filterOn"
+          :sort-by.sync="sortBy"
+          :sort-desc.sync="sortDesc"
+          :sort-direction="sortDirection"
+          show-empty
+          small
+          @filtered="onFiltered"
+          striped
+          hover
+          outlined
+          sticky-header
+          no-border-collapse
+          @row-clicked="
+            (item) => $set(item, '_showDetails', !item._showDetails)
+          "
+        >
           <template #cell(nome)="row">
-            <p class="tr-cliente">{{ row.item.nome }}</p>
+            <p class="tr-imovel">{{ row.item.nome }}</p>
           </template>
           <template #cell(rua)="row">
-            <p class="tr-cliente">{{ row.item.rua }}</p>
+            <p class="tr-imovel">{{ row.item.rua }}</p>
           </template>
           <template #cell(cpf_cnpj)="row">
-            <p class="tr-cliente">{{ row.item.cpf_cnpj }}</p>
+            <p class="tr-imovel">{{ row.item.cpf_cnpj }}</p>
           </template>
           <template #cell(status)="row">
-            <p class="tr-cliente">{{ row.item.status }}</p>
+            <p class="tr-imovel">{{ row.item.status }}</p>
           </template>
           <template #cell(editar)="row">
-            <vs-button type="flat" color="dark" @click="editarImovelModal(row.item)" icon="edit"></vs-button>
+            <vs-button
+              type="flat"
+              color="dark"
+              @click="editarImovelModal(row.item)"
+              icon="edit"
+            ></vs-button>
           </template>
           <template #cell(deletar)="row">
-            <vs-button type="flat" color="dark" @click="deletarImovelModal(row.item)" icon="delete"></vs-button>
+            <vs-button
+              type="flat"
+              color="dark"
+              @click="deletarImovelModal(row.item)"
+              icon="delete"
+            ></vs-button>
           </template>
-
-
           <template #row-details="row">
             <b-card>
-              <p>Rua: {{ row.item.rua }},{{ row.item.numero }} | Bairro: {{ row.item.bairro }} | Cidade:
-                {{ row.item.cidade }} |
-                Estado: {{ row.item.estado }}</p>
+              <p>
+                Rua: {{ row.item.rua }},{{ row.item.numero }} | Bairro:
+                {{ row.item.bairro }} | Cidade: {{ row.item.cidade }} | Estado:
+                {{ row.item.estado }}
+              </p>
               <p>Complemento: {{ row.item.complemento }}</p>
               <p>Identidade: {{ row.item.identidade }}</p>
               <p>Data de Nascimento: {{ row.item.data_nascimento }}</p>
@@ -92,60 +101,88 @@
       <b-row>
         <b-col class="" cols="auto">
           <b-pagination
-              v-model="currentPage"
-              :total-rows="totalRows"
-              :per-page="perPage"
-              align="left"
-              class="my-0"
-              first-text="Primeira"
-              last-text="Última"
+            v-model="currentPage"
+            :total-rows="totalRows"
+            :per-page="perPage"
+            align="left"
+            class="my-0"
+            first-text="Primeira"
+            last-text="Última"
           ></b-pagination>
         </b-col>
         <b-col sm="5" md="auto" class="">
           <b-form-group
-              label="Por pagina"
-              label-for="per-page-select"
-              label-cols-sm="auto"
-              label-cols-md="auto"
-              label-cols-lg="auto"
-              label-align-sm="right"
-              label-size="sm"
-              align="left"
+            label="Por pagina"
+            label-for="per-page-select"
+            label-cols-sm="auto"
+            label-cols-md="auto"
+            label-cols-lg="auto"
+            label-align-sm="right"
+            label-size="sm"
+            align="left"
           >
             <b-form-select
-                id="per-page-select"
-                v-model="perPage"
-                :options="pageOptions"
-                size="sm"
+              id="per-page-select"
+              v-model="perPage"
+              :options="pageOptions"
+              size="sm"
             ></b-form-select>
           </b-form-group>
         </b-col>
         <b-col class="ml-auto" cols="auto">
-          <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal">Adicionar
+          <vs-button
+            color="#24a35a"
+            type="filled"
+            icon="apartment"
+            @click="mostrarModal"
+            >Adicionar
           </vs-button>
         </b-col>
       </b-row>
     </b-container>
     <!--  Fim da tabela-->
-    <modal name="modal-imovel" width="60%" height="auto" :scrollable="true" :click-to-close="false"
-           class="modal-adicionando-cliente">
+    <modal
+      name="modal-imovel"
+      width="60%"
+      height="auto"
+      :scrollable="true"
+      :click-to-close="false"
+      class="modal-adicionando-imovel"
+    >
       <h3>Adicionando imóvel</h3>
       <b-tabs content-class="mt-3">
-
         <b-tab title="Dados gerais" active>
           <b-row align-v="center">
             <b-col cols="5">
-              <vs-input label-placeholder="Nome*" v-model="imovel.nome" class="input-personalizado"/>
+              <vs-input
+                label-placeholder="Nome*"
+                v-model="imovel.nome"
+                class="input-personalizado"
+              />
             </b-col>
             <b-col cols="5">
-              <vs-input label-placeholder="Proprietário*" v-model="imovel.proprietario" class="input-personalizado"/>
+              <vs-input
+                label-placeholder="Proprietário*"
+                v-model="imovel.proprietario"
+                class="input-personalizado"
+              />
             </b-col>
             <b-col>
-              <b-form-group id="select-cliente" label="Status" class="select-personalizado">
-                <b-form-select v-model="imovel.id_status" :options="tiposStatus" value-field="id"
-                               text-field="descricao">
+              <b-form-group
+                id="select-imovel"
+                label="Status"
+                class="select-personalizado"
+              >
+                <b-form-select
+                  v-model="imovel.id_status"
+                  :options="tiposStatus"
+                  value-field="id"
+                  text-field="descricao"
+                >
                   <template #first>
-                    <b-form-select-option :value="null">Selecione</b-form-select-option>
+                    <b-form-select-option :value="null"
+                      >Selecione</b-form-select-option
+                    >
                   </template>
                 </b-form-select>
               </b-form-group>
@@ -153,19 +190,37 @@
           </b-row>
           <b-row>
             <b-col>
-              <vs-input type="number" label-placeholder="Inscrição Municipal" v-model="imovel.inscricao_municipal"
-                        class="input-personalizado"/>
+              <vs-input
+                type="number"
+                label-placeholder="Inscrição Municipal"
+                v-model="imovel.inscricao_municipal"
+                class="input-personalizado"
+              />
             </b-col>
             <b-col>
-              <vs-input type="number" label-placeholder="Funesbom" v-model="imovel.funesbom"
-                        class="input-personalizado"/>
+              <vs-input
+                type="number"
+                label-placeholder="Funesbom"
+                v-model="imovel.funesbom"
+                class="input-personalizado"
+              />
             </b-col>
             <b-col cols="3">
-              <b-form-group id="select-tipo-imovel" label="Tipo do Imóvel*" class="select-personalizado">
-                <b-form-select v-model="imovel.tipo_imovel" :options="tiposImoveis" value-field="id"
-                               text-field="descricao">
+              <b-form-group
+                id="select-tipo-imovel"
+                label="Tipo do Imóvel*"
+                class="select-personalizado"
+              >
+                <b-form-select
+                  v-model="imovel.tipo_imovel"
+                  :options="tiposImoveis"
+                  value-field="id"
+                  text-field="descricao"
+                >
                   <template #first>
-                    <b-form-select-option :value="null">Selecione</b-form-select-option>
+                    <b-form-select-option :value="null"
+                      >Selecione</b-form-select-option
+                    >
                   </template>
                 </b-form-select>
               </b-form-group>
@@ -173,79 +228,152 @@
           </b-row>
           <b-row>
             <b-col cols="2">
-              <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" label-placeholder="CEP*" v-model="imovel.cep" class="input-personalizado"/>
+              <vs-input
+                type="text"
+                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;"
+                label-placeholder="CEP*"
+                v-model="imovel.cep"
+                class="input-personalizado"
+              />
             </b-col>
             <b-col cols="5">
-              <vs-input label-placeholder="Rua*" v-model="imovel.rua" class="input-personalizado"/>
+              <vs-input
+                label-placeholder="Rua*"
+                v-model="imovel.rua"
+                class="input-personalizado"
+              />
             </b-col>
             <b-col cols="2">
-              <vs-input label-placeholder="Número*" v-model="imovel.numero" class="input-personalizado"/>
+              <vs-input
+                label-placeholder="Número*"
+                v-model="imovel.numero"
+                class="input-personalizado"
+              />
             </b-col>
             <b-col cols="3">
-              <vs-input label-placeholder="Complemento" v-model="imovel.complemento" class="input-personalizado"/>
+              <vs-input
+                label-placeholder="Complemento"
+                v-model="imovel.complemento"
+                class="input-personalizado"
+              />
             </b-col>
           </b-row>
           <b-row>
             <b-col>
-              <vs-input label-placeholder="Bairro*" v-model="imovel.bairro" class="input-personalizado"/>
+              <vs-input
+                label-placeholder="Bairro*"
+                v-model="imovel.bairro"
+                class="input-personalizado"
+              />
             </b-col>
             <b-col>
-              <vs-input label-placeholder="Cidade*" v-model="imovel.cidade" class="input-personalizado"/>
+              <vs-input
+                label-placeholder="Cidade*"
+                v-model="imovel.cidade"
+                class="input-personalizado"
+              />
             </b-col>
             <b-col cols="2">
-              <vs-input label-placeholder="UF*" v-model="imovel.estado" class="input-personalizado" maxlength="2"/>
+              <vs-input
+                label-placeholder="UF*"
+                v-model="imovel.estado"
+                class="input-personalizado"
+                maxlength="2"
+              />
             </b-col>
           </b-row>
         </b-tab>
         <b-tab title="Inf. adicionais">
           <b-row>
             <b-col>
-              <vs-input label="Data de Aquisição" v-model="imovel.data_aquisicao" type="date"
-                        class="input-nascimento"/>
+              <vs-input
+                label="Data de Aquisição"
+                v-model="imovel.data_aquisicao"
+                type="date"
+                class="input-nascimento"
+              />
             </b-col>
             <b-col>
-              <vs-input label="Data de Venda" v-model="imovel.data_venda" type="date"
-                        class="input-nascimento"/>
+              <vs-input
+                label="Data de Venda"
+                v-model="imovel.data_venda"
+                type="date"
+                class="input-nascimento"
+              />
             </b-col>
             <b-col>
-              <vs-input label-placeholder="Área total m²" type="number" v-model="imovel.area"
-                        class="input-personalizado"/>
+              <vs-input
+                label-placeholder="Área total m²"
+                type="number"
+                v-model="imovel.area"
+                class="input-personalizado"
+              />
             </b-col>
             <b-col>
-              <vs-input label-placeholder="Área construida m²" type="number" v-model="imovel.area_construida"
-                        class="input-personalizado"/>
+              <vs-input
+                label-placeholder="Área construida m²"
+                type="number"
+                v-model="imovel.area_construida"
+                class="input-personalizado"
+              />
             </b-col>
           </b-row>
           <b-row>
             <b-col>
-              <vs-input label-placeholder="Valor da aquisição" type="number" v-model="imovel.valor_aquisicao"
-                        class="input-personalizado"/>
+              <vs-input
+                label-placeholder="Valor da aquisição"
+                type="number"
+                v-model="imovel.valor_aquisicao"
+                class="input-personalizado"
+              />
             </b-col>
             <b-col>
-              <vs-input label-placeholder="Valor atual" type="number" v-model="imovel.valor_atual"
-                        class="input-personalizado"/>
+              <vs-input
+                label-placeholder="Valor da aquisiçao em Dólar"
+                type="number"
+                v-model="imovel.valor_aquisicao_dolar"
+                class="input-personalizado"
+              />
             </b-col>
             <b-col>
-              <vs-input label-placeholder="Valor atual dólar" type="number" v-model="imovel.valor_dolar" readonly=""
-                        class="input-personalizado"/>
+              <vs-input
+                label-placeholder="Valor atual"
+                type="number"
+                v-model="imovel.valor_atual"
+                class="input-personalizado"
+              />
             </b-col>
           </b-row>
           <b-row>
             <b-col>
-              <vs-input type="number" label-placeholder="N° cliente luz" v-model="imovel.numero_cliente_luz"
-                        class="input-personalizado"/>
+              <vs-input
+                type="number"
+                label-placeholder="N° cliente luz"
+                v-model="imovel.numero_cliente_luz"
+                class="input-personalizado"
+              />
             </b-col>
             <b-col>
-              <vs-input type="number" label-placeholder="N° cliente água" v-model="imovel.numero_cliente_agua"
-                        class="input-personalizado"/>
+              <vs-input
+                type="number"
+                label-placeholder="N° cliente água"
+                v-model="imovel.numero_cliente_agua"
+                class="input-personalizado"
+              />
             </b-col>
           </b-row>
         </b-tab>
         <b-tab title="Cômodos">
           <b-row>
             <b-col cols="auto">
-              <vs-button type="filled" icon="add" class="botao-salvar botao-adicionar-comodo" color="#5498ff"
-                         @click.prevent="adicionarComodo()">Adicionar comôdo
+              <vs-button
+                type="filled"
+                icon="add"
+                class="botao-salvar botao-adicionar-comodo"
+                color="#5498ff"
+                @click.prevent="adicionarComodo()"
+                >Adicionar comôdo
               </vs-button>
             </b-col>
           </b-row>
@@ -253,21 +381,36 @@
             <b-col cols="6" v-for="(comodo, index) in comodos" :key="index">
               <b-row>
                 <b-col cols="5">
-                  <vs-input label-placeholder="Quantidade" v-model="comodo.quantidade"
-                            class="input-personalizado"/>
+                  <vs-input
+                    label-placeholder="Quantidade"
+                    v-model="comodo.quantidade"
+                    class="input-personalizado"
+                  />
                 </b-col>
                 <b-col cols="5">
                   <b-form-group id="select-comodo" label="Status">
-                    <b-form-select v-model="comodo.tipo" :options="tiposComodos" value-field="id" text-field="descricao">
+                    <b-form-select
+                      v-model="comodo.tipo"
+                      :options="tiposComodos"
+                      value-field="id"
+                      text-field="descricao"
+                    >
                       <template #first>
-                        <b-form-select-option :value="null">Selecione</b-form-select-option>
+                        <b-form-select-option :value="null"
+                          >Selecione</b-form-select-option
+                        >
                       </template>
                     </b-form-select>
                   </b-form-group>
                 </b-col>
                 <b-col cols="2" class="text-center botao-deletar-comodo">
-                  <vs-button type="flat" icon="delete" color="dark" class="botao-salvar"
-                             @click="removerComodo(index)"/>
+                  <vs-button
+                    type="flat"
+                    icon="delete"
+                    color="dark"
+                    class="botao-salvar"
+                    @click="removerComodo(index)"
+                  />
                 </b-col>
               </b-row>
             </b-col>
@@ -276,35 +419,43 @@
         <b-tab title="Despesas">
           <b-row class="text-center">
             <b-col cols="auto">
-              <vs-button color="#5498ff" type="filled" icon="add" class="botao-salvar">
+              <vs-button
+                color="#5498ff"
+                type="filled"
+                icon="add"
+                class="botao-salvar"
+              >
                 Adicionar despesa
               </vs-button>
             </b-col>
           </b-row>
           <b-row>
-            <b-col class="col-tabela-clientes">
+            <b-col class="col-tabela-imoveis">
               <b-table
-                  bordered
-                  head-variant="dark"
-                  sort-icon-left
-                  :items="itemsContratoClientes"
-                  :fields="cabecalhosDespesas"
-                  :current-page="currentPage"
-                  :per-page="perPage"
-                  :filter="filter"
-                  :filter-included-fields="filterOn"
-                  :sort-by.sync="sortBy"
-                  :sort-desc.sync="sortDesc"
-                  :sort-direction="sortDirection"
-                  show-empty
-                  small
-                  fixed
-                  @filtered="onFiltered"
-                  striped
-                  hover
-                  outlined
-                  no-border-collapse
-                  @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
+                primary-key="nome"
+                id="tabela-imovel"
+                :tbody-transition-props="transProps"
+                bordered
+                head-variant="dark"
+                sort-icon-left
+                :items="itemsContratoClientes"
+                :fields="cabecalhosDespesas"
+                :current-page="currentPage"
+                :per-page="perPage"
+                :filter="filter"
+                :filter-included-fields="filterOn"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                :sort-direction="sortDirection"
+                show-empty
+                small
+                @filtered="onFiltered"
+                striped
+                hover
+                outlined
+                no-border-collapse
+                @row-clicked="(item) => $set(item, '_showDetails', !item._showDetails)"
+              >
               </b-table>
             </b-col>
           </b-row>
@@ -312,40 +463,50 @@
         <b-tab title="Contratos">
           <b-row class="text-center mb-2">
             <b-col cols="auto">
-              <vs-button color="#5498ff" type="filled" icon="add" class="botao-salvar">
+              <vs-button
+                color="#5498ff"
+                type="filled"
+                icon="add"
+                class="botao-salvar"
+              >
                 Adicionar contrato
               </vs-button>
             </b-col>
           </b-row>
           <b-row>
             <b-col>
-              <p class="p-contratos">Contratos de: </p>
+              <p class="p-contratos">Contratos de:</p>
             </b-col>
           </b-row>
           <b-row>
             <b-col class="tabelas-contrato">
               <b-table
-                  bordered
-                  head-variant="dark"
-                  sort-icon-left
-                  :items="itemsContratoClientes"
-                  :fields="cabecalhosContratosClientes"
-                  :current-page="currentPage"
-                  :per-page="perPage"
-                  :filter="filter"
-                  :filter-included-fields="filterOn"
-                  :sort-by.sync="sortBy"
-                  :sort-desc.sync="sortDesc"
-                  :sort-direction="sortDirection"
-                  show-empty
-                  small
-                  fixed
-                  @filtered="onFiltered"
-                  striped
-                  hover
-                  outlined
-                  no-border-collapse
-                  @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
+                primary-key="nome"
+                id="tabela-imovel"
+                :tbody-transition-props="transProps"
+                bordered
+                head-variant="dark"
+                sort-icon-left
+                :items="itemsContratoClientes"
+                :fields="cabecalhosContratosClientes"
+                :current-page="currentPage"
+                :per-page="perPage"
+                :filter="filter"
+                :filter-included-fields="filterOn"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                :sort-direction="sortDirection"
+                show-empty
+                small
+                @filtered="onFiltered"
+                striped
+                hover
+                outlined
+                no-border-collapse
+                @row-clicked="
+                  (item) => $set(item, '_showDetails', !item._showDetails)
+                "
+              >
               </b-table>
             </b-col>
           </b-row>
@@ -357,27 +518,32 @@
           <b-row>
             <b-col class="tabelas-contrato">
               <b-table
-                  bordered
-                  head-variant="dark"
-                  sort-icon-left
-                  :items="itemsContratoClientes"
-                  :fields="cabecalhosContratosParcelas"
-                  :current-page="currentPage"
-                  :per-page="perPage"
-                  :filter="filter"
-                  :filter-included-fields="filterOn"
-                  :sort-by.sync="sortBy"
-                  :sort-desc.sync="sortDesc"
-                  :sort-direction="sortDirection"
-                  show-empty
-                  small
-                  fixed
-                  @filtered="onFiltered"
-                  striped
-                  hover
-                  outlined
-                  no-border-collapse
-                  @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
+                primary-key="nome"
+                id="tabela-imovel"
+                :tbody-transition-props="transProps"
+                bordered
+                head-variant="dark"
+                sort-icon-left
+                :items="itemsContratoClientes"
+                :fields="cabecalhosContratosParcelas"
+                :current-page="currentPage"
+                :per-page="perPage"
+                :filter="filter"
+                :filter-included-fields="filterOn"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                :sort-direction="sortDirection"
+                show-empty
+                small
+                @filtered="onFiltered"
+                striped
+                hover
+                outlined
+                no-border-collapse
+                @row-clicked="
+                  (item) => $set(item, '_showDetails', !item._showDetails)
+                "
+              >
               </b-table>
             </b-col>
           </b-row>
@@ -386,15 +552,34 @@
       <div class="text-center">
         <b-row align-h="end">
           <b-col cols="2">
-            <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="save" class="botao-salvar"
-                       @click="editarImovel">Salvar
+            <vs-button
+              v-if="editar == true"
+              color="#24a35a"
+              type="filled"
+              icon="save"
+              class="botao-salvar"
+              @click="editarImovel"
+              >Salvar
             </vs-button>
-            <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar" @click="cadastrarImovel">
+            <vs-button
+              v-else
+              color="#24a35a"
+              type="filled"
+              icon="save"
+              class="botao-salvar"
+              @click="cadastrarImovel"
+            >
               Salvar
             </vs-button>
           </b-col>
           <b-col cols="2">
-            <vs-button color="#707070" type="filled" icon="clear" class="botao-salvar" @click="esconderModal">
+            <vs-button
+              color="#707070"
+              type="filled"
+              icon="clear"
+              class="botao-salvar"
+              @click="esconderModal"
+            >
               Cancelar
             </vs-button>
           </b-col>
@@ -405,57 +590,55 @@
 </template>
 
 <script>
-
-import api from '../../services/api'
+import api from "../../services/api";
 
 export default {
   name: "VisualizarImovel",
   data() {
     return {
-      larguraTela: `${(window.innerWidth).toString()}px`,
-      alturaTela: `${(window.innerHeight).toString()}px`,
+      larguraTela: `${window.innerWidth.toString()}px`,
+      alturaTela: `${window.innerHeight.toString()}px`,
       items: [],
       itemsContratoClientes: [],
       transProps: {
-        // Transition name
-        name: 'flip-list'
+        name: "flip-list",
       },
       fields: [
-        {key: 'nome', label: 'Nome', sortable: true},
-        {key: 'rua', label: 'Rua', sortable: true},
-        {key: 'status', label: 'Status', sortable: true},
-        {key: 'editar', label: 'Editar'},
-        {key: 'deletar', label: 'Deletar'},
+        { key: "nome", label: "Nome", sortable: true },
+        { key: "rua", label: "Rua", sortable: true },
+        { key: "status", label: "Status", sortable: true },
+        { key: "editar", label: "Editar" },
+        { key: "deletar", label: "Deletar" },
       ],
       cabecalhosDespesas: [
-        {key: 'categoria', label: 'Categoria', sortable: true},
-        {key: 'descricao', label: 'Descricao', sortable: true},
-        {key: 'data', label: 'Data', sortable: true,},
-        {key: 'vencimento', label: 'Vencimento'},
-        {key: 'tipo', label: 'Tipo'},
-        {key: 'editar', label: 'Editar'},
-        {key: 'deletar', label: 'Deletar'},
+        { key: "categoria", label: "Categoria", sortable: true },
+        { key: "descricao", label: "Descricao", sortable: true },
+        { key: "data", label: "Data", sortable: true },
+        { key: "vencimento", label: "Vencimento" },
+        { key: "tipo", label: "Tipo" },
+        { key: "editar", label: "Editar" },
+        { key: "deletar", label: "Deletar" },
       ],
       cabecalhosContratosClientes: [
-        {key: 'contrato', label: 'Contrato', sortable: true},
-        {key: 'cliente', label: 'Cliente', sortable: true},
-        {key: 'data_inicio', label: 'Data de início', sortable: true,},
-        {key: 'vencimento', label: 'Vencimento'},
-        {key: 'status', label: 'Status'},
+        { key: "contrato", label: "Contrato", sortable: true },
+        { key: "cliente", label: "Cliente", sortable: true },
+        { key: "data_inicio", label: "Data de início", sortable: true },
+        { key: "vencimento", label: "Vencimento" },
+        { key: "status", label: "Status" },
       ],
       cabecalhosContratosParcelas: [
-        {key: 'valor', label: 'Valor', sortable: true},
-        {key: 'vencimento', label: 'Vencimento'},
-        {key: 'status', label: 'Status'},
-        {key: 'editar', label: 'Editar'},
+        { key: "valor", label: "Valor", sortable: true },
+        { key: "vencimento", label: "Vencimento" },
+        { key: "status", label: "Status" },
+        { key: "editar", label: "Editar" },
       ],
       totalRows: 1,
       currentPage: 1,
       perPage: 25,
       pageOptions: [25, 50, 100],
-      sortBy: '',
+      sortBy: "",
       sortDesc: false,
-      sortDirection: 'asc',
+      sortDirection: "asc",
       filter: null,
       filterOn: [],
       imovel: {
@@ -481,85 +664,91 @@ export default {
         area_construida: "",
         valor_aquisicao: "",
         valor_atual: "",
-        valor_dolar: "",
+        valor_aquisicao_dolar: "",
         numero_cliente_luz: "",
         numero_cliente_agua: "",
       },
       tiposStatus: [],
       tiposImoveis: [],
-      tiposComodos:[],
-      comodos: [{id: "", quantidade: 0, tipo: null}],
-      editar: false
-    }
+      tiposComodos: [],
+      comodos: [{ id: "", quantidade: 0, tipo: null }],
+      editar: false,
+    };
   },
 
   methods: {
     async buscarTiposStatus() {
-      await api.get('/imovel/status').then(response => {
-        this.tiposStatus = response.data
-      })
+      await api.get("/imovel/status").then((response) => {
+        this.tiposStatus = response.data;
+      });
     },
     async buscarTiposImoveis() {
-      await api.get('/imovel/tipos_imoveis').then(response => {
-        this.tiposImoveis = response.data
-      })
+      await api.get("/imovel/tipos_imoveis").then((response) => {
+        this.tiposImoveis = response.data;
+      });
     },
     async buscarImoveis() {
-      await api.get('/imoveis').then(response => {
-        this.items = response.data
-        this.totalRows = this.items.length
-      }).catch(erro => {
-        console.log(erro)
-      })
+      await api
+        .get("/imoveis")
+        .then((response) => {
+          this.items = response.data;
+          this.totalRows = this.items.length;
+        })
+        .catch((erro) => {
+          console.log(erro);
+        });
     },
-    async buscarTiposComodos(){
-      await api.get('/imoveis/tipo_comodo').then(response => {
-        console.log(response)
-        this.tiposComodos = response.data
-      })
+    async buscarTiposComodos() {
+      await api.get("/imoveis/tipo_comodo").then((response) => {
+        this.tiposComodos = response.data;
+      });
     },
     onFiltered(filteredItems) {
-      this.totalRows = filteredItems.length
-      this.currentPage = 1
+      this.totalRows = filteredItems.length;
+      this.currentPage = 1;
     },
     async deletarImovel(imovel) {
       await api.delete(`/imovel/deletar/${imovel.id}`).then(() => {
-        this.buscarImoveis()
-      })
+        this.buscarImoveis();
+      });
     },
     deletarImovelModal(imovel) {
-      this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar o imóvel: ${imovel.nome} ?`, {
-        title: 'Deletar imóvel',
-        buttonSize: 'sm',
-        okTitle: 'Deletar',
-        cancelTitle: 'Cancelar',
-        okVariant: 'danger',
-        footerClass: 'p-2',
-        centered: true
-      }).then(value => {
-        if (value) {
-          this.deletarImovel(imovel)
-        }
-      })
+      this.$bvModal
+        .msgBoxConfirm(
+          `Tem certeza que deseja deletar o imóvel: ${imovel.nome} ?`,
+          {
+            title: "Deletar imóvel",
+            buttonSize: "sm",
+            okTitle: "Deletar",
+            cancelTitle: "Cancelar",
+            okVariant: "danger",
+            footerClass: "p-2",
+            centered: true,
+          }
+        )
+        .then((value) => {
+          if (value) {
+            this.deletarImovel(imovel);
+          }
+        });
     },
 
-
     async editarImovelModal(imovel) {
-      await api.get(`/imovel/`, {params: {id: imovel.id}}).then(response => {
-        this.comodos = []
-        this.imovel = response.data[0]
-        console.log(this.imovel)
-        for (let x = 0; x < this.imovel.quantidade.length; x++) {
-          let quantidade = this.imovel.quantidade[x]
-          let tipo = this.imovel.tipo_comodo[x]
-          let id = this.imovel.id_comodo[x]
-          this.comodos.push({id: id, quantidade: quantidade, tipo: tipo})
-        }
+      await api
+        .get(`/imovel/`, { params: { id: imovel.id } })
+        .then((response) => {
+          this.comodos = [];
+          this.imovel = response.data[0];
+          for (let x = 0; x < this.imovel.quantidade.length; x++) {
+            let quantidade = this.imovel.quantidade[x];
+            let tipo = this.imovel.tipo_comodo[x];
+            let id = this.imovel.id_comodo[x];
+            this.comodos.push({ id: id, quantidade: quantidade, tipo: tipo });
+          }
 
-        this.editar = true
-        this.mostrarModal()
-
-      })
+          this.editar = true;
+          this.mostrarModal();
+        });
     },
     async editarImovel() {
       if (this.validarCamposObrigatorio()) {
@@ -569,41 +758,43 @@ export default {
         //     this.cliente[variaveisString[key]] = null
         //   }
         // }
-        await api.post(`/imovel/editar/${this.imovel.id}`, {
-          data: this.imovel,
-          comodos: this.comodos
-        }).then(response => {
-          let nomeImovel = response.data[0].nome
-          this.$vs.notify({
-            text: `Imóvel editado com sucesso: ${nomeImovel} !`,
-            position: 'top-center',
-            color: 'warning',
-            time: 6000,
-            icon: 'check_circle_outline'
+        await api
+          .post(`/imovel/editar/${this.imovel.id}`, {
+            data: this.imovel,
+            comodos: this.comodos,
           })
-          this.buscarImoveis()
-          this.limparModal()
-          this.esconderModal()
-        })
+          .then((response) => {
+            let nomeImovel = response.data[0].nome;
+            this.$vs.notify({
+              text: `Imóvel editado com sucesso: ${nomeImovel} !`,
+              position: "top-center",
+              color: "warning",
+              time: 6000,
+              icon: "check_circle_outline",
+            });
+            this.buscarImoveis();
+            this.limparModal();
+            this.esconderModal();
+          });
       }
     },
 
     mostrarModal() {
-      this.$modal.show('modal-imovel')
-      this.buscarTiposStatus()
-      this.buscarTiposComodos()
+      this.$modal.show("modal-imovel");
+      this.buscarTiposStatus();
+      this.buscarTiposComodos();
     },
     esconderModal() {
-      this.$modal.hide('modal-imovel');
-      this.limparModal()
-      this.editar = false
+      this.$modal.hide("modal-imovel");
+      this.limparModal();
+      this.editar = false;
     },
     limparModal() {
-      Object.keys(this.imovel).forEach(key => {
-        this.imovel[key] = ""
-      })
-      this.imovel.id_status = null
-      this.imovel.tipo_imovel = null
+      Object.keys(this.imovel).forEach((key) => {
+        this.imovel[key] = "";
+      });
+      this.imovel.id_status = null;
+      this.imovel.tipo_imovel = null;
     },
     async cadastrarImovel() {
       if (this.validarCamposObrigatorio()) {
@@ -613,26 +804,38 @@ export default {
         //     this.cliente[variaveisString[key]] = null
         //   }
         // }
-        await api.post('/imovel/cadastrar', {data: this.imovel, comodos: this.comodos}).then(response => {
-          let nomeImovel = response.data[0].nome
-          console.log(nomeImovel)
-          this.esconderModal()
-          this.$vs.notify({
-            text: `Imóvel cadastrado com sucesso: ${nomeImovel} !`,
-            position: 'top-center',
-            color: 'success',
-            time: 6000,
-            icon: 'check_circle_outline'
+        await api
+          .post("/imovel/cadastrar", {
+            data: this.imovel,
+            comodos: this.comodos,
           })
-          this.buscarImoveis()
-          this.limparModal()
-        })
+          .then((response) => {
+            let nomeImovel = response.data[0].nome;
+            this.esconderModal();
+            this.$vs.notify({
+              text: `Imóvel cadastrado com sucesso: ${nomeImovel} !`,
+              position: "top-center",
+              color: "success",
+              time: 6000,
+              icon: "check_circle_outline",
+            });
+            this.buscarImoveis();
+            this.limparModal();
+          });
       }
     },
     validarCamposObrigatorio() {
-      if (this.imovel['nome'] == "" || this.imovel['email'] == "" || this.imovel['rua'] == "" ||
-          this.imovel['cidade'] == "" || this.imovel['bairro'] == "" || this.imovel['estado'] == "" ||
-          this.imovel['cpf_cnpj'] == "" || this.imovel['numero'] == "" || this.imovel['cep'] == "") {
+      if (
+        this.imovel["nome"] == "" ||
+        this.imovel["email"] == "" ||
+        this.imovel["rua"] == "" ||
+        this.imovel["cidade"] == "" ||
+        this.imovel["bairro"] == "" ||
+        this.imovel["estado"] == "" ||
+        this.imovel["cpf_cnpj"] == "" ||
+        this.imovel["numero"] == "" ||
+        this.imovel["cep"] == ""
+      ) {
         // this.$vs.notify({
         //   text: `Campos obrigatorios vazio.`,
         //   position: 'top-center',
@@ -640,62 +843,58 @@ export default {
         //   time: 4000,
         //   icon: 'check_circle_outline'
         // })
-        return true
+        return true;
       } else {
-        return true
+        return true;
       }
     },
     atribuirCep(dados) {
-      this.imovel.bairro = ""
-      this.imovel.cidade = ""
-      this.imovel.uf = ""
-      this.imovel.complemento = ""
-      this.imovel.rua = ""
-      this.imovel.numero = ""
+      // this.imovel.bairro = ""
+      // this.imovel.cidade = ""
+      // this.imovel.uf = ""
+      // this.imovel.complemento = ""
+      // this.imovel.rua = ""
+      // this.imovel.numero = ""
       if (dados.bairro != "") {
-        this.imovel['bairro'] = dados.bairro
+        this.imovel["bairro"] = dados.bairro;
       }
       if (dados.localidade != "") {
-        this.imovel.cidade = dados.localidade
+        this.imovel.cidade = dados.localidade;
       }
       if (dados.uf != "") {
-        this.imovel.estado = dados.uf
+        this.imovel.estado = dados.uf;
       }
       if (dados.complemento != "") {
-        this.imovel.complemento = dados.complemento
+        this.imovel.complemento = dados.complemento;
       }
       if (dados.logradouro != "") {
-        this.imovel.rua = dados.logradouro
+        this.imovel.rua = dados.logradouro;
       }
     },
-    adicionarComodo(){
+    adicionarComodo() {
       this.comodos.push({
         quantidade: 0,
-        tipo: null
-      })
+        tipo: null,
+      });
     },
     removerComodo(index) {
-      this.comodos.splice(index, 1)
+      this.comodos.splice(index, 1);
     },
   },
   watch: {
-    'imovel.cep': function (cep) {
+    "imovel.cep": function(cep) {
       if (cep.length == 8) {
-        api.get(`/cliente/consultar_cep/${cep}`).then(response => {
-          this.atribuirCep(response.data)
-        })
+        api.get(`/cliente/consultar_cep/${cep}`).then((response) => {
+          this.atribuirCep(response.data);
+        });
       }
     },
-    'imovel.valor_atual': function (valor) {
-      let dolar = this.$store.state.dolar
-      this.imovel.valor_dolar = parseFloat(valor * dolar).toFixed(2)
-    }
   },
   async mounted() {
-    this.buscarImoveis()
-    this.buscarTiposImoveis()
+    this.buscarImoveis();
+    this.buscarTiposImoveis();
   },
-}
+};
 </script>
 <style>
 .input-personalizado {
@@ -708,7 +907,7 @@ export default {
   margin-top: 5px;
 }
 
-.botao-adicionar-comodo{
+.botao-adicionar-comodo {
   margin-bottom: 10px;
 }
 
@@ -747,12 +946,12 @@ export default {
   padding: 25px;
 }
 
-.tr-cliente {
+.tr-imovel {
   margin-top: 6px;
   margin-bottom: 0px;
 }
 
-.barraTopCliente {
+.barra-top-imovel {
   border: 1px solid rgb(220, 220, 220);
   padding: 0;
   margin: 0;
@@ -761,14 +960,14 @@ export default {
   box-shadow: 5px 5px 20px rgb(200, 200, 200);
 }
 
-.tabela-clientes {
+.tabela-imoveis {
   background-color: white;
   margin: 0;
   padding: 0;
   margin-bottom: 10px;
 }
 
-.col-tabela-clientes {
+.col-tabela-imoveis {
   padding-top: 15px;
 }
 
@@ -805,5 +1004,4 @@ export default {
 table#tabela-imovel .flip-list-move {
   transition: transform 0.4s;
 }
-
 </style>

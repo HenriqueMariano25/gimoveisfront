@@ -51,16 +51,13 @@ export default {
         let usuario = response.data['usuario']
         let token = response.data['Authorization']
         let dolar = response.data['dolar']
-
         this.$store.commit('DEFINIR_USUARIO_LOGADO', {
           token: token,
           usuario: usuario,
           dolar: dolar
         })
-        console.log(this.$store)
         this.$router.push({name: 'home'})
       }).catch(erro => {
-        console.log(erro.response.data.erro)
         this.erroVisivel = true
         let erroAtual = erro.response.data.erro
         this.mensagemErro = erroAtual
@@ -100,8 +97,6 @@ export default {
   top: 50%;
   transform: translateY(-50%);
 }
-
-
 .includeIconOnly.large.botao_seta {
   width: 68px !important;
   height: 68px !important;

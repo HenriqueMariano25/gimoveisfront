@@ -1,7 +1,5 @@
 <template>
   <b-container fluid>
-    <!--    <h1 style="position:absolute; top:0;">{{ alturaTela }}</h1>-->
-    <!--    <h1 style="position:absolute; top:0;">{{ larguraTela }}</h1>-->
     <b-row class="barraTopCliente " align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Clientes</h1>
@@ -24,12 +22,12 @@
         </b-form-group>
       </b-col>
     </b-row>
-    <!-- Main table element
-    stacked="md"
-    -->
     <b-row class="tabela-clientes">
       <b-col class="col-tabela-clientes">
         <b-table
+            id="tabela-cliente"
+            primary-key="nome"
+            :tbody-transition-props="transProps"
             bordered
             head-variant="dark"
             sort-icon-left
@@ -44,7 +42,6 @@
             :sort-direction="sortDirection"
             show-empty
             small
-            fixed
             @filtered="onFiltered"
             striped
             hover
@@ -70,8 +67,6 @@
           <template #cell(deletar)="row">
             <vs-button type="flat" color="dark" @click="deletarClienteModal(row.item)" icon="delete"></vs-button>
           </template>
-
-
           <template #row-details="row">
             <b-card>
               <p>Rua: {{ row.item.rua }},{{ row.item.numero }} | Bairro: {{ row.item.bairro }} | Cidade:
@@ -82,15 +77,12 @@
               <p>Data de Nascimento: {{ row.item.data_formatada }}</p>
               <p>Estado Civil: {{ row.item.estado_civil }}</p>
               <p>Referência: {{ row.item.referencia }}</p>
-
               <p>Telefones:</p>
               <ul v-for="(telefone, index) in row.item.numero_telefone" :key="index">
-
                 <li>{{ telefone }}</li>
               </ul>
               <vs-button color="#5498ff" type="filled" icon="work" @click="mostrarModalContratos(row.item)">Contratos
               </vs-button>
-              button
             </b-card>
           </template>
         </b-table>
@@ -117,8 +109,7 @@
             label-cols-lg="auto"
             label-align-sm="right"
             label-size="sm"
-            align="left"
-        >
+            align="left">
           <b-form-select
               id="per-page-select"
               v-model="perPage"
@@ -206,13 +197,14 @@
               <vs-input label-placeholder="Referência" v-model="cliente.referencia" class="input-personalizado" required/>
             </b-col>
           </b-row>
+        </b-tab>
+        <b-tab title="Inf. Adicionais">
           <b-row>
             <b-col>
               <b-form-group
                   id="textarea"
                   label="Observação"
-                  label-for="input-1"
-              >
+                  label-for="input-1">
                 <b-form-textarea
                     id="textarea"
                     v-model="cliente.observacao"
@@ -270,12 +262,10 @@
             Cancelar
           </vs-button>
         </b-col>
-
       </b-row>
     </modal>
     <modal name="contratos-cliente" width="60%" height="auto" :scrollable="true"
            class="modal-adicionando-cliente">
-
       <b-row>
         <b-col>
           <h6>Contratos de: {{ cliente.nome }} </h6>
@@ -284,7 +274,6 @@
       <b-row class="tabela-contratos-clientes">
         <b-col class="col-tabela-contratos-clientes">
           <b-table
-
               :fields="fieldsContratos"
               :current-page="currentPage"
               :per-page="perPage"
@@ -295,7 +284,6 @@
               :sort-direction="sortDirection"
               show-empty
               small
-              fixed
               @filtered="onFiltered"
               striped
               hover
@@ -312,7 +300,6 @@
       <b-row class="tabela-parcelas-clientes">
         <b-col class="col-tabela-parcelas-clientes">
           <b-table
-
               :fields="fieldsParcelas"
               :current-page="currentPage"
               :per-page="perPage"
@@ -323,7 +310,6 @@
               :sort-direction="sortDirection"
               show-empty
               small
-              fixed
               @filtered="onFiltered"
               striped
               hover
@@ -351,8 +337,9 @@ export default {
   name: "VisualizarCliente",
   data() {
     return {
-      alturaTela: `${(window.innerWidth / 3).toString()}px`,
-      larguraTela: window.innerHeight,
+      transProps: {
+        name: "flip-list",
+      },
       items: [],
       fields: [
         {key: 'nome', label: 'Nome', sortable: true},
@@ -729,4 +716,7 @@ export default {
   margin-bottom: 10px;
 }
 
+table#tabela-cliente .flip-list-move {
+  transition: transform 0.4s;
+}
 </style>

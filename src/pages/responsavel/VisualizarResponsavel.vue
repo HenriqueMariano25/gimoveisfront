@@ -1,6 +1,6 @@
 <template>
   <b-container fluid>
-    <b-row class="barraTopCliente " align-v="center">
+    <b-row class="barra-top-responsavel " align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Responsável</h1>
       </b-col>
@@ -22,12 +22,12 @@
         </b-form-group>
       </b-col>
     </b-row>
-    <!-- Main table element
-    stacked="md"
-    -->
-    <b-row class="tabela-clientes">
-      <b-col class="col-tabela-clientes">
+    <b-row class="tabela-responsaveis">
+      <b-col class="col-tabela-responsaveis">
         <b-table
+            id="tabela-responsavel"
+            primary-key="nome"
+            :tbody-transition-props="transProps"
             bordered
             head-variant="dark"
             sort-icon-left
@@ -42,22 +42,21 @@
             :sort-direction="sortDirection"
             show-empty
             small
-            fixed
             @filtered="onFiltered"
             striped
             hover
             outlined
-            :sticky-header="alturaTela"
+            sticky-header
             no-border-collapse
             @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
           <template #cell(nome)="row">
-            <p class="tr-cliente">{{ row.item.nome }}</p>
+            <p class="tr-responsavel">{{ row.item.nome }}</p>
           </template>
           <template #cell(email)="row">
-            <p class="tr-cliente">{{ row.item.email }}</p>
+            <p class="tr-responsavel">{{ row.item.email }}</p>
           </template>
           <template #cell(cpf_cnpj)="row">
-            <p class="tr-cliente">{{ row.item.cpf_cnpj }}</p>
+            <p class="tr-responsavel">{{ row.item.cpf_cnpj }}</p>
           </template>
           <template #cell(editar)="row">
             <vs-button type="flat" color="dark" @click="editarResponsavelModal(row.item.id)" icon="edit"></vs-button>
@@ -65,8 +64,6 @@
           <template #cell(deletar)="row">
             <vs-button type="flat" color="dark" @click="deletarResponsavelModal(row.item)" icon="delete"></vs-button>
           </template>
-
-
           <template #row-details="row">
             <b-card>
               <p>Rua: {{ row.item.rua }},{{ row.item.numero }} | Bairro: {{ row.item.bairro }} | Cidade:
@@ -123,38 +120,43 @@
     </b-row>
     <!--  Fim da tabela-->
     <modal name="modal-responsavel" width="60%" height="auto" :scrollable="true" :click-to-close="false"
-           class="modal-adicionando-cliente">
+           class="modal-adicionando-responsavel">
       <h3>Adicionando responsável</h3>
       <b-row align-v="center">
         <b-col cols="8">
           <vs-input label-placeholder="Nome*" v-model="responsavel.nome" class="input-personalizado"
           />
         </b-col>
-
         <b-col cols="4">
-          <vs-input label="Data de Nascimento" v-model="responsavel.data_nascimento" type="date" class="input-nascimento"/>
+          <vs-input label="Data de Nascimento" v-model="responsavel.data_nascimento" type="date"
+                    class="input-nascimento"/>
         </b-col>
       </b-row>
       <b-row>
         <b-col cols="4">
-          <b-form-group id="select-cliente" label="Estado Civil">
-            <b-form-select v-model="responsavel.id_estado_civil" :options="estadosCivis" value-field="id" text-field="descricao">
+          <b-form-group id="select-responsavel" label="Estado Civil">
+            <b-form-select v-model="responsavel.id_estado_civil" :options="estadosCivis" value-field="id"
+                           text-field="descricao">
               <template #first>
-                <b-form-select-option  :value="null">Selecione</b-form-select-option>
+                <b-form-select-option :value="null">Selecione</b-form-select-option>
               </template>
             </b-form-select>
           </b-form-group>
         </b-col>
         <b-col cols="4">
-          <vs-input onKeyDown="if(this.value.length==15 && event.keyCode!=8) return false;" type="number" label-placeholder="CPF ou CNPJ*" v-model="responsavel.cpf_cnpj" class="input-personalizado"/>
+          <vs-input onKeyDown="if(this.value.length==15 && event.keyCode!=8) return false;" type="text"
+                    v-mask="['###.###.###-##', '##.###.###/####-##']" label-placeholder="CPF ou CNPJ*" v-model="responsavel.cpf_cnpj" class="input-personalizado"/>
         </b-col>
         <b-col cols="4">
-          <vs-input onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" type="number" label-placeholder="Identidade" v-model="responsavel.identidade" class="input-personalizado"/>
+          <vs-input onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" type="number"
+                    label-placeholder="Identidade" v-model="responsavel.identidade" class="input-personalizado"/>
         </b-col>
       </b-row>
       <b-row>
         <b-col cols="2">
-          <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" label-placeholder="CEP*" v-model="responsavel.cep" class="input-personalizado"/>
+          <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                    onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" label-placeholder="CEP*"
+                    v-model="responsavel.cep" class="input-personalizado" v-mask="'#####-###'"/>
         </b-col>
         <b-col cols="5">
           <vs-input label-placeholder="Rua*" v-model="responsavel.rua" class="input-personalizado"/>
@@ -182,7 +184,8 @@
           <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="save" class="botao-salvar"
                      @click="editarResponsavel">Salvar
           </vs-button>
-          <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar" @click="cadastrarResponsavel">
+          <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar"
+                     @click="cadastrarResponsavel">
             Salvar
           </vs-button>
         </b-col>
@@ -199,13 +202,15 @@
 <script>
 
 import api from '../../services/api'
+import { atribuirCep } from '../../methods/global'
 
 export default {
   name: "VisualizarResponsavel",
   data() {
     return {
-      alturaTela: `${(window.innerWidth / 3).toString()}px`,
-      larguraTela: window.innerHeight,
+      transProps: {
+        name: "flip-list",
+      },
       items: [],
       fields: [
         {key: 'nome', label: 'Nome', sortable: true},
@@ -249,7 +254,6 @@ export default {
     },
     async buscarResponsaveis() {
       await api.get('/responsaveis').then(response => {
-        console.log(response)
         this.items = response.data
         this.totalRows = this.items.length
       }).catch(erro => {
@@ -374,7 +378,7 @@ export default {
       }
     },
     atribuirCep(dados) {
-      if(this.editar != true){
+      if (this.editar != true) {
         this.responsavel.bairro = ""
         this.responsavel.cidade = ""
         this.responsavel.estado = ""
@@ -396,16 +400,23 @@ export default {
           this.responsavel.rua = dados.logradouro
         }
       }
+    },
+    mascaraCpfCNPJ(cpf){
+      // cpf=cpf.replace(/\D/g,"")
+      // cpf=cpf.replace(/(\d{3})(\d)/,"$1.$2")
+      // cpf=cpf.replace(/(\d{3})(\d)/,"$1.$2")
+      // cpf=cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
+      return cpf
     }
   },
   watch: {
     'responsavel.cep': function (cep) {
-      if (cep.length == 8) {
-        api.get(`/cliente/consultar_cep/${cep}`).then(response => {
-          this.atribuirCep(response.data)
+      if(atribuirCep(cep)){
+        atribuirCep(cep).then(response => {
+          this.atribuirCep(response)
         })
       }
-    }
+    },
   },
   async mounted() {
     this.buscarResponsaveis()
@@ -464,12 +475,12 @@ export default {
   padding: 25px;
 }
 
-.tr-cliente {
+.tr-responsavel {
   margin-top: 6px;
   margin-bottom: 0px;
 }
 
-.barraTopCliente {
+.barra-top-responsavel {
   border: 1px solid rgb(220, 220, 220);
   padding: 0;
   margin: 0;
@@ -478,14 +489,14 @@ export default {
   box-shadow: 5px 5px 20px rgb(200, 200, 200);
 }
 
-.tabela-clientes {
+.tabela-responsaveis {
   background-color: white;
   margin: 0;
   padding: 0;
   margin-bottom: 10px;
 }
 
-.col-tabela-clientes {
+.col-tabela-responsaveis {
   padding-top: 15px;
 }
 
@@ -497,14 +508,19 @@ export default {
 .material-icons {
   z-index: 0;
 }
-#select-cliente__BV_label_{
-  margin:0;
-  padding:0;
-  color:rgb(110,110,110);
+
+#select-responsavel__BV_label_ {
+  margin: 0;
+  padding: 0;
+  color: rgb(110, 110, 110);
   font-size: 12px;
 }
-#select-cliente{
+
+#select-responsavel {
   margin-bottom: 10px;
 }
 
+table#tabela-responsavel .flip-list-move {
+  transition: transform 0.4s;
+}
 </style>

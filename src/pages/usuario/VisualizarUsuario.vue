@@ -1,6 +1,6 @@
 <template>
   <b-container fluid>
-    <b-row class="barraTopUsuario" align-v="center">
+    <b-row class="barra-top-usuario" align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Usuários</h1>
       </b-col>
@@ -22,12 +22,12 @@
         </b-form-group>
       </b-col>
     </b-row>
-    <!-- Main table element
-    stacked="md"
-    -->
     <b-row class="tabela-usuarios">
       <b-col class="col-tabela-usuarios">
         <b-table
+            id="tabela-usuario"
+            primary-key="nome"
+            :tbody-transition-props="transProps"
             bordered
             head-variant="dark"
             sort-icon-left
@@ -67,8 +67,6 @@
           <template #cell(deletar)="row">
             <vs-button type="flat" color="dark" @click="deletarUsuarioModal(row.item)" icon="delete"></vs-button>
           </template>
-
-
           <template #row-details="row">
             <b-card>
               <p>Nome: {{ row.item.nome }}</p>
@@ -140,7 +138,6 @@
               </template>
             </b-form-select>
           </b-form-group>
-
         </b-col>
       </b-row>
       <b-row align-h="end">
@@ -170,8 +167,9 @@ export default {
   name: "VisualizarUsuario",
   data() {
     return {
-      alturaTela: `${(window.innerWidth / 3).toString()}px`,
-      larguraTela: window.innerHeight,
+      transProps: {
+        name: "flip-list",
+      },
       items: [],
       fields: [
         {key: 'nome', label: 'Nome do Operador', sortable: true},
@@ -331,11 +329,6 @@ export default {
   margin-top: 5px;
 }
 
-.botao-fiador {
-  width: 100%;
-  margin-bottom: 10px;
-}
-
 .vs-input--label {
   color: rgb(160, 160, 160);
   font-size: 11px;
@@ -376,10 +369,7 @@ export default {
   margin-bottom: 0px;
 }
 
-.botao-deletar-telefone {
-  margin-top: 12px;
-}
-.barraTopUsuario {
+.barra-top-usuario {
   border: 1px solid rgb(220, 220, 220);
   padding: 0;
   margin: 0;
@@ -401,9 +391,6 @@ export default {
   border-top: 1px solid rgb(200,200,200);
   padding-top: 10px;
 }
-.botao-adicionar-telefone{
-  margin-bottom: 8px;
-}
 .material-icons{
   z-index: 0;
 }
@@ -415,5 +402,8 @@ export default {
 }
 #select-permissao{
   margin-bottom: 10px;
+}
+table#tabela-usuario .flip-list-move {
+  transition: transform 0.4s;
 }
 </style>

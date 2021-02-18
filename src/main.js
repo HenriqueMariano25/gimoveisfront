@@ -4,6 +4,7 @@ import router from './router'
 import Vuesax from 'vuesax'
 import { BootstrapVue,BootstrapVueIcons } from 'bootstrap-vue'
 import VModal from 'vue-js-modal'
+import VueTheMask from 'vue-the-mask'
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -16,6 +17,7 @@ Vue.use(Vuesax)
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 Vue.use(VModal)
+Vue.use(VueTheMask)
 
 Vue.config.productionTip = false
 
