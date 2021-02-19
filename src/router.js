@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from "./services/store";
 
 import Autenticacao from './routers/autenticacaoRouter'
 import Cliente from './routers/clienteRouter'
@@ -24,6 +25,13 @@ const router = new Router({
         ...Responsavel,
         ...Contrato
     ]
+})
+
+router.beforeEach((to, from, next) => {
+    const token = store.state.token
+
+    if (to.name !== 'Login' && !token) next({name: 'Login'})
+    else next()
 })
 
 

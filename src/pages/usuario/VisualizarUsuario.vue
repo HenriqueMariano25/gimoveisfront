@@ -140,6 +140,11 @@
           </b-form-group>
         </b-col>
       </b-row>
+      <b-row>
+        <b-col cols="6">
+          <vs-input label-placeholder="Senha*" v-model="usuario.senha" type="password" class="input-personalizado"/>
+        </b-col>
+      </b-row>
       <b-row align-h="end">
         <b-col cols="2">
           <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="save" class="botao-salvar"
@@ -192,8 +197,9 @@ export default {
         nome: "",
         usuario:"",
         email: "",
-        permissao:null
-      },
+        permissao:null,
+        senha:"",
+        },
       tiposPermissoes: [],
       editar: false
     }

@@ -167,6 +167,7 @@
               <vs-input onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" type="number" label-placeholder="Identidade" v-model="cliente.identidade" class="input-personalizado"/>
             </b-col>
           </b-row>
+          <Carregando :visivel="carregandoCep"/>
           <b-row>
             <b-col cols="2">
               <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado"/>
@@ -199,6 +200,14 @@
           </b-row>
         </b-tab>
         <b-tab title="Inf. Adicionais">
+          <b-row class="mb-2">
+            <b-col>
+              <b-form-radio-group v-slot="{ ariaDescribedby }" v-model="cliente.tipo_cliente">
+                <b-form-radio :aria-describedby="ariaDescribedby" value="pessoa física">Pessoa física</b-form-radio>
+                <b-form-radio :aria-describedby="ariaDescribedby" value="pessoa jurícida">Pessoa jurídica</b-form-radio>
+              </b-form-radio-group>
+            </b-col>
+          </b-row>
           <b-row>
             <b-col>
               <b-form-group
@@ -332,9 +341,13 @@
 <script>
 
 import api from '../../services/api'
+import Carregando from "../../components/shared/Carregando";
 
 export default {
   name: "VisualizarCliente",
+  components:{
+    Carregando
+  },
   data() {
     return {
       transProps: {
@@ -388,13 +401,15 @@ export default {
         estado_civil: null,
         numero: "",
         status: null,
-        observacao: ""
+        observacao: "",
+        tipo_cliente:""
       },
       telefones: [{id: "", numero: "", tipo: null}],
       tiposTelefone: [],
       tiposStatus: [],
       editar: false,
-      estadosCivis: []
+      estadosCivis: [],
+      carregandoCep:false
     }
   },
 
@@ -607,7 +622,9 @@ export default {
   watch: {
     'cliente.cep': function (cep) {
       if (cep.length == 8) {
+        this.carregandoCep = true
         api.get(`/cliente/consultar_cep/${cep}`).then(response => {
+          this.carregandoCep = false
           this.atribuirCep(response.data)
         })
       }
@@ -719,4 +736,6 @@ export default {
 table#tabela-cliente .flip-list-move {
   transition: transform 0.4s;
 }
+
+
 </style>

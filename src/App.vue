@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <Fundo/>
-    <Topo/>
-    <Menu/>
-      <router-view class="pagina"/>
+    <Topo v-if="logado"/>
+    <Menu v-if="logado"/>
+    <router-view class="pagina"/>
   </div>
 </template>
 
@@ -19,6 +19,9 @@ export default {
     Menu,
     Topo,
     Fundo
+  },
+  computed:{
+    logado: function(){ return this.$store.state.token != null}
   }
 }
 </script>

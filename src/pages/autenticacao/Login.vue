@@ -9,7 +9,7 @@
       </div>
       <b-row>
         <b-col>
-          <form @submit.prevent>
+          <form @submit.prevent v-on:keyup.enter="login">
             <vs-input icon="person" label-placeholder="Usuário" class="w-100" v-model="usuario"/>
             <vs-input type="password" icon="lock" label-placeholder="Senha" class="w-100" v-model='senha'/>
           </form>
@@ -50,13 +50,11 @@ export default {
       await api.post('/autenticacao/login', {usuario:this.usuario, senha: this.senha}).then(response => {
         let usuario = response.data['usuario']
         let token = response.data['Authorization']
-        let dolar = response.data['dolar']
         this.$store.commit('DEFINIR_USUARIO_LOGADO', {
           token: token,
           usuario: usuario,
-          dolar: dolar
         })
-        this.$router.push({name: 'home'})
+        this.$router.push({name: 'Home'})
       }).catch(erro => {
         this.erroVisivel = true
         let erroAtual = erro.response.data.erro

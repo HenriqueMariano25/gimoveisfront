@@ -237,6 +237,7 @@
                 class="input-personalizado"
               />
             </b-col>
+            <Carregando :visivel="carregandoCep"/>
             <b-col cols="5">
               <vs-input
                 label-placeholder="Rua*"
@@ -591,9 +592,13 @@
 
 <script>
 import api from "../../services/api";
+import Carregando from "../../components/shared/Carregando";
 
 export default {
   name: "VisualizarImovel",
+  components:{
+    Carregando
+  },
   data() {
     return {
       larguraTela: `${window.innerWidth.toString()}px`,
@@ -673,6 +678,7 @@ export default {
       tiposComodos: [],
       comodos: [{ id: "", quantidade: 0, tipo: null }],
       editar: false,
+      carregandoCep:false
     };
   },
 
@@ -884,7 +890,9 @@ export default {
   watch: {
     "imovel.cep": function(cep) {
       if (cep.length == 8) {
+        this.carregandoCep = true
         api.get(`/cliente/consultar_cep/${cep}`).then((response) => {
+          this.carregandoCep = false
           this.atribuirCep(response.data);
         });
       }

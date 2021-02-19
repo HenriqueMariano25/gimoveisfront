@@ -6,19 +6,16 @@ Vue.use(Vuex)
 const estado = {
     token: null,
     usuario: {},
-    dolar: 0
 }
 
 const mutations = {
-    DEFINIR_USUARIO_LOGADO(state, { token, usuario, dolar }) {
+    DEFINIR_USUARIO_LOGADO(state, { token, usuario}) {
         state.token = token
         state.usuario = usuario
-        state.dolar = dolar
     },
     DESLOGAR_USUARIO(state) {
         state.token = null
         state.usuario = {}
-        state.dolar = 0
     }
 }
 

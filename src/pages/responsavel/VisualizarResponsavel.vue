@@ -152,6 +152,7 @@
                     label-placeholder="Identidade" v-model="responsavel.identidade" class="input-personalizado"/>
         </b-col>
       </b-row>
+      <Carregando :visivel="carregandoCep"/>
       <b-row>
         <b-col cols="2">
           <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57"
@@ -203,9 +204,13 @@
 
 import api from '../../services/api'
 import { atribuirCep } from '../../methods/global'
+import Carregando from "../../components/shared/Carregando"
 
 export default {
   name: "VisualizarResponsavel",
+  components:{
+    Carregando
+  },
   data() {
     return {
       transProps: {
@@ -242,7 +247,8 @@ export default {
         numero: "",
       },
       editar: false,
-      estadosCivis: []
+      estadosCivis: [],
+      carregandoCep:false
     }
   },
 
@@ -401,18 +407,15 @@ export default {
         }
       }
     },
-    mascaraCpfCNPJ(cpf){
-      // cpf=cpf.replace(/\D/g,"")
-      // cpf=cpf.replace(/(\d{3})(\d)/,"$1.$2")
-      // cpf=cpf.replace(/(\d{3})(\d)/,"$1.$2")
-      // cpf=cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
-      return cpf
-    }
   },
   watch: {
     'responsavel.cep': function (cep) {
       if(atribuirCep(cep)){
+        if (cep.length == 9) {
+          this.carregandoCep = true
+        }
         atribuirCep(cep).then(response => {
+          this.carregandoCep = false
           this.atribuirCep(response)
         })
       }
