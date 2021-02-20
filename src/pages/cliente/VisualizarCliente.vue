@@ -1,6 +1,6 @@
 <template>
   <b-container fluid>
-    <b-row class="barraTopCliente " align-v="center">
+    <b-row class="barra-top-cliente " align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Clientes</h1>
       </b-col>
@@ -46,7 +46,7 @@
             striped
             hover
             outlined
-            :sticky-header="alturaTela"
+            sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
             no-border-collapse
             @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
           <template #cell(nome)="row">
@@ -66,6 +66,14 @@
           </template>
           <template #cell(deletar)="row">
             <vs-button type="flat" color="dark" @click="deletarClienteModal(row.item)" icon="delete"></vs-button>
+          </template>
+          <template #table-colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col style="width: 15px">
+            <col style="width: 15px">
           </template>
           <template #row-details="row">
             <b-card>
@@ -88,7 +96,8 @@
         </b-table>
       </b-col>
     </b-row>
-    <b-row class="divider-personalizado">
+    <b-container fluid class="divider-personalizado">
+    <b-row align-v="end" >
       <b-col class="" cols="auto">
         <b-pagination
             v-model="currentPage"
@@ -109,7 +118,8 @@
             label-cols-lg="auto"
             label-align-sm="right"
             label-size="sm"
-            align="left">
+            align="left"
+            class="mb-1">
           <b-form-select
               id="per-page-select"
               v-model="perPage"
@@ -118,11 +128,13 @@
           ></b-form-select>
         </b-form-group>
       </b-col>
-      <b-col class="ml-auto" cols="auto">
-        <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal">Adicionar
+      <b-col class="ml-auto" cols="auto" style="margin-bottom: -5px">
+        <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal" >
+          Adicionar
         </vs-button>
       </b-col>
     </b-row>
+    </b-container>
     <!--  Fim da tabela-->
     <modal name="hello-world" width="60%" height="auto" :scrollable="true" :click-to-close="false"
            class="modal-adicionando-cliente">
@@ -355,12 +367,12 @@ export default {
       },
       items: [],
       fields: [
-        {key: 'nome', label: 'Nome', sortable: true},
-        {key: 'email', label: 'Email', sortable: true},
-        {key: 'cpf_cnpj', label: 'CPF ou CNPJ', sortable: true,},
-        {key: 'status', label: 'Status'},
-        {key: 'editar', label: 'Editar'},
-        {key: 'deletar', label: 'Deletar'},
+        {key: 'nome', label: 'Nome', sortable: true, thClass: 'text-center'},
+        {key: 'email', label: 'Email', sortable: true, thClass: 'text-center'},
+        {key: 'cpf_cnpj', label: 'CPF ou CNPJ', sortable: true, thClass: 'text-center'},
+        {key: 'status', label: 'Status' , class: 'text-center'},
+        {key: 'editar', label: ''},
+        {key: 'deletar', label: ''},
       ],
       fieldsContratos: [
         {key:'id', label: 'Contrato'},
@@ -696,13 +708,13 @@ export default {
   margin-top: 12px;
 }
 
-.barraTopCliente {
-  border: 1px solid rgb(220, 220, 220);
+.barra-top-cliente {
   padding: 0;
+  background-color: white;
   margin: 0;
   margin-bottom: 10px;
   border-radius: 10px;
-  box-shadow: 5px 5px 20px rgb(200, 200, 200);
+  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
 }
 
 .tabela-clientes {
@@ -710,6 +722,18 @@ export default {
   margin: 0;
   padding: 0;
   margin-bottom: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
+}
+
+.divider-personalizado {
+  border-top: 1px solid rgb(200, 200, 200);
+  position: absolute;
+  bottom: 0;
+  margin-left:-100px;
+  width: 100%;
+  padding: 10px 100px 15px 100px;
+  background-color: white;
 }
 
 .col-tabela-clientes {

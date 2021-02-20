@@ -34,7 +34,6 @@ export default {
   flex-direction: column;
 }
 .pagina{
-  margin-top:30px;
   padding: 10px 100px;
   z-index:20;
 }

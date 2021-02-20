@@ -46,7 +46,7 @@
             striped
             hover
             outlined
-            :sticky-header="alturaTela"
+            sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
             no-border-collapse
             @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
           <template #cell(nome)="row">
@@ -67,6 +67,14 @@
           <template #cell(deletar)="row">
             <vs-button type="flat" color="dark" @click="deletarUsuarioModal(row.item)" icon="delete"></vs-button>
           </template>
+          <template #table-colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col style="width: 15px">
+            <col style="width: 15px">
+          </template>
           <template #row-details="row">
             <b-card>
               <p>Nome: {{ row.item.nome }}</p>
@@ -78,7 +86,8 @@
         </b-table>
       </b-col>
     </b-row>
-    <b-row class="divider-personalizado">
+    <b-container fluid class="divider-personalizado">
+      <b-row align-v="end" >
       <b-col class="" cols="auto">
         <b-pagination
             v-model="currentPage"
@@ -100,6 +109,7 @@
             label-align-sm="right"
             label-size="sm"
             align="left"
+            class="mb-1"
         >
           <b-form-select
               id="per-page-select"
@@ -109,11 +119,12 @@
           ></b-form-select>
         </b-form-group>
       </b-col>
-      <b-col class="ml-auto" cols="auto">
+      <b-col class="ml-auto" cols="auto" style="margin-bottom: -5px">
         <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal">Adicionar
         </vs-button>
       </b-col>
     </b-row>
+    </b-container>
     <!--  Fim da tabela-->
     <modal name="usuario-modal" width="60%" height="auto" :scrollable="true" :click-to-close="false">
       <h3>Adicionando usuário</h3>
@@ -177,12 +188,12 @@ export default {
       },
       items: [],
       fields: [
-        {key: 'nome', label: 'Nome do Operador', sortable: true},
-        {key: 'email', label: 'Email', sortable: true},
-        {key: 'usuario', label: 'Usuário', sortable: true,},
-        {key: 'permissao', label: 'Nivel de permissão'},
-        {key: 'editar', label: 'Editar'},
-        {key: 'deletar', label: 'Deletar'},
+        {key: 'nome', label: 'Nome do Operador', sortable: true, thClass: 'text-center'},
+        {key: 'email', label: 'Email', sortable: true, thClass: 'text-center'},
+        {key: 'usuario', label: 'Usuário', sortable: true, thClass: 'text-center'},
+        {key: 'permissao', label: 'Nivel de permissão', class: 'text-center'},
+        {key: 'editar', label: ''},
+        {key: 'deletar', label: ''},
       ],
       totalRows: 1,
       currentPage: 1,
@@ -376,12 +387,12 @@ export default {
 }
 
 .barra-top-usuario {
-  border: 1px solid rgb(220, 220, 220);
+  background-color: white;
   padding: 0;
   margin: 0;
   margin-bottom: 10px;
   border-radius: 10px;
-  box-shadow: 5px 5px 20px rgb(200, 200, 200);
+  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
 }
 
 .tabela-usuarios {
@@ -389,13 +400,20 @@ export default {
   margin:0;
   padding: 0;
   margin-bottom: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
 }
 .col-tabela-usuarios{
   padding-top: 15px;
 }
 .divider-personalizado{
-  border-top: 1px solid rgb(200,200,200);
-  padding-top: 10px;
+  border-top: 1px solid rgb(200, 200, 200);
+  position: absolute;
+  bottom: 0;
+  margin-left:-100px;
+  width: 100%;
+  padding: 10px 100px 15px 100px;
+  background-color: white;
 }
 .material-icons{
   z-index: 0;

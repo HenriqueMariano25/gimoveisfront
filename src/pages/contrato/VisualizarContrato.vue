@@ -47,11 +47,11 @@
             striped
             hover
             outlined
-            sticky-header
+            sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
             no-border-collapse
             @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
           <template #cell(id)="row">
-            <p class="tr-contrato">{{("0000" + row.item.id).slice(-4) }}</p>
+            <p class="tr-contrato">{{ ("0000" + row.item.id).slice(-4) }}</p>
           </template>
           <template #cell(nome_cliente)="row">
             <p class="tr-contrato">{{ row.item.nome_cliente }}</p>
@@ -75,6 +75,15 @@
               <vs-button type="flat" color="dark" @click="deletarContratoModal(row.item)" icon="delete"></vs-button>
             </div>
           </template>
+          <template #table-colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col style="width: 15px">
+            <col style="width: 15px">
+          </template>
           <template #row-details="row">
             <b-card>
               <vs-button target :href="row.item.url" color="#5498ff" type="filled" icon="description">
@@ -85,42 +94,45 @@
         </b-table>
       </b-col>
     </b-row>
-    <b-row class="divider-personalizado">
-      <b-col class="" cols="auto">
-        <b-pagination
-            v-model="currentPage"
-            :total-rows="totalRows"
-            :per-page="perPage"
-            align="left"
-            class="my-0"
-            first-text="Primeira"
-            last-text="Última"
-        ></b-pagination>
-      </b-col>
-      <b-col sm="5" md="auto" class="">
-        <b-form-group
-            label="Por pagina"
-            label-for="per-page-select"
-            label-cols-sm="auto"
-            label-cols-md="auto"
-            label-cols-lg="auto"
-            label-align-sm="right"
-            label-size="sm"
-            align="left"
-        >
-          <b-form-select
-              id="per-page-select"
-              v-model="perPage"
-              :options="pageOptions"
-              size="sm"
-          ></b-form-select>
-        </b-form-group>
-      </b-col>
-      <b-col class="ml-auto" cols="auto">
-        <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal">Adicionar
-        </vs-button>
-      </b-col>
-    </b-row>
+    <b-container fluid class="divider-personalizado">
+      <b-row align-v="end">
+        <b-col class="" cols="auto">
+          <b-pagination
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="perPage"
+              align="left"
+              class="my-0"
+              first-text="Primeira"
+              last-text="Última"
+          ></b-pagination>
+        </b-col>
+        <b-col sm="5" md="auto" class="">
+          <b-form-group
+              label="Por pagina"
+              label-for="per-page-select"
+              label-cols-sm="auto"
+              label-cols-md="auto"
+              label-cols-lg="auto"
+              label-align-sm="right"
+              label-size="sm"
+              align="left"
+              class="mb-1"
+          >
+            <b-form-select
+                id="per-page-select"
+                v-model="perPage"
+                :options="pageOptions"
+                size="sm"
+            ></b-form-select>
+          </b-form-group>
+        </b-col>
+        <b-col class="ml-auto" cols="auto" style="margin-bottom: -5px">
+          <vs-button color="#24a35a" type="filled" icon="note_add" @click="mostrarModal">Adicionar
+          </vs-button>
+        </b-col>
+      </b-row>
+    </b-container>
     <!--  Fim da tabela-->
     <modal name="modal-contrato" width="60%" height="auto" :scrollable="true"
 
@@ -276,11 +288,11 @@
         <b-col cols="6" class="mr-auto">
           <b-form @submit.prevent="importarContrato" enctype="multipart/form-data" v-if="editar == true">
             <b-row>
-              <b-col >
-<!--                <b-form-file type="file" @change="onSelect" ref="file" class="mt-3 arquivo-pdf" plain accept=".pdf"></b-form-file>-->
+              <b-col>
+                <!--                <b-form-file type="file" @change="onSelect" ref="file" class="mt-3 arquivo-pdf" plain accept=".pdf"></b-form-file>-->
                 <b-form-file @change="importarPDF" type="file" ref="file" class="mt-3 arquivo-pdf" accept=".pdf"
-                    placeholder="Escolha um arquivo para importar"
-                    drop-placeholder="Solte o arquivo aqui!">
+                             placeholder="Escolha um arquivo para importar"
+                             drop-placeholder="Solte o arquivo aqui!">
                 </b-form-file>
               </b-col>
             </b-row>
@@ -372,8 +384,8 @@ export default {
         {key: 'nome_responsavel', label: 'Responsável', sortable: true, thClass: 'text-center'},
         {key: 'nome_imovel', label: 'Imóvel', sortable: true, thClass: 'text-center'},
         {key: 'status', label: 'Status', class: 'text-center'},
-        {key: 'editar', label: '', thClass: 'text-center'},
-        {key: 'deletar', label: '', thClass: 'text-center'},
+        {key: 'editar', label: ''},
+        {key: 'deletar', label: ''},
       ],
       fieldsBoletos: [
         {key: 'id', label: 'Código', sortable: true, class: 'text-center'},
@@ -424,7 +436,7 @@ export default {
       dayjs: dayjs,
       status_boleto: [],
       files: null,
-      btn_importa_desabilitado:true
+      btn_importa_desabilitado: true
     }
   },
 
@@ -759,12 +771,12 @@ export default {
 }
 
 .barra-top-contrato {
-  border: 1px solid rgb(220, 220, 220);
   padding: 0;
   margin: 0;
   margin-bottom: 10px;
+  background-color: white;
   border-radius: 10px;
-  box-shadow: 5px 5px 20px rgb(200, 200, 200);
+  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
 }
 
 .tabela-responsaveis {
@@ -772,6 +784,8 @@ export default {
   margin: 0;
   padding: 0;
   margin-bottom: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
 }
 
 .col-tabela-responsaveis {
@@ -780,7 +794,12 @@ export default {
 
 .divider-personalizado {
   border-top: 1px solid rgb(200, 200, 200);
-  padding-top: 10px;
+  position: absolute;
+  bottom: 0;
+  margin-left:-100px;
+  width: 100%;
+  padding: 10px 100px 15px 100px;
+  background-color: white;
 }
 
 .material-icons {
@@ -804,19 +823,22 @@ export default {
   justify-content: center;
 }
 
-.btn-importar-pdf{
-  margin-top:5px;
+.btn-importar-pdf {
+  margin-top: 5px;
 }
 
-.arquivo-pdf{
+.arquivo-pdf {
   margin-top: 10px !important;
 }
+
 .custom-file-input:lang(en) ~ .custom-file-label::after {
   content: 'Importar';
 }
+
 table#tabela-contrato .flip-list-move {
   transition: transform 0.4s;
 }
+
 table#tabela-boleto .flip-list-move {
   transition: transform 0.4s;
 }

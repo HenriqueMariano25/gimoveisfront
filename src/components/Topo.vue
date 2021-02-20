@@ -1,6 +1,6 @@
 <template>
-  <b-container fluid>
-    <b-row align-v="center" class="bg-light">
+  <b-container fluid >
+    <b-row align-v="center" class="topo" >
       <b-col class="text-center">
         <h1>Gimoveis</h1>
       </b-col>
@@ -53,6 +53,11 @@ export default {
 </script>
 
 <style scoped>
+.topo{
+  box-shadow: 0px 1px 5px rgba(200,200,200,0.6);
+  background-color: white;
+}
+
 .img-perfil {
   margin-top: 10px;
   margin-right: 10px;

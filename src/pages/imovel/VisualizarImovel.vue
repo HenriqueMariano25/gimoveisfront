@@ -46,8 +46,9 @@
           striped
           hover
           outlined
-          sticky-header
+          responsive
           no-border-collapse
+          sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
           @row-clicked="
             (item) => $set(item, '_showDetails', !item._showDetails)
           "
@@ -64,41 +65,33 @@
           <template #cell(status)="row">
             <p class="tr-imovel">{{ row.item.status }}</p>
           </template>
-          <template #cell(editar)="row">
-            <vs-button
-              type="flat"
-              color="dark"
-              @click="editarImovelModal(row.item)"
-              icon="edit"
-            ></vs-button>
+          <template #cell(editar)="row" >
+            <div class="item-coluna-centralizada">
+            <vs-button type="flat" color="dark" @click="editarImovelModal(row.item)" icon="edit"></vs-button>
+            </div>
           </template>
-          <template #cell(deletar)="row">
-            <vs-button
-              type="flat"
-              color="dark"
-              @click="deletarImovelModal(row.item)"
-              icon="delete"
-            ></vs-button>
+          <template #table-colgroup>
+            <col>
+            <col>
+            <col>
+            <col style="width: 15px">
+            <col style="width: 15px">
           </template>
-          <template #row-details="row">
+          <template #cell(deletar)="row" >
+            <div class="item-coluna-centralizada">
+              <vs-button type="flat" color="dark" @click="deletarImovelModal(row.item)" icon="delete"></vs-button>
+            </div>
+          </template>
+          <template #row-details>
             <b-card>
-              <p>
-                Rua: {{ row.item.rua }},{{ row.item.numero }} | Bairro:
-                {{ row.item.bairro }} | Cidade: {{ row.item.cidade }} | Estado:
-                {{ row.item.estado }}
-              </p>
-              <p>Complemento: {{ row.item.complemento }}</p>
-              <p>Identidade: {{ row.item.identidade }}</p>
-              <p>Data de Nascimento: {{ row.item.data_nascimento }}</p>
-              <p>Estado Civil: {{ row.item.estado_civil }}</p>
-              <p>Referência: {{ row.item.referencia }}</p>
+              <p>Detalhes do imóvel</p>
             </b-card>
           </template>
         </b-table>
       </b-col>
     </b-row>
-    <b-container class="divider-personalizados">
-      <b-row>
+    <b-container fluid class="divider-personalizado">
+      <b-row align-v="end" >
         <b-col class="" cols="auto">
           <b-pagination
             v-model="currentPage"
@@ -110,7 +103,7 @@
             last-text="Última"
           ></b-pagination>
         </b-col>
-        <b-col sm="5" md="auto" class="">
+        <b-col sm="5" md="auto">
           <b-form-group
             label="Por pagina"
             label-for="per-page-select"
@@ -120,6 +113,7 @@
             label-align-sm="right"
             label-size="sm"
             align="left"
+            class="mb-1"
           >
             <b-form-select
               id="per-page-select"
@@ -129,11 +123,11 @@
             ></b-form-select>
           </b-form-group>
         </b-col>
-        <b-col class="ml-auto" cols="auto">
+        <b-col class="ml-auto" cols="auto" style="margin-bottom: -5px">
           <vs-button
             color="#24a35a"
             type="filled"
-            icon="apartment"
+            icon="add_business"
             @click="mostrarModal"
             >Adicionar
           </vs-button>
@@ -601,19 +595,17 @@ export default {
   },
   data() {
     return {
-      larguraTela: `${window.innerWidth.toString()}px`,
-      alturaTela: `${window.innerHeight.toString()}px`,
       items: [],
       itemsContratoClientes: [],
       transProps: {
         name: "flip-list",
       },
       fields: [
-        { key: "nome", label: "Nome", sortable: true },
-        { key: "rua", label: "Rua", sortable: true },
-        { key: "status", label: "Status", sortable: true },
-        { key: "editar", label: "Editar" },
-        { key: "deletar", label: "Deletar" },
+        { key: "nome", label: "Nome", sortable: true, thClass: 'text-center' },
+        { key: "rua", label: "Rua", sortable: true, thClass: 'text-center' },
+        { key: "status", label: "Status", sortable: true, class: 'text-center' },
+        { key: "editar", label: "" },
+        { key: "deletar", label: "" },
       ],
       cabecalhosDespesas: [
         { key: "categoria", label: "Categoria", sortable: true },
@@ -905,6 +897,12 @@ export default {
 };
 </script>
 <style>
+
+html,
+body {
+  height: 100%;
+}
+
 .input-personalizado {
   width: 100%;
   margin-bottom: 10px;
@@ -938,6 +936,12 @@ export default {
   max-width: 100% !important;
 }
 
+.item-coluna-centralizada {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .con-select {
   width: 100%;
   margin-top: -6px;
@@ -960,12 +964,12 @@ export default {
 }
 
 .barra-top-imovel {
-  border: 1px solid rgb(220, 220, 220);
   padding: 0;
   margin: 0;
   margin-bottom: 10px;
+  background-color: white;
   border-radius: 10px;
-  box-shadow: 5px 5px 20px rgb(200, 200, 200);
+  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
 }
 
 .tabela-imoveis {
@@ -973,17 +977,22 @@ export default {
   margin: 0;
   padding: 0;
   margin-bottom: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
 }
 
 .col-tabela-imoveis {
   padding-top: 15px;
 }
 
-.divider-personalizados {
+.divider-personalizado {
   border-top: 1px solid rgb(200, 200, 200);
-  padding-top: 10px;
-  position: fixed;
-  bottom: 5px;
+  position: absolute;
+  bottom: 0;
+  margin-left:-100px;
+  width: 100%;
+  padding: 10px 100px 15px 100px;
+  background-color: white;
 }
 
 .material-icons {
@@ -1010,6 +1019,6 @@ export default {
 }
 
 table#tabela-imovel .flip-list-move {
-  transition: transform 0.4s;
+  transition: transform 0.3s;
 }
 </style>

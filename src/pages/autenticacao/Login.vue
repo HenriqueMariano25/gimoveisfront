@@ -1,7 +1,7 @@
 <template>
   <b-container fluid="sm">
     <div >
-      <img src="../../assets/jonathan-riley-VW8MUbHyxCU-unsplash.jpg" alt="" class="imagem-background">
+      <img src="../../assets/fundo-inicial.jpg" alt="" class="imagem-background">
     </div>
     <div class="login-base">
       <div class="titulo text-center">

@@ -64,6 +64,12 @@
           <template #cell(deletar)="row">
             <vs-button type="flat" color="dark" @click="deletarResponsavelModal(row.item)" icon="delete"></vs-button>
           </template>
+          <template #table-colgroup>
+            <col>
+            <col>
+            <col style="width: 15px">
+            <col style="width: 15px">
+          </template>
           <template #row-details="row">
             <b-card>
               <p>Rua: {{ row.item.rua }},{{ row.item.numero }} | Bairro: {{ row.item.bairro }} | Cidade:
@@ -82,42 +88,45 @@
         </b-table>
       </b-col>
     </b-row>
-    <b-row class="divider-personalizado">
-      <b-col class="" cols="auto">
-        <b-pagination
-            v-model="currentPage"
-            :total-rows="totalRows"
-            :per-page="perPage"
-            align="left"
-            class="my-0"
-            first-text="Primeira"
-            last-text="Última"
-        ></b-pagination>
-      </b-col>
-      <b-col sm="5" md="auto" class="">
-        <b-form-group
-            label="Por pagina"
-            label-for="per-page-select"
-            label-cols-sm="auto"
-            label-cols-md="auto"
-            label-cols-lg="auto"
-            label-align-sm="right"
-            label-size="sm"
-            align="left"
-        >
-          <b-form-select
-              id="per-page-select"
-              v-model="perPage"
-              :options="pageOptions"
-              size="sm"
-          ></b-form-select>
-        </b-form-group>
-      </b-col>
-      <b-col class="ml-auto" cols="auto">
-        <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal">Adicionar
-        </vs-button>
-      </b-col>
-    </b-row>
+    <b-container fluid class="divider-personalizado">
+      <b-row align-v="end">
+        <b-col class="" cols="auto">
+          <b-pagination
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="perPage"
+              align="left"
+              class="my-0"
+              first-text="Primeira"
+              last-text="Última"
+          ></b-pagination>
+        </b-col>
+        <b-col sm="5" md="auto" class="">
+          <b-form-group
+              label="Por pagina"
+              label-for="per-page-select"
+              label-cols-sm="auto"
+              label-cols-md="auto"
+              label-cols-lg="auto"
+              label-align-sm="right"
+              label-size="sm"
+              align="left"
+              class="mb-1"
+          >
+            <b-form-select
+                id="per-page-select"
+                v-model="perPage"
+                :options="pageOptions"
+                size="sm"
+            ></b-form-select>
+          </b-form-group>
+        </b-col>
+        <b-col class="ml-auto" cols="auto" style="margin-bottom: -5px">
+          <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal">Adicionar
+          </vs-button>
+        </b-col>
+      </b-row>
+    </b-container>
     <!--  Fim da tabela-->
     <modal name="modal-responsavel" width="60%" height="auto" :scrollable="true" :click-to-close="false"
            class="modal-adicionando-responsavel">
@@ -145,7 +154,8 @@
         </b-col>
         <b-col cols="4">
           <vs-input onKeyDown="if(this.value.length==15 && event.keyCode!=8) return false;" type="text"
-                    v-mask="['###.###.###-##', '##.###.###/####-##']" label-placeholder="CPF ou CNPJ*" v-model="responsavel.cpf_cnpj" class="input-personalizado"/>
+                    v-mask="['###.###.###-##', '##.###.###/####-##']" label-placeholder="CPF ou CNPJ*"
+                    v-model="responsavel.cpf_cnpj" class="input-personalizado"/>
         </b-col>
         <b-col cols="4">
           <vs-input onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" type="number"
@@ -203,12 +213,12 @@
 <script>
 
 import api from '../../services/api'
-import { atribuirCep } from '../../methods/global'
+import {atribuirCep} from '../../methods/global'
 import Carregando from "../../components/shared/Carregando"
 
 export default {
   name: "VisualizarResponsavel",
-  components:{
+  components: {
     Carregando
   },
   data() {
@@ -218,10 +228,10 @@ export default {
       },
       items: [],
       fields: [
-        {key: 'nome', label: 'Nome', sortable: true},
-        {key: 'cpf_cnpj', label: 'CPF ou CNPJ', sortable: true,},
-        {key: 'editar', label: 'Editar'},
-        {key: 'deletar', label: 'Deletar'},
+        {key: 'nome', label: 'Nome', sortable: true, thClass: 'text-center'},
+        {key: 'cpf_cnpj', label: 'CPF ou CNPJ', sortable: true, thClass: 'text-center'},
+        {key: 'editar', label: ''},
+        {key: 'deletar', label: ''},
       ],
       totalRows: 1,
       currentPage: 1,
@@ -248,7 +258,7 @@ export default {
       },
       editar: false,
       estadosCivis: [],
-      carregandoCep:false
+      carregandoCep: false
     }
   },
 
@@ -410,7 +420,7 @@ export default {
   },
   watch: {
     'responsavel.cep': function (cep) {
-      if(atribuirCep(cep)){
+      if (atribuirCep(cep)) {
         if (cep.length == 9) {
           this.carregandoCep = true
         }
@@ -484,12 +494,12 @@ export default {
 }
 
 .barra-top-responsavel {
-  border: 1px solid rgb(220, 220, 220);
   padding: 0;
   margin: 0;
   margin-bottom: 10px;
+  background-color: white;
   border-radius: 10px;
-  box-shadow: 5px 5px 20px rgb(200, 200, 200);
+  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
 }
 
 .tabela-responsaveis {
@@ -497,6 +507,8 @@ export default {
   margin: 0;
   padding: 0;
   margin-bottom: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
 }
 
 .col-tabela-responsaveis {
@@ -505,7 +517,12 @@ export default {
 
 .divider-personalizado {
   border-top: 1px solid rgb(200, 200, 200);
-  padding-top: 10px;
+  position: absolute;
+  bottom: 0;
+  margin-left: -100px;
+  width: 100%;
+  padding: 10px 100px 15px 100px;
+  background-color: white;
 }
 
 .material-icons {

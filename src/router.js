@@ -30,7 +30,7 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
     const token = store.state.token
 
-    if (to.name !== 'Login' && !token) next({name: 'Login'})
+    if (to.name !== 'Login' && !token && to.name !== 'Testes') next({name: 'Login'})
     else next()
 })
 
