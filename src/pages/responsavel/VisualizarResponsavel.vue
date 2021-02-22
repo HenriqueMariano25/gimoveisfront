@@ -72,17 +72,23 @@
           </template>
           <template #row-details="row">
             <b-card>
-              <p>Rua: {{ row.item.rua }},{{ row.item.numero }} | Bairro: {{ row.item.bairro }} | Cidade:
-                {{ row.item.cidade }} |
-                Estado: {{ row.item.estado }}</p>
-              <p>Complemento: {{ row.item.complemento }}</p>
-              <p>Identidade: {{ row.item.identidade }}</p>
-              <p>Data de Nascimento: {{ row.item.data_nascimento }}</p>
-              <p>Estado Civil: {{ row.item.estado_civil }}</p>
-              <p>Referência: {{ row.item.referencia }}</p>
-              <vs-button color="#5498ff" type="filled" icon="work" @click="mostrarModalContratos(row.item)">Contratos
-              </vs-button>
-              button
+              <b-row>
+                <b-col cols="auto">
+                  <p><b>Rua:</b> {{ row.item.rua }},{{ row.item.numero }}</p>
+                </b-col>
+                <b-col cols="auto">
+                  <p><b>Bairro: </b>{{ row.item.bairro }}</p>
+                </b-col>
+                <b-col cols="auto">
+                  <p><b>Cidade: </b>{{ row.item.cidade }}</p>
+                </b-col>
+                <b-col cols="auto">
+                  <p><b>Estado: </b>{{ row.item.estado }}</p>
+                </b-col>
+                <b-col>
+                  <p><b>Complemento: </b>{{ row.item.complemento }}</p>
+                </b-col>
+              </b-row>
             </b-card>
           </template>
         </b-table>
@@ -193,15 +199,15 @@
       <b-row align-h="end">
         <b-col cols="2">
           <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="save" class="botao-salvar"
-                     @click="editarResponsavel">Salvar
+                     @click.native="editarResponsavel">Salvar
           </vs-button>
           <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar"
-                     @click="cadastrarResponsavel">
+                     @click.native="cadastrarResponsavel">
             Salvar
           </vs-button>
         </b-col>
         <b-col cols="2">
-          <vs-button color="#707070" type="filled" icon="clear" class="botao-salvar" @click="esconderModal">
+          <vs-button color="#707070" type="filled" icon="clear" class="botao-salvar" @click.native="esconderModal">
             Cancelar
           </vs-button>
         </b-col>
