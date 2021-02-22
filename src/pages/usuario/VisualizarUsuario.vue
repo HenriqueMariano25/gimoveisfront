@@ -55,11 +55,11 @@
           <template #cell(email)="row">
             <p class="tr-usuario">{{ row.item.email }}</p>
           </template>
-          <template #cell(cpf_cnpj)="row">
-            <p class="tr-usuario">{{ row.item.cpf_cnpj }}</p>
+          <template #cell(usuario)="row">
+            <p class="tr-usuario">{{ row.item.usuario }}</p>
           </template>
-          <template #cell(status)="row">
-            <p class="tr-usuario">{{ row.item.status }}</p>
+          <template #cell(permissao)="row">
+            <p class="tr-usuario">{{ row.item.permissao }}</p>
           </template>
           <template #cell(editar)="row">
             <vs-button type="flat" color="dark" @click="editarUsuarioModal(row.item.id)" icon="edit"></vs-button>
@@ -75,55 +75,47 @@
             <col style="width: 15px">
             <col style="width: 15px">
           </template>
-          <template #row-details="row">
-            <b-card>
-              <p>Nome: {{ row.item.nome }}</p>
-              <p>Usuário: {{ row.item.usuario }}</p>
-              <p>Email: {{ row.item.email }}</p>
-              <p>Permissão: {{ row.item.permissao }}</p>
-            </b-card>
-          </template>
         </b-table>
       </b-col>
     </b-row>
     <b-container fluid class="divider-personalizado">
-      <b-row align-v="end" >
-      <b-col class="" cols="auto">
-        <b-pagination
-            v-model="currentPage"
-            :total-rows="totalRows"
-            :per-page="perPage"
-            align="left"
-            class="my-0"
-            first-text="Primeira"
-            last-text="Última"
-        ></b-pagination>
-      </b-col>
-      <b-col sm="5" md="auto" class="">
-        <b-form-group
-            label="Por pagina"
-            label-for="per-page-select"
-            label-cols-sm="auto"
-            label-cols-md="auto"
-            label-cols-lg="auto"
-            label-align-sm="right"
-            label-size="sm"
-            align="left"
-            class="mb-1"
-        >
-          <b-form-select
-              id="per-page-select"
-              v-model="perPage"
-              :options="pageOptions"
-              size="sm"
-          ></b-form-select>
-        </b-form-group>
-      </b-col>
-      <b-col class="ml-auto" cols="auto" style="margin-bottom: -5px">
-        <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal">Adicionar
-        </vs-button>
-      </b-col>
-    </b-row>
+      <b-row align-v="end">
+        <b-col class="" cols="auto">
+          <b-pagination
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="perPage"
+              align="left"
+              class="my-0"
+              first-text="Primeira"
+              last-text="Última"
+          ></b-pagination>
+        </b-col>
+        <b-col sm="5" md="auto" class="">
+          <b-form-group
+              label="Por pagina"
+              label-for="per-page-select"
+              label-cols-sm="auto"
+              label-cols-md="auto"
+              label-cols-lg="auto"
+              label-align-sm="right"
+              label-size="sm"
+              align="left"
+              class="mb-1"
+          >
+            <b-form-select
+                id="per-page-select"
+                v-model="perPage"
+                :options="pageOptions"
+                size="sm"
+            ></b-form-select>
+          </b-form-group>
+        </b-col>
+        <b-col class="ml-auto" cols="auto" style="margin-bottom: -5px">
+          <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal">Adicionar
+          </vs-button>
+        </b-col>
+      </b-row>
     </b-container>
     <!--  Fim da tabela-->
     <modal name="usuario-modal" width="60%" height="auto" :scrollable="true" :click-to-close="false">
@@ -191,7 +183,7 @@ export default {
         {key: 'nome', label: 'Nome do Operador', sortable: true, thClass: 'text-center'},
         {key: 'email', label: 'Email', sortable: true, thClass: 'text-center'},
         {key: 'usuario', label: 'Usuário', sortable: true, thClass: 'text-center'},
-        {key: 'permissao', label: 'Nivel de permissão', class: 'text-center'},
+        {key: 'permissao', label: 'Nivel de permissão', sortable: true, class: 'text-center'},
         {key: 'editar', label: ''},
         {key: 'deletar', label: ''},
       ],
@@ -206,11 +198,11 @@ export default {
       filterOn: [],
       usuario: {
         nome: "",
-        usuario:"",
+        usuario: "",
         email: "",
-        permissao:null,
-        senha:"",
-        },
+        permissao: null,
+        senha: "",
+      },
       tiposPermissoes: [],
       editar: false
     }
@@ -243,7 +235,7 @@ export default {
         this.buscarUsuarios()
       })
     },
-    deletarUsuarioModal(usuario){
+    deletarUsuarioModal(usuario) {
       this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar o usuário: ${usuario.nome} ?`, {
         title: 'Deletar usuário',
         buttonSize: 'sm',
@@ -252,8 +244,8 @@ export default {
         okVariant: 'danger',
         footerClass: 'p-2',
         centered: true
-      }).then(value =>{
-        if(value){
+      }).then(value => {
+        if (value) {
           this.deletarUsuario(usuario)
         }
       })
@@ -299,7 +291,7 @@ export default {
       this.usuario.permissao = null
     },
     async cadastrarUsuario() {
-      if(this.validarCamposObrigatorio()) {
+      if (this.validarCamposObrigatorio()) {
         await api.post('/usuario/cadastrar', {data: this.usuario}).then(response => {
           let nomeUsuario = response.data[0].nome
           this.esconderModal()
@@ -376,7 +368,7 @@ export default {
 }
 
 .vm--modal {
-  margin-top:-20px !important;
+  margin-top: -20px !important;
   bottom: 25px;
   padding: 25px;
 }
@@ -392,41 +384,47 @@ export default {
   margin: 0;
   margin-bottom: 10px;
   border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
+  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
 }
 
 .tabela-usuarios {
   background-color: white;
-  margin:0;
+  margin: 0;
   padding: 0;
   margin-bottom: 10px;
   border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
+  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
 }
-.col-tabela-usuarios{
+
+.col-tabela-usuarios {
   padding-top: 15px;
 }
-.divider-personalizado{
+
+.divider-personalizado {
   border-top: 1px solid rgb(200, 200, 200);
   position: absolute;
   bottom: 0;
-  margin-left:-100px;
+  margin-left: -100px;
   width: 100%;
   padding: 10px 100px 15px 100px;
   background-color: white;
 }
-.material-icons{
+
+.material-icons {
   z-index: 0;
 }
-#select-permissao__BV_label_{
-  margin:0;
-  padding:0;
-  color:rgb(110,110,110);
+
+#select-permissao__BV_label_ {
+  margin: 0;
+  padding: 0;
+  color: rgb(110, 110, 110);
   font-size: 12px;
 }
-#select-permissao{
+
+#select-permissao {
   margin-bottom: 10px;
 }
+
 table#tabela-usuario .flip-list-move {
   transition: transform 0.4s;
 }
