@@ -63,7 +63,8 @@
             <p class="tr-contrato">{{ row.item.nome_imovel }}</p>
           </template>
           <template #cell(status)="row">
-            <p class="tr-contrato">{{ row.item.status }}</p>
+            <p v-if="!row.item.nome_pdf" class="tr-contrato" style="color:red"><b>Falta PDF</b></p>
+            <p v-else class="tr-contrato">{{ row.item.status }}</p>
           </template>
           <template #cell(editar)="row">
             <div class="item-coluna-centralizada">
@@ -86,9 +87,10 @@
           </template>
           <template #row-details="row">
             <b-card>
-              <vs-button target :href="row.item.url" color="#5498ff" type="filled" icon="description">
+              <vs-button v-if="row.item.url" target :href="row.item.url" color="#5498ff" type="filled" icon="description">
                 Contrato
               </vs-button>
+              <label v-else><b>Pendência de contrato importado no sistema.</b></label>
             </b-card>
           </template>
         </b-table>
@@ -214,6 +216,20 @@
               </b-form-group>
             </b-col>
           </b-row>
+        </b-tab>
+        <b-tab title="Inf. adicionais">
+          <b-row>
+            <b-col>
+              <b-form-file @change="importarPDF" type="file" ref="file" class="mt-3 arquivo-pdf" accept=".pdf"
+                           placeholder="Escolha um arquivo para importar"
+                           drop-placeholder="Solte o arquivo aqui!">
+              </b-form-file>
+            </b-col>
+            <b-col>
+              <p v-if="contrato.nome_pdf" style="color:green" class="p-contrato"><b>Contrato importado</b></p>
+              <p v-else style="color:red" class="p-contrato"><b>Contrato não importado</b></p>
+            </b-col>
+          </b-row>
           <b-row>
             <b-col>
               <b-form-group
@@ -229,7 +245,7 @@
             </b-col>
           </b-row>
         </b-tab>
-        <b-tab title="Boletos">
+        <b-tab title="Boletos" :disabled="!editar">
           <b-row>
             <b-col>
               <b-table
@@ -254,7 +270,7 @@
                   striped
                   hover
                   outlined
-                  sticky-header
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
                   no-border-collapse
                   @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
                 <template #cell(data_vencimento)="row">
@@ -279,36 +295,31 @@
                     <vs-button type="flat" color="dark" @click="editarBoletoModal(row.item)" icon="edit"></vs-button>
                   </div>
                 </template>
+                <template #table-colgroup>
+                  <col>
+                  <col>
+                  <col>
+                  <col>
+                  <col>
+                  <col style="width: 15px">
+                </template>
               </b-table>
             </b-col>
           </b-row>
         </b-tab>
       </b-tabs>
-      <b-row>
-        <b-col cols="6" class="mr-auto">
-          <b-form @submit.prevent="importarContrato" enctype="multipart/form-data" v-if="editar == true">
-            <b-row>
-              <b-col>
-                <!--                <b-form-file type="file" @change="onSelect" ref="file" class="mt-3 arquivo-pdf" plain accept=".pdf"></b-form-file>-->
-                <b-form-file @change="importarPDF" type="file" ref="file" class="mt-3 arquivo-pdf" accept=".pdf"
-                             placeholder="Escolha um arquivo para importar"
-                             drop-placeholder="Solte o arquivo aqui!">
-                </b-form-file>
-              </b-col>
-            </b-row>
-          </b-form>
-        </b-col>
+      <b-row align-h="end">
         <b-col cols="auto">
           <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="save" class="botao-salvar"
-                     @click="editarContrato">Salvar
+                     @click.native="editarContrato">Salvar
           </vs-button>
           <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar"
-                     @click="cadastrarContrato">
+                     @click.native="cadastrarContrato">
             Salvar
           </vs-button>
         </b-col>
         <b-col cols="auto">
-          <vs-button color="#707070" type="filled" icon="clear" class="botao-salvar" @click="esconderModal">
+          <vs-button color="#707070" type="filled" icon="clear" class="botao-salvar" @click.native="esconderModal">
             Cancelar
           </vs-button>
         </b-col>
@@ -414,10 +425,11 @@ export default {
         vigencia: "",
         data_vencimento: "",
         valor_boleto: "",
-        carenica: "",
+        carencia: "",
         garantia: "",
         fiador: "",
-        locador: ""
+        locador: "",
+        nome_pdf:""
       },
       boletos: [],
       boleto: {
@@ -576,8 +588,6 @@ export default {
     },
     esconderModalEditarBoleto() {
       this.$modal.hide('modal-editar-boleto');
-      this.limparModal()
-      this.editar = false
     },
     limparModalEditarBoleto() {
       Object.keys(this.boleto).forEach(key => {
@@ -593,8 +603,10 @@ export default {
       }
       api.post(`/contrato/${this.contrato.id}/importar/pdf`, formData, {}).then((res) => {
         console.log(res)
+        this.contrato.nome_pdf = res.data[0].nome
+        this.buscarContratos()
         this.$vs.notify({
-          text: `PDF importado com sucesso!`,
+          text: `Contrato importado com sucesso!`,
           position: 'top-center',
           color: 'success',
           time: 4000,
@@ -602,24 +614,6 @@ export default {
         })
       })
     },
-
-    // async importarContrato() {
-    //   const formData = new FormData();
-    //   for (const i of Object.keys(this.files)) {
-    //     formData.append('files', this.files[i])
-    //   }
-    //   api.post(`/contrato/${this.contrato.id}/importar/pdf`, formData, {}).then((res) => {
-    //     console.log(res)
-    //     this.$vs.notify({
-    //       text: `PDF importado com sucesso!`,
-    //       position: 'top-center',
-    //       color: 'success',
-    //       time: 4000,
-    //       icon: 'check_circle_outline'
-    //     })
-    //   })
-    // },
-
     async cadastrarContrato() {
       if (this.validarCamposObrigatorio()) {
         if (this.validarDataInicioFim()) {
@@ -833,6 +827,10 @@ export default {
 
 .custom-file-input:lang(en) ~ .custom-file-label::after {
   content: 'Importar';
+}
+
+.p-contrato{
+  margin-top:15px;
 }
 
 table#tabela-contrato .flip-list-move {
