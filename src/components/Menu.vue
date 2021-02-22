@@ -24,14 +24,6 @@
           </router-link>
         </li>
         <li class="has-subnav">
-          <router-link to="/visualizar/usuario">
-            <b-icon icon="person-badge" class="icone-bootstrap-menu"></b-icon>
-            <span class="nav-text">
-                  Usuários
-                </span>
-          </router-link>
-        </li>
-        <li class="has-subnav">
           <router-link to="/visualizar/imovel">
             <b-icon icon="house-fill" class="icone-bootstrap-menu"></b-icon>
             <span class="nav-text">
@@ -53,6 +45,14 @@
             <b-icon icon="briefcase-fill" class="icone-bootstrap-menu"></b-icon>
             <span class="nav-text">
                   Contratos
+                </span>
+          </router-link>
+        </li>
+        <li class="has-subnav">
+          <router-link to="/visualizar/usuario">
+            <b-icon icon="person-badge" class="icone-bootstrap-menu"></b-icon>
+            <span class="nav-text">
+                  Usuários
                 </span>
           </router-link>
         </li>

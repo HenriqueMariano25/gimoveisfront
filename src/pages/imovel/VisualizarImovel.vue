@@ -228,6 +228,7 @@
                 onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;"
                 label-placeholder="CEP*"
                 v-model="imovel.cep"
+                v-mask="'#####-###'"
                 class="input-personalizado"
               />
             </b-col>
@@ -343,18 +344,18 @@
           <b-row>
             <b-col>
               <vs-input
-                type="number"
-                label-placeholder="N° cliente luz"
-                v-model="imovel.numero_cliente_luz"
-                class="input-personalizado"
+                  type="text"
+                  label-placeholder="N° cliente luz"
+                  v-model="imovel.numero_cliente_luz"
+                  class="input-personalizado"
               />
             </b-col>
             <b-col>
               <vs-input
-                type="number"
-                label-placeholder="N° cliente água"
-                v-model="imovel.numero_cliente_agua"
-                class="input-personalizado"
+                  type="text"
+                  label-placeholder="N° cliente água"
+                  v-model="imovel.numero_cliente_agua"
+                  class="input-personalizado"
               />
             </b-col>
           </b-row>
@@ -376,14 +377,7 @@
             <b-col cols="6" v-for="(comodo, index) in comodos" :key="index">
               <b-row>
                 <b-col cols="5">
-                  <vs-input
-                    label-placeholder="Quantidade"
-                    v-model="comodo.quantidade"
-                    class="input-personalizado"
-                  />
-                </b-col>
-                <b-col cols="5">
-                  <b-form-group id="select-comodo" label="Status">
+                  <b-form-group id="select-comodo" label="Tipo do comôdo">
                     <b-form-select
                       v-model="comodo.tipo"
                       :options="tiposComodos"
@@ -392,19 +386,27 @@
                     >
                       <template #first>
                         <b-form-select-option :value="null"
-                          >Selecione</b-form-select-option
+                        >Selecione</b-form-select-option
                         >
                       </template>
                     </b-form-select>
                   </b-form-group>
                 </b-col>
+                <b-col cols="5">
+                  <vs-input
+                      label-placeholder="Quantidade"
+                      type="number"
+                      v-model="comodo.quantidade"
+                      class="input-personalizado"
+                  />
+                </b-col>
                 <b-col cols="2" class="text-center botao-deletar-comodo">
                   <vs-button
-                    type="flat"
-                    icon="delete"
-                    color="dark"
-                    class="botao-salvar"
-                    @click="removerComodo(index)"
+                      type="flat"
+                      icon="delete"
+                      color="dark"
+                      class=""
+                      @click.native="removerComodo(index)"
                   />
                 </b-col>
               </b-row>
@@ -427,29 +429,29 @@
           <b-row>
             <b-col class="col-tabela-imoveis">
               <b-table
-                primary-key="nome"
-                id="tabela-imovel"
-                :tbody-transition-props="transProps"
-                bordered
-                head-variant="dark"
-                sort-icon-left
-                :items="itemsContratoClientes"
-                :fields="cabecalhosDespesas"
-                :current-page="currentPage"
-                :per-page="perPage"
-                :filter="filter"
-                :filter-included-fields="filterOn"
-                :sort-by.sync="sortBy"
-                :sort-desc.sync="sortDesc"
-                :sort-direction="sortDirection"
-                show-empty
-                small
-                @filtered="onFiltered"
-                striped
-                hover
-                outlined
-                no-border-collapse
-                @row-clicked="(item) => $set(item, '_showDetails', !item._showDetails)"
+                  primary-key="nome"
+                  id="tabela-imovel"
+                  :tbody-transition-props="transProps"
+                  bordered
+                  head-variant="dark"
+                  sort-icon-left
+                  :items="itemsContratoClientes"
+                  :fields="cabecalhosDespesas"
+                  :current-page="currentPage"
+                  :per-page="perPage"
+                  :filter="filter"
+                  :filter-included-fields="filterOn"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+                  show-empty
+                  small
+                  @filtered="onFiltered"
+                  striped
+                  hover
+                  outlined
+                  no-border-collapse
+                  @row-clicked="(item) => $set(item, '_showDetails', !item._showDetails)"
               >
               </b-table>
             </b-col>
@@ -507,7 +509,7 @@
           </b-row>
           <b-row>
             <b-col>
-              <p class="p-contratos">Parcelas do contrato:</p>
+              <p class="p-contratos">Boletos do contrato:</p>
             </b-col>
           </b-row>
           <b-row>
@@ -520,7 +522,7 @@
                 head-variant="dark"
                 sort-icon-left
                 :items="itemsContratoClientes"
-                :fields="cabecalhosContratosParcelas"
+                :fields="cabecalhosContratosBoletos"
                 :current-page="currentPage"
                 :per-page="perPage"
                 :filter="filter"
@@ -548,13 +550,14 @@
         <b-row align-h="end">
           <b-col cols="2">
             <vs-button
-              v-if="editar == true"
-              color="#24a35a"
-              type="filled"
-              icon="save"
-              class="botao-salvar"
-              @click="editarImovel"
-              >Salvar
+                v-if="editar == true"
+                color="#24a35a"
+                type="filled"
+                icon="save"
+                class="botao-salvar"
+                @click.native="editarImovel"
+            >
+              Salvar
             </vs-button>
             <vs-button
               v-else
@@ -562,7 +565,7 @@
               type="filled"
               icon="save"
               class="botao-salvar"
-              @click="cadastrarImovel"
+              @click.native="cadastrarImovel"
             >
               Salvar
             </vs-button>
@@ -573,7 +576,7 @@
               type="filled"
               icon="clear"
               class="botao-salvar"
-              @click="esconderModal"
+              @click.native="esconderModal"
             >
               Cancelar
             </vs-button>
@@ -587,6 +590,7 @@
 <script>
 import api from "../../services/api";
 import Carregando from "../../components/shared/Carregando";
+import {atribuirCep} from "../../methods/global";
 
 export default {
   name: "VisualizarImovel",
@@ -623,7 +627,7 @@ export default {
         { key: "vencimento", label: "Vencimento" },
         { key: "status", label: "Status" },
       ],
-      cabecalhosContratosParcelas: [
+      cabecalhosContratosBoletos: [
         { key: "valor", label: "Valor", sortable: true },
         { key: "vencimento", label: "Vencimento" },
         { key: "status", label: "Status" },
@@ -686,15 +690,12 @@ export default {
       });
     },
     async buscarImoveis() {
-      await api
-        .get("/imoveis")
-        .then((response) => {
-          this.items = response.data;
-          this.totalRows = this.items.length;
-        })
-        .catch((erro) => {
-          console.log(erro);
-        });
+      await api.get("/imoveis").then((response) => {
+        this.items = response.data;
+        this.totalRows = this.items.length;
+      }).catch((erro) => {
+        console.log(erro);
+      });
     },
     async buscarTiposComodos() {
       await api.get("/imoveis/tipo_comodo").then((response) => {
@@ -711,8 +712,7 @@ export default {
       });
     },
     deletarImovelModal(imovel) {
-      this.$bvModal
-        .msgBoxConfirm(
+      this.$bvModal.msgBoxConfirm(
           `Tem certeza que deseja deletar o imóvel: ${imovel.nome} ?`,
           {
             title: "Deletar imóvel",
@@ -723,57 +723,45 @@ export default {
             footerClass: "p-2",
             centered: true,
           }
-        )
-        .then((value) => {
-          if (value) {
-            this.deletarImovel(imovel);
-          }
-        });
+      ).then((value) => {
+        if (value) {
+          this.deletarImovel(imovel);
+        }
+      });
     },
 
     async editarImovelModal(imovel) {
-      await api
-        .get(`/imovel/`, { params: { id: imovel.id } })
-        .then((response) => {
-          this.comodos = [];
-          this.imovel = response.data[0];
-          for (let x = 0; x < this.imovel.quantidade.length; x++) {
-            let quantidade = this.imovel.quantidade[x];
-            let tipo = this.imovel.tipo_comodo[x];
-            let id = this.imovel.id_comodo[x];
-            this.comodos.push({ id: id, quantidade: quantidade, tipo: tipo });
-          }
-
-          this.editar = true;
-          this.mostrarModal();
-        });
+      await api.get(`/imovel/`, { params: { id: imovel.id } }).then((response) => {
+        this.comodos = [];
+        this.imovel = response.data[0];
+        for (let x = 0; x < this.imovel.quantidade.length; x++) {
+          let quantidade = this.imovel.quantidade[x];
+          let tipo = this.imovel.tipo_comodo[x];
+          let id = this.imovel.id_comodo[x];
+          this.comodos.push({ id: id, quantidade: quantidade, tipo: tipo });
+        }
+        this.editar = true;
+        this.mostrarModal();
+      });
     },
     async editarImovel() {
       if (this.validarCamposObrigatorio()) {
-        // let variaveisString = ['data_nascimento', 'identidade', 'status', 'estado_civil']
-        // for (let key in variaveisString) {
-        //   if (this.cliente[variaveisString[key]] == "") {
-        //     this.cliente[variaveisString[key]] = null
-        //   }
-        // }
-        await api
-          .post(`/imovel/editar/${this.imovel.id}`, {
-            data: this.imovel,
-            comodos: this.comodos,
-          })
-          .then((response) => {
-            let nomeImovel = response.data[0].nome;
-            this.$vs.notify({
-              text: `Imóvel editado com sucesso: ${nomeImovel} !`,
-              position: "top-center",
-              color: "warning",
-              time: 6000,
-              icon: "check_circle_outline",
-            });
-            this.buscarImoveis();
-            this.limparModal();
-            this.esconderModal();
+        await api.post(`/imovel/editar/${this.imovel.id}`, {
+          data: this.imovel,
+          comodos: this.comodos,
+        }).then((response) => {
+          let nomeImovel = response.data[0].nome;
+          this.$vs.notify({
+            text: `Imóvel editado com sucesso: ${nomeImovel} !`,
+            position: "top-center",
+            color: "warning",
+            time: 6000,
+            icon: "check_circle_outline",
           });
+          this.buscarImoveis();
+          this.limparModal();
+          this.esconderModal();
+        });
       }
     },
 
@@ -802,57 +790,50 @@ export default {
         //     this.cliente[variaveisString[key]] = null
         //   }
         // }
-        await api
-          .post("/imovel/cadastrar", {
-            data: this.imovel,
-            comodos: this.comodos,
-          })
-          .then((response) => {
-            let nomeImovel = response.data[0].nome;
-            this.esconderModal();
-            this.$vs.notify({
-              text: `Imóvel cadastrado com sucesso: ${nomeImovel} !`,
-              position: "top-center",
-              color: "success",
-              time: 6000,
-              icon: "check_circle_outline",
-            });
-            this.buscarImoveis();
-            this.limparModal();
+        await api.post("/imovel/cadastrar", {
+          data: this.imovel,
+          comodos: this.comodos,
+        }).then((response) => {
+          let nomeImovel = response.data[0].nome;
+          this.esconderModal();
+          this.$vs.notify({
+            text: `Imóvel cadastrado com sucesso: ${nomeImovel} !`,
+            position: "top-center",
+            color: "success",
+            time: 6000,
+            icon: "check_circle_outline",
           });
+          this.buscarImoveis();
+          this.limparModal();
+        });
       }
     },
     validarCamposObrigatorio() {
       if (
-        this.imovel["nome"] == "" ||
-        this.imovel["email"] == "" ||
-        this.imovel["rua"] == "" ||
-        this.imovel["cidade"] == "" ||
-        this.imovel["bairro"] == "" ||
-        this.imovel["estado"] == "" ||
-        this.imovel["cpf_cnpj"] == "" ||
-        this.imovel["numero"] == "" ||
-        this.imovel["cep"] == ""
-      ) {
-        // this.$vs.notify({
-        //   text: `Campos obrigatorios vazio.`,
-        //   position: 'top-center',
-        //   color: 'danger',
-        //   time: 4000,
-        //   icon: 'check_circle_outline'
-        // })
-        return true;
+          this.imovel["nome"] == "" ||
+          this.imovel["proprietario"] == "" ||
+          this.imovel["rua"] == "" ||
+          this.imovel["cidade"] == "" ||
+          this.imovel["bairro"] == "" ||
+          this.imovel["estado"] == "" ||
+          this.imovel["cpf_cnpj"] == "" ||
+          this.imovel["numero"] == "" ||
+          this.imovel["cep"] == "" ||
+          this.imovel["tipo_imovel"] == ""
+      ){
+        this.$vs.notify({
+          text: `Campos obrigatorios vazio.`,
+          position: 'top-center',
+          color: 'danger',
+          time: 4000,
+          icon: 'check_circle_outline'
+        })
+        return false;
       } else {
         return true;
       }
     },
     atribuirCep(dados) {
-      // this.imovel.bairro = ""
-      // this.imovel.cidade = ""
-      // this.imovel.uf = ""
-      // this.imovel.complemento = ""
-      // this.imovel.rua = ""
-      // this.imovel.numero = ""
       if (dados.bairro != "") {
         this.imovel["bairro"] = dados.bairro;
       }
@@ -876,17 +857,46 @@ export default {
       });
     },
     removerComodo(index) {
-      this.comodos.splice(index, 1);
+      let comodo = this.comodos[index]
+      if (comodo.id) {
+        this.$bvModal.msgBoxConfirm(`Tem certeza que deseja remover esse cômodo ?`, {
+          title: 'Remover cômodo',
+          buttonSize: 'sm',
+          okTitle: 'Remover',
+          cancelTitle: 'Cancelar',
+          okVariant: 'danger',
+          footerClass: 'p-2',
+          centered: true
+        }).then(value => {
+          if (value) {
+            api.post('/imoveis/deletar/comodo', {idComodo: comodo.id}).then(() => {
+              if (this.comodos.length > 1) {
+                this.comodos.splice(index, 1)
+              } else {
+                this.comodos = [{ id: "", quantidade: 0, tipo: null }]
+              }
+            })
+          }
+        })
+      } else {
+        if (this.comodos.length > 1) {
+          this.comodos.splice(index, 1)
+        } else {
+          this.comodos = [{ id: "", quantidade: 0, tipo: null }]
+        }
+      }
     },
   },
   watch: {
     "imovel.cep": function(cep) {
-      if (cep.length == 8) {
-        this.carregandoCep = true
-        api.get(`/cliente/consultar_cep/${cep}`).then((response) => {
+      if (atribuirCep(cep)) {
+        if (cep.length == 9) {
+          this.carregandoCep = true
+        }
+        atribuirCep(cep).then(response => {
           this.carregandoCep = false
-          this.atribuirCep(response.data);
-        });
+          this.atribuirCep(response)
+        })
       }
     },
   },
@@ -970,6 +980,10 @@ body {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
+}
+
+.botao-deletar-comodo {
+  margin-top: 17px;
 }
 
 .tabela-imoveis {

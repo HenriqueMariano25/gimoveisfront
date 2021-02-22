@@ -90,7 +90,7 @@
                 <b-col cols="auto">
                   <p><b>Estado: </b>{{ row.item.estado }}</p>
                 </b-col>
-                <b-col >
+                <b-col>
                   <p><b>Complemento: </b>{{ row.item.complemento }}</p>
                 </b-col>
               </b-row>
@@ -109,43 +109,43 @@
       </b-col>
     </b-row>
     <b-container fluid class="divider-personalizado">
-    <b-row align-v="end" >
-      <b-col class="" cols="auto">
-        <b-pagination
-            v-model="currentPage"
-            :total-rows="totalRows"
-            :per-page="perPage"
-            align="left"
-            class="my-0"
-            first-text="Primeira"
-            last-text="Última"
-        ></b-pagination>
-      </b-col>
-      <b-col sm="5" md="auto" class="">
-        <b-form-group
-            label="Por pagina"
-            label-for="per-page-select"
-            label-cols-sm="auto"
-            label-cols-md="auto"
-            label-cols-lg="auto"
-            label-align-sm="right"
-            label-size="sm"
-            align="left"
-            class="mb-1">
-          <b-form-select
-              id="per-page-select"
-              v-model="perPage"
-              :options="pageOptions"
-              size="sm"
-          ></b-form-select>
-        </b-form-group>
-      </b-col>
-      <b-col class="ml-auto" cols="auto" style="margin-bottom: -5px">
-        <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal" >
-          Adicionar
-        </vs-button>
-      </b-col>
-    </b-row>
+      <b-row align-v="end">
+        <b-col class="" cols="auto">
+          <b-pagination
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="perPage"
+              align="left"
+              class="my-0"
+              first-text="Primeira"
+              last-text="Última"
+          ></b-pagination>
+        </b-col>
+        <b-col sm="5" md="auto" class="">
+          <b-form-group
+              label="Por pagina"
+              label-for="per-page-select"
+              label-cols-sm="auto"
+              label-cols-md="auto"
+              label-cols-lg="auto"
+              label-align-sm="right"
+              label-size="sm"
+              align="left"
+              class="mb-1">
+            <b-form-select
+                id="per-page-select"
+                v-model="perPage"
+                :options="pageOptions"
+                size="sm"
+            ></b-form-select>
+          </b-form-group>
+        </b-col>
+        <b-col class="ml-auto" cols="auto" style="margin-bottom: -5px">
+          <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal">
+            Adicionar
+          </vs-button>
+        </b-col>
+      </b-row>
     </b-container>
     <!--  Fim da tabela-->
     <modal name="modal-cliente" width="60%" height="auto" :scrollable="true" :click-to-close="false"
@@ -160,21 +160,23 @@
             </b-col>
             <b-col cols="2">
               <b-form-group id="select-cliente" label="Estado Civil">
-                <b-form-select v-model="cliente.estado_civil" :options="estadosCivis" value-field="id" text-field="descricao">
+                <b-form-select v-model="cliente.estado_civil" :options="estadosCivis" value-field="id"
+                               text-field="descricao">
                   <template #first>
-                    <b-form-select-option  :value="null">Selecione</b-form-select-option>
+                    <b-form-select-option :value="null">Selecione</b-form-select-option>
                   </template>
                 </b-form-select>
               </b-form-group>
             </b-col>
             <b-col cols="3">
-              <vs-input label="Data de Nascimento" v-model="cliente.data_nascimento" type="date" class="input-nascimento"/>
+              <vs-input label="Data de Nascimento" v-model="cliente.data_nascimento" type="date"
+                        class="input-nascimento"/>
             </b-col>
             <b-col cols="2">
               <b-form-group id="select-cliente" label="Status">
                 <b-form-select v-model="cliente.status" :options="tiposStatus" value-field="id" text-field="descricao">
                   <template #first>
-                    <b-form-select-option  :value="null">Selecione</b-form-select-option>
+                    <b-form-select-option :value="null">Selecione</b-form-select-option>
                   </template>
                 </b-form-select>
               </b-form-group>
@@ -186,11 +188,13 @@
             </b-col>
             <b-col cols="3">
               <vs-input onKeyDown="if(this.value.length==15 && event.keyCode!=8) return false;" type="text"
-                        v-mask="['###.###.###-##', '##.###.###/####-##']" label-placeholder="CPF ou CNPJ*" v-model="cliente.cpf_cnpj"
+                        v-mask="['###.###.###-##', '##.###.###/####-##']" label-placeholder="CPF ou CNPJ*"
+                        v-model="cliente.cpf_cnpj"
                         class="input-personalizado"/>
             </b-col>
             <b-col cols="3">
-              <vs-input onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" type="number" label-placeholder="Identidade" v-model="cliente.identidade" class="input-personalizado"/>
+              <vs-input onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" type="number"
+                        label-placeholder="Identidade" v-model="cliente.identidade" class="input-personalizado"/>
             </b-col>
           </b-row>
           <Carregando :visivel="carregandoCep"/>
@@ -198,7 +202,8 @@
             <b-col cols="2">
               <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                         onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;"
-                        label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado" v-mask="'#####-###'"/>
+                        label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado"
+                        v-mask="'#####-###'"/>
             </b-col>
             <b-col cols="5">
               <vs-input label-placeholder="Rua*" v-model="cliente.rua" class="input-personalizado"/>
@@ -223,7 +228,8 @@
           </b-row>
           <b-row>
             <b-col>
-              <vs-input label-placeholder="Referência" v-model="cliente.referencia" class="input-personalizado" required/>
+              <vs-input label-placeholder="Referência" v-model="cliente.referencia" class="input-personalizado"
+                        required/>
             </b-col>
           </b-row>
         </b-tab>
@@ -269,9 +275,10 @@
                 </b-col>
                 <b-col cols="5">
                   <b-form-group id="select-cliente" label="Tipo telefone">
-                    <b-form-select v-model="telefone.tipo" :options="tiposTelefone" value-field="id" text-field="descricao">
+                    <b-form-select v-model="telefone.tipo" :options="tiposTelefone" value-field="id"
+                                   text-field="descricao">
                       <template #first>
-                        <b-form-select-option  :value="null">Selecione</b-form-select-option>
+                        <b-form-select-option :value="null">Selecione</b-form-select-option>
                       </template>
                     </b-form-select>
                   </b-form-group>
@@ -359,7 +366,8 @@
       </b-row>
       <b-row align-h="end">
         <b-col cols="2">
-          <vs-button color="#707070" type="filled" icon="arrow_back" class="botao-salvar" @click="esconderModalContratos">
+          <vs-button color="#707070" type="filled" icon="arrow_back" class="botao-salvar"
+                     @click="esconderModalContratos">
             Sair
           </vs-button>
         </b-col>
@@ -376,7 +384,7 @@ import {atribuirCep} from "../../methods/global";
 
 export default {
   name: "VisualizarCliente",
-  components:{
+  components: {
     Carregando
   },
   data() {
@@ -389,21 +397,21 @@ export default {
         {key: 'nome', label: 'Nome', sortable: true, thClass: 'text-center'},
         {key: 'email', label: 'Email', sortable: true, thClass: 'text-center'},
         {key: 'cpf_cnpj', label: 'CPF ou CNPJ', sortable: true, thClass: 'text-center'},
-        {key: 'status', label: 'Status' , class: 'text-center'},
+        {key: 'status', label: 'Status', class: 'text-center'},
         {key: 'editar', label: ''},
         {key: 'deletar', label: ''},
       ],
       fieldsContratos: [
-        {key:'id', label: 'Contrato', class: 'text-center'},
-        {key:'nome', label: 'Imóvel', thClass: 'text-center'},
-        {key:'data_inicio', label: 'Data de Início', thClass: 'text-center'},
-        {key:'vencimeno', label: 'Vencimento',thClass: 'text-center'},
-        {key:'status', label: 'Status',class: 'text-center'},
+        {key: 'id', label: 'Contrato', class: 'text-center'},
+        {key: 'nome', label: 'Imóvel', thClass: 'text-center'},
+        {key: 'data_inicio', label: 'Data de Início', thClass: 'text-center'},
+        {key: 'vencimeno', label: 'Vencimento', thClass: 'text-center'},
+        {key: 'status', label: 'Status', class: 'text-center'},
       ],
-      fieldsParcelas:[
-        {key: 'valor', label: 'Valor',class: 'text-center'},
+      fieldsParcelas: [
+        {key: 'valor', label: 'Valor', class: 'text-center'},
         {key: 'vencimento', label: 'Vencimento', class: 'text-center'},
-        {key: 'status', label: 'Status',class: 'text-center' },
+        {key: 'status', label: 'Status', class: 'text-center'},
       ],
       totalRows: 1,
       currentPage: 1,
@@ -431,15 +439,15 @@ export default {
         numero: "",
         status: null,
         observacao: "",
-        tipo_cliente:""
+        tipo_cliente: ""
       },
       telefones: [{id: "", numero: "", tipo: null}],
       tiposTelefone: [],
       tiposStatus: [],
       editar: false,
       estadosCivis: [],
-      carregandoCep:false,
-      contEditarCep:0,
+      carregandoCep: false,
+      contEditarCep: 0,
     }
   },
 
@@ -555,11 +563,11 @@ export default {
       this.contEditarCep = 0
       this.editar = false
     },
-    mostrarModalContratos(cliente){
+    mostrarModalContratos(cliente) {
       this.cliente = cliente
       this.$modal.show('contratos-cliente')
     },
-    esconderModalContratos(){
+    esconderModalContratos() {
       this.$modal.hide('contratos-cliente')
     },
     limparModal() {
@@ -579,7 +587,7 @@ export default {
 
     async removerTelefone(index) {
       let telefone = this.telefones[index]
-      if(telefone.id) {
+      if (telefone.id) {
         this.$bvModal.msgBoxConfirm(`Tem certeza que deseja remover o telefone: ${telefone.numero} ?`, {
           title: 'Remover telefone',
           buttonSize: 'sm',
@@ -599,7 +607,7 @@ export default {
             })
           }
         })
-      }else{
+      } else {
         if (this.telefones.length > 1) {
           this.telefones.splice(index, 1)
         } else {
@@ -610,8 +618,8 @@ export default {
     async cadastrarCliente() {
       if (this.validarCamposObrigatorio()) {
         let variaveisString = ['data_nascimento', 'identidade', 'status', 'estado_civil']
-        for( let key in variaveisString){
-          if(this.cliente[variaveisString[key]] == ""){
+        for (let key in variaveisString) {
+          if (this.cliente[variaveisString[key]] == "") {
             this.cliente[variaveisString[key]] = null
           }
         }
@@ -655,12 +663,6 @@ export default {
       }
     },
     atribuirCep(dados) {
-      this.cliente.bairro = ""
-      this.cliente.cidade = ""
-      this.cliente.estado = ""
-      this.cliente.complemento = ""
-      this.cliente.rua = ""
-      this.cliente.numero = ""
       if (dados.bairro != "") {
         this.cliente['bairro'] = dados.bairro
       }
@@ -680,19 +682,14 @@ export default {
   },
   watch: {
     'cliente.cep': function (cep) {
-      if(this.editar){
-        this.contEditarCep += 1
-      }
-      if(this.contEditarCep > 2) {
-        if (atribuirCep(cep)) {
-          if (cep.length == 9) {
-            this.carregandoCep = true
-          }
-          atribuirCep(cep).then(response => {
-            this.carregandoCep = false
-            this.atribuirCep(response)
-          })
+      if (atribuirCep(cep)) {
+        if (cep.length == 9) {
+          this.carregandoCep = true
         }
+        atribuirCep(cep).then(response => {
+          this.carregandoCep = false
+          this.atribuirCep(response)
+        })
       }
     }
   },
@@ -768,7 +765,7 @@ export default {
   margin: 0;
   margin-bottom: 10px;
   border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
+  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
 }
 
 .tabela-clientes {
@@ -777,14 +774,14 @@ export default {
   padding: 0;
   margin-bottom: 10px;
   border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
+  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
 }
 
 .divider-personalizado {
   border-top: 1px solid rgb(200, 200, 200);
   position: absolute;
   bottom: 0;
-  margin-left:-100px;
+  margin-left: -100px;
   width: 100%;
   padding: 10px 100px 15px 100px;
   background-color: white;
@@ -801,13 +798,15 @@ export default {
 .material-icons {
   z-index: 0;
 }
-#select-cliente__BV_label_{
-  margin:0;
-  padding:0;
-  color:rgb(110,110,110);
+
+#select-cliente__BV_label_ {
+  margin: 0;
+  padding: 0;
+  color: rgb(110, 110, 110);
   font-size: 12px;
 }
-#select-cliente{
+
+#select-cliente {
   margin-bottom: 10px;
 }
 
