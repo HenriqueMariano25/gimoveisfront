@@ -77,18 +77,30 @@
           </template>
           <template #row-details="row">
             <b-card>
-              <p>Rua: {{ row.item.rua }},{{ row.item.numero }} | Bairro: {{ row.item.bairro }} | Cidade:
-                {{ row.item.cidade }} |
-                Estado: {{ row.item.estado }}</p>
-              <p>Complemento: {{ row.item.complemento }}</p>
-              <p>Identidade: {{ row.item.identidade }}</p>
-              <p>Data de Nascimento: {{ row.item.data_formatada }}</p>
-              <p>Estado Civil: {{ row.item.estado_civil }}</p>
-              <p>Referência: {{ row.item.referencia }}</p>
-              <p>Telefones:</p>
-              <ul v-for="(telefone, index) in row.item.numero_telefone" :key="index">
-                <li>{{ telefone }}</li>
-              </ul>
+              <b-row>
+                <b-col cols="auto">
+                  <p><b>Rua:</b> {{ row.item.rua }},{{ row.item.numero }}</p>
+                </b-col>
+                <b-col cols="auto">
+                  <p><b>Bairro: </b>{{ row.item.bairro }}</p>
+                </b-col>
+                <b-col cols="auto">
+                  <p><b>Cidade: </b>{{ row.item.cidade }}</p>
+                </b-col>
+                <b-col cols="auto">
+                  <p><b>Estado: </b>{{ row.item.estado }}</p>
+                </b-col>
+                <b-col >
+                  <p><b>Complemento: </b>{{ row.item.complemento }}</p>
+                </b-col>
+              </b-row>
+              <p><b>Telefones: </b></p>
+              <div v-for="(telefone, index) in row.item.numero_telefone" :key="index">
+                <b-row>
+                  <b-col cols="auto"><p>{{ telefone }}</p></b-col>
+                  <b-col><p>{{ row.item.tipo_telefone[index] }}</p></b-col>
+                </b-row>
+              </div>
               <vs-button color="#5498ff" type="filled" icon="work" @click="mostrarModalContratos(row.item)">Contratos
               </vs-button>
             </b-card>
@@ -136,7 +148,7 @@
     </b-row>
     </b-container>
     <!--  Fim da tabela-->
-    <modal name="hello-world" width="60%" height="auto" :scrollable="true" :click-to-close="false"
+    <modal name="modal-cliente" width="60%" height="auto" :scrollable="true" :click-to-close="false"
            class="modal-adicionando-cliente">
       <h3>Adicionando cliente</h3>
       <b-tabs content-class="mt-3">
@@ -173,7 +185,9 @@
               <vs-input label-placeholder="Email*" v-model="cliente.email" class="input-personalizado"/>
             </b-col>
             <b-col cols="3">
-              <vs-input onKeyDown="if(this.value.length==15 && event.keyCode!=8) return false;" type="number" label-placeholder="CPF ou CNPJ*" v-model="cliente.cpf_cnpj" class="input-personalizado"/>
+              <vs-input onKeyDown="if(this.value.length==15 && event.keyCode!=8) return false;" type="text"
+                        v-mask="['###.###.###-##', '##.###.###/####-##']" label-placeholder="CPF ou CNPJ*" v-model="cliente.cpf_cnpj"
+                        class="input-personalizado"/>
             </b-col>
             <b-col cols="3">
               <vs-input onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" type="number" label-placeholder="Identidade" v-model="cliente.identidade" class="input-personalizado"/>
@@ -182,7 +196,9 @@
           <Carregando :visivel="carregandoCep"/>
           <b-row>
             <b-col cols="2">
-              <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57" onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado"/>
+              <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                        onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;"
+                        label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado" v-mask="'#####-###'"/>
             </b-col>
             <b-col cols="5">
               <vs-input label-placeholder="Rua*" v-model="cliente.rua" class="input-personalizado"/>
@@ -249,7 +265,7 @@
               <b-row>
                 <b-col cols="5">
                   <vs-input label-placeholder="Numero de telefone" v-model="telefone.numero"
-                            class="input-personalizado"/>
+                            class="input-personalizado" v-mask="['(##)####-####', '(##)#####-####']"/>
                 </b-col>
                 <b-col cols="5">
                   <b-form-group id="select-cliente" label="Tipo telefone">
@@ -279,7 +295,7 @@
           </vs-button>
         </b-col>
         <b-col cols="2">
-          <vs-button color="#707070" type="filled" icon="clear" class="botao-salvar" @click="esconderModal">
+          <vs-button color="#707070" type="filled" icon="clear" class="botao-salvar" @click.native="esconderModal">
             Cancelar
           </vs-button>
         </b-col>
@@ -303,6 +319,7 @@
               :sort-by.sync="sortBy"
               :sort-desc.sync="sortDesc"
               :sort-direction="sortDirection"
+              head-variant="dark"
               show-empty
               small
               @filtered="onFiltered"
@@ -330,6 +347,7 @@
               :sort-desc.sync="sortDesc"
               :sort-direction="sortDirection"
               show-empty
+              head-variant="dark"
               small
               @filtered="onFiltered"
               striped
@@ -354,6 +372,7 @@
 
 import api from '../../services/api'
 import Carregando from "../../components/shared/Carregando";
+import {atribuirCep} from "../../methods/global";
 
 export default {
   name: "VisualizarCliente",
@@ -375,18 +394,16 @@ export default {
         {key: 'deletar', label: ''},
       ],
       fieldsContratos: [
-        {key:'id', label: 'Contrato'},
-        {key:'nome', label: 'Imóvel'},
-        {key:'data_inicio', label: 'Data de Início'},
-        {key:'vencimeno', label: 'Vencimento'},
-        {key:'status', label: 'Status'},
-        {key:'status'},
+        {key:'id', label: 'Contrato', class: 'text-center'},
+        {key:'nome', label: 'Imóvel', thClass: 'text-center'},
+        {key:'data_inicio', label: 'Data de Início', thClass: 'text-center'},
+        {key:'vencimeno', label: 'Vencimento',thClass: 'text-center'},
+        {key:'status', label: 'Status',class: 'text-center'},
       ],
       fieldsParcelas:[
-        {key: 'valor', label: 'Valor'},
-        {key: 'vencimento', label: 'Vencimento'},
-        {key: 'status', label: 'Status'},
-        {key: 'status'},
+        {key: 'valor', label: 'Valor',class: 'text-center'},
+        {key: 'vencimento', label: 'Vencimento', class: 'text-center'},
+        {key: 'status', label: 'Status',class: 'text-center' },
       ],
       totalRows: 1,
       currentPage: 1,
@@ -421,7 +438,8 @@ export default {
       tiposStatus: [],
       editar: false,
       estadosCivis: [],
-      carregandoCep:false
+      carregandoCep:false,
+      contEditarCep:0,
     }
   },
 
@@ -527,13 +545,14 @@ export default {
     },
 
     mostrarModal() {
-      this.$modal.show('hello-world')
+      this.$modal.show('modal-cliente')
       this.buscarTipoTelefones()
       this.buscarTipoStatus()
     },
     esconderModal() {
-      this.$modal.hide('hello-world');
+      this.$modal.hide('modal-cliente');
       this.limparModal()
+      this.contEditarCep = 0
       this.editar = false
     },
     mostrarModalContratos(cliente){
@@ -547,7 +566,7 @@ export default {
       Object.keys(this.cliente).forEach(key => {
         this.cliente[key] = ""
       })
-      this.telefones = [{numero: "", tipo: ""}]
+      this.telefones = [{numero: "", tipo: null}]
       this.cliente.status = null
       this.cliente.estado_civil = null
     },
@@ -557,8 +576,36 @@ export default {
         tipo: null
       })
     },
-    removerTelefone(index) {
-      this.telefones.splice(index, 1)
+
+    async removerTelefone(index) {
+      let telefone = this.telefones[index]
+      if(telefone.id) {
+        this.$bvModal.msgBoxConfirm(`Tem certeza que deseja remover o telefone: ${telefone.numero} ?`, {
+          title: 'Remover telefone',
+          buttonSize: 'sm',
+          okTitle: 'Remover',
+          cancelTitle: 'Cancelar',
+          okVariant: 'danger',
+          footerClass: 'p-2',
+          centered: true
+        }).then(value => {
+          if (value) {
+            api.post('/cliente/deletar/telefone', {idTelefone: telefone.id}).then(() => {
+              if (this.telefones.length > 1) {
+                this.telefones.splice(index, 1)
+              } else {
+                this.telefones = [{id: "", numero: "", tipo: null}]
+              }
+            })
+          }
+        })
+      }else{
+        if (this.telefones.length > 1) {
+          this.telefones.splice(index, 1)
+        } else {
+          this.telefones = [{id: "", numero: "", tipo: null}]
+        }
+      }
     },
     async cadastrarCliente() {
       if (this.validarCamposObrigatorio()) {
@@ -610,7 +657,7 @@ export default {
     atribuirCep(dados) {
       this.cliente.bairro = ""
       this.cliente.cidade = ""
-      this.cliente.uf = ""
+      this.cliente.estado = ""
       this.cliente.complemento = ""
       this.cliente.rua = ""
       this.cliente.numero = ""
@@ -633,12 +680,19 @@ export default {
   },
   watch: {
     'cliente.cep': function (cep) {
-      if (cep.length == 8) {
-        this.carregandoCep = true
-        api.get(`/cliente/consultar_cep/${cep}`).then(response => {
-          this.carregandoCep = false
-          this.atribuirCep(response.data)
-        })
+      if(this.editar){
+        this.contEditarCep += 1
+      }
+      if(this.contEditarCep > 2) {
+        if (atribuirCep(cep)) {
+          if (cep.length == 9) {
+            this.carregandoCep = true
+          }
+          atribuirCep(cep).then(response => {
+            this.carregandoCep = false
+            this.atribuirCep(response)
+          })
+        }
       }
     }
   },
