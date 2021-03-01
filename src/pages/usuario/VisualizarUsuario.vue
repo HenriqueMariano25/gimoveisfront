@@ -260,7 +260,8 @@ export default {
       })
     },
     async editarUsuario() {
-      await api.post(`/usuario/editar/${this.usuario.id}`, {data: this.usuario,}).then(response => {
+      let idUsuario = this.$store.state.usuario.id
+      await api.post(`/usuario/editar/${this.usuario.id}`, {data: this.usuario, idUsuario: idUsuario}).then(response => {
         let nomeUsuario = response.data.nome
         this.$vs.notify({
           text: `Usuário editado com sucesso: ${nomeUsuario} !`,
@@ -292,7 +293,8 @@ export default {
     },
     async cadastrarUsuario() {
       if (this.validarCamposObrigatorio()) {
-        await api.post('/usuario/cadastrar', {data: this.usuario}).then(response => {
+        let idUsuario = this.$store.state.usuario.id
+        await api.post('/usuario/cadastrar', {data: this.usuario, idUsuario: idUsuario}).then(response => {
           let nomeUsuario = response.data[0].nome
           this.esconderModal()
           this.$vs.notify({

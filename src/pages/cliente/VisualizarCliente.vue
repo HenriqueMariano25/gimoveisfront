@@ -616,9 +616,11 @@ export default {
             this.cliente[variaveisString[key]] = null
           }
         }
+        let idUsuario = this.$store.state.usuario.id
         await api.post(`/cliente/editar/${this.cliente.id}`, {
           data: this.cliente,
-          telefones: this.telefones
+          telefones: this.telefones,
+          idUsuario: idUsuario
         }).then(response => {
           let nomeCliente = response.data[0].nome
           this.$vs.notify({
@@ -767,7 +769,8 @@ export default {
             this.cliente[variaveisString[key]] = null
           }
         }
-        await api.post('/cliente/cadastrar', {data: this.cliente, telefones: this.telefones}).then(response => {
+        let idUsuario = this.$store.state.usuario.id
+        await api.post('/cliente/cadastrar', {data: this.cliente, telefones: this.telefones, idUsuario: idUsuario}, ).then(response => {
           let nomeCliente = response.data[0].nome
           this.esconderModal()
           this.$vs.notify({

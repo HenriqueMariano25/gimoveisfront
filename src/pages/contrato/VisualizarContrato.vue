@@ -531,8 +531,10 @@ export default {
     async editarContrato() {
       this.contrato.valor_boleto = converterDinherioFloat(this.contrato.valor_boleto)
       if (this.validarCamposObrigatorio()) {
+        let idUsuario = this.$store.state.usuario.id
         await api.post(`/contrato/editar`, {
           contrato: this.contrato,
+          idUsuario: idUsuario
         }).then(response => {
           let codigo = response.data[0].id
           this.$vs.notify({
@@ -630,7 +632,8 @@ export default {
       this.contrato.valor_boleto = converterDinherioFloat(this.contrato.valor_boleto)
       if (this.validarCamposObrigatorio()) {
         if (this.validarDataInicioFim()) {
-          await api.post('/contrato/cadastrar', {contrato: this.contrato}).then(() => {
+          let idUsuario = this.$store.state.usuario.id
+          await api.post('/contrato/cadastrar', {contrato: this.contrato, idUsuario: idUsuario}).then(() => {
             this.esconderModal()
             this.$vs.notify({
               text: `Contrato cadastrado com sucesso!`,

@@ -317,8 +317,10 @@ export default {
     },
     async editarResponsavel() {
       if (this.validarCamposObrigatorio()) {
+        let idUsuario = this.$store.state.usuario.id
         await api.post(`/responsavel/editar`, {
           responsavel: this.responsavel,
+          idUsuario: idUsuario
         }).then(response => {
           let nomeResponsavel = response.data[0].nome
           this.$vs.notify({
@@ -360,7 +362,8 @@ export default {
     },
     async cadastrarResponsavel() {
       if (this.validarCamposObrigatorio()) {
-        await api.post('/responsavel/cadastrar', {responsavel: this.responsavel}).then(response => {
+        let idUsuario = this.$store.state.usuario.id
+        await api.post('/responsavel/cadastrar', {responsavel: this.responsavel, idUsuario: idUsuario}).then(response => {
           let nomeResponsavel = response.data[0].nome
           this.esconderModal()
           this.$vs.notify({

@@ -939,9 +939,11 @@ export default {
       this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual)
       this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar)
       if (this.validarCamposObrigatorio()) {
+        let idUsuario = this.$store.state.usuario.id
         await api.post(`/imovel/editar/${this.imovel.id}`, {
           data: this.imovel,
           comodos: this.comodos,
+          idUsuario: idUsuario
         }).then((response) => {
           let nomeImovel = response.data[0].nome;
           this.$vs.notify({
@@ -995,10 +997,12 @@ export default {
       this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao)
       this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual)
       this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar)
+      let idUsuario = this.$store.state.usuario.id
       if (this.validarCamposObrigatorio()) {
         await api.post("/imovel/cadastrar", {
           data: this.imovel,
           comodos: this.comodos,
+          idUsuario: idUsuario
         }).then((response) => {
           let nomeImovel = response.data[0].nome;
           this.esconderModal();
