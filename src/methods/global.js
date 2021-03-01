@@ -11,3 +11,7 @@ export function atribuirCep (cep) {
         return false
     })
 }
+
+export function converterDinherioFloat(valor){
+    return valor.replace(/[USR$.\s]/gi, "").replace(',','.')
+}

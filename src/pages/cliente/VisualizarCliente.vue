@@ -50,16 +50,16 @@
             no-border-collapse
             @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
           <template #cell(nome)="row">
-            <p class="tr-cliente">{{ row.item.nome }}</p>
+            <label class="tr-cliente">{{ row.item.nome }}</label>
           </template>
           <template #cell(email)="row">
-            <p class="tr-cliente">{{ row.item.email }}</p>
+            <label class="tr-cliente">{{ row.item.email }}</label>
           </template>
           <template #cell(cpf_cnpj)="row">
-            <p class="tr-cliente">{{ row.item.cpf_cnpj }}</p>
+            <label class="tr-cliente">{{ row.item.cpf_cnpj }}</label>
           </template>
           <template #cell(status)="row">
-            <p class="tr-cliente">{{ row.item.status }}</p>
+            <label class="tr-cliente">{{ row.item.status }}</label>
           </template>
           <template #cell(editar)="row">
             <vs-button type="flat" color="dark" @click="editarClienteModal(row.item.id)" icon="edit"></vs-button>
@@ -101,8 +101,6 @@
                   <b-col><p>{{ row.item.tipo_telefone[index] }}</p></b-col>
                 </b-row>
               </div>
-              <vs-button color="#5498ff" type="filled" icon="work" @click="mostrarModalContratos(row.item)">Contratos
-              </vs-button>
             </b-card>
           </template>
         </b-table>
@@ -153,6 +151,14 @@
       <h3>Adicionando cliente</h3>
       <b-tabs content-class="mt-3">
         <b-tab title="Dados gerais" active>
+          <b-row class="mb-2">
+            <b-col>
+              <b-form-radio-group v-slot="{ ariaDescribedby }" v-model="cliente.tipo_cliente">
+                <b-form-radio :aria-describedby="ariaDescribedby" value="pessoa física">Pessoa física*</b-form-radio>
+                <b-form-radio :aria-describedby="ariaDescribedby" value="pessoa jurícida">Pessoa jurídica*</b-form-radio>
+              </b-form-radio-group>
+            </b-col>
+          </b-row>
           <b-row align-v="center">
             <b-col cols="5">
               <vs-input label-placeholder="Nome*" v-model="cliente.nome" class="input-personalizado"
@@ -202,14 +208,14 @@
             <b-col cols="2">
               <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                         onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;"
-                        label-placeholder="CEP*" v-model="cliente.cep" class="input-personalizado"
+                        label-placeholder="CEP" v-model="cliente.cep" class="input-personalizado"
                         v-mask="'#####-###'"/>
             </b-col>
             <b-col cols="5">
-              <vs-input label-placeholder="Rua*" v-model="cliente.rua" class="input-personalizado"/>
+              <vs-input label-placeholder="Rua" v-model="cliente.rua" class="input-personalizado"/>
             </b-col>
             <b-col cols="2">
-              <vs-input label-placeholder="Número*" v-model="cliente.numero" class="input-personalizado"/>
+              <vs-input label-placeholder="Número" v-model="cliente.numero" class="input-personalizado"/>
             </b-col>
             <b-col cols="3">
               <vs-input label-placeholder="Complemento" v-model="cliente.complemento" class="input-personalizado"/>
@@ -217,29 +223,21 @@
           </b-row>
           <b-row>
             <b-col>
-              <vs-input label-placeholder="Bairro*" v-model="cliente.bairro" class="input-personalizado"/>
+              <vs-input label-placeholder="Bairro" v-model="cliente.bairro" class="input-personalizado"/>
             </b-col>
             <b-col>
-              <vs-input label-placeholder="Cidade*" v-model="cliente.cidade" class="input-personalizado"/>
+              <vs-input label-placeholder="Cidade" v-model="cliente.cidade" class="input-personalizado"/>
             </b-col>
             <b-col cols="2">
-              <vs-input label-placeholder="UF*" v-model="cliente.estado" class="input-personalizado" maxlength="2"/>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <vs-input label-placeholder="Referência" v-model="cliente.referencia" class="input-personalizado"
-                        required/>
+              <vs-input label-placeholder="UF" v-model="cliente.estado" class="input-personalizado" maxlength="2"/>
             </b-col>
           </b-row>
         </b-tab>
         <b-tab title="Inf. Adicionais">
-          <b-row class="mb-2">
+          <b-row>
             <b-col>
-              <b-form-radio-group v-slot="{ ariaDescribedby }" v-model="cliente.tipo_cliente">
-                <b-form-radio :aria-describedby="ariaDescribedby" value="pessoa física">Pessoa física</b-form-radio>
-                <b-form-radio :aria-describedby="ariaDescribedby" value="pessoa jurícida">Pessoa jurídica</b-form-radio>
-              </b-form-radio-group>
+              <vs-input label-placeholder="Indicação" v-model="cliente.referencia" class="input-personalizado"
+                        required/>
             </b-col>
           </b-row>
           <b-row>
@@ -258,36 +256,175 @@
             </b-col>
           </b-row>
         </b-tab>
-        <b-tab title="Telefones">
+        <b-tab title="Telefones" @click="inicializarTabTelefone">
           <b-row>
+            <b-col cols="3">
+              <vs-input label-placeholder="Numero de telefone" v-model="telefone.numero"
+                        class="input-personalizado" v-mask="['(##)####-####', '(##)#####-####']"/>
+            </b-col>
+            <b-col cols="3">
+              <b-form-group id="select-cliente" label="Tipo telefone">
+                <b-form-select :options="tiposTelefone" value-field="id_tipo" v-model="telefone.id_tipo"
+                               text-field="descricao">
+                  <template #first>
+                    <b-form-select-option :value="null">Selecione</b-form-select-option>
+                  </template>
+                </b-form-select>
+              </b-form-group>
+            </b-col>
+            <b-col>
+              <vs-input label-placeholder="Observação" class="input-personalizado" v-model="telefone.observacao"/>
+            </b-col>
             <b-col cols="auto">
               <vs-button type="filled" icon="add_ic_call" class="botao-salvar botao-adicionar-telefone" color="#5498ff"
-                         @click.prevent="adicionarTelefone()">Adicionar telefone
-              </vs-button>
+                         @click.prevent="adicionarTelefone()"/>
             </b-col>
           </b-row>
-          <b-row class="campos-telefone">
-            <b-col cols="6" v-for="(telefone, index) in telefones" :key="index">
-              <b-row>
-                <b-col cols="5">
-                  <vs-input label-placeholder="Numero de telefone" v-model="telefone.numero"
-                            class="input-personalizado" v-mask="['(##)####-####', '(##)#####-####']"/>
-                </b-col>
-                <b-col cols="5">
-                  <b-form-group id="select-cliente" label="Tipo telefone">
-                    <b-form-select v-model="telefone.tipo" :options="tiposTelefone" value-field="id"
-                                   text-field="descricao">
-                      <template #first>
-                        <b-form-select-option :value="null">Selecione</b-form-select-option>
-                      </template>
-                    </b-form-select>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="2" class="text-center botao-deletar-telefone">
-                  <vs-button type="flat" icon="delete" color="dark" class="botao-salvar"
-                             @click="removerTelefone(index)"/>
-                </b-col>
-              </b-row>
+          <b-row>
+            <b-col>
+              <b-table
+                  :fields="fieldsTelefone"
+                  :current-page="currentPage"
+                  :per-page="perPage"
+                  :filter="filter"
+                  :filter-included-fields="filterOn"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+                  head-variant="dark"
+                  show-empty
+                  :items="telefones"
+                  small
+                  @filtered="onFiltered"
+                  striped
+                  hover
+                  bordered
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
+                  outlined
+                  sort-icon-left
+                  no-border-collapse>
+                <template #table-colgroup>
+                  <col>
+                  <col>
+                  <col>
+                  <col style="width: 15px">
+                  <col style="width: 15px">
+                </template>
+                <template #cell(editar)="row">
+                  <vs-button type="flat" color="dark" @click="editarTelefone(row)" icon="edit"></vs-button>
+                </template>
+                <template #cell(deletar)="row">
+                  <vs-button type="flat" color="dark" @click="alertaDeletarTelefone(row)" icon="delete"></vs-button>
+                </template>
+              </b-table>
+            </b-col>
+          </b-row>
+        </b-tab>
+        <b-tab title="Contratos" @click.prevent="buscarContratos">
+          <b-row>
+            <b-col>
+              <h6>Contratos de: {{ cliente.nome }} </h6>
+            </b-col>
+          </b-row>
+          <b-row class="tabela-contratos-clientes">
+            <b-col class="col-tabela-contratos-clientes">
+              <b-table
+                  :fields="fieldsContratos"
+                  :current-page="currentPage"
+                  :per-page="perPage"
+                  :filter="filter"
+                  :filter-included-fields="filterOn"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+                  head-variant="dark"
+                  show-empty
+                  sort-icon-left
+                  small
+                  :items="contratos"
+                  @filtered="onFiltered"
+                  striped
+                  hover
+                  bordered
+                  selectable
+                  select-mode="single"
+                  @row-selected="selecionandoContrato"
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 300px)"
+                  outlined
+                  no-border-collapse>
+                <template #table-colgroup>
+                  <col>
+                  <col>
+                  <col>
+                  <col>
+                  <col>
+                  <col style="width: 15px">
+                </template>
+                <template #cell(id)="row">
+                  <label>
+                    {{ ("0000" + row.item.id).slice(-4) }}
+                  </label>
+                </template>
+                <template #cell(data_inicio)="row">
+                  <label>
+                    {{ $dayjs(row.item.data_inicio).format('DD/MM/YYYY') }}
+                  </label>
+                </template>
+                <template #cell(data_fim)="row">
+                  <label>
+                    {{ $dayjs(row.item.data_fim).format('DD/MM/YYYY') }}
+                  </label>
+                </template>
+                <template #cell(editar)="row">
+                  <vs-button type="flat" color="dark" @mousedown.stop="mostrarModalContrato(row.item)" icon="edit"></vs-button>
+                </template>
+              </b-table>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <h6>Boletos do contrato: {{ idContrato }}</h6>
+            </b-col>
+          </b-row>
+          <b-row class="tabela-parcelas-clientes">
+            <b-col class="col-tabela-parcelas-clientes">
+              <b-table
+                  :fields="fieldsBoletos"
+                  :current-page="currentPage"
+                  :per-page="perPage"
+                  :filter="filter"
+                  :filter-included-fields="filterOn"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+                  show-empty
+                  head-variant="dark"
+                  :items="boletos"
+                  small
+                  @filtered="onFiltered"
+                  striped
+                  sort-icon-left
+                  bordered
+                  hover
+                  outlined
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 300px)"
+                  no-border-collapse>
+                <template #cell(data_vencimento)="row">
+                  <label>
+                    {{ $dayjs(row.item.data_vencimento).format('DD/MM/YYYY') }}
+                  </label>
+                </template>
+                <template #cell(data_quitacao)="row">
+                  <label v-if="row.item.data_quitacao">
+                    {{ $dayjs(row.item.data_quitacao).format('DD/MM/YYYY') }}
+                  </label>
+                </template>
+                <template #cell(valor)="row">
+                  <label>
+                    R$ {{ row.item.valor }}
+                  </label>
+                </template>
+              </b-table>
             </b-col>
           </b-row>
         </b-tab>
@@ -308,71 +445,7 @@
         </b-col>
       </b-row>
     </modal>
-    <modal name="contratos-cliente" width="60%" height="auto" :scrollable="true"
-           class="modal-adicionando-cliente">
-      <b-row>
-        <b-col>
-          <h6>Contratos de: {{ cliente.nome }} </h6>
-        </b-col>
-      </b-row>
-      <b-row class="tabela-contratos-clientes">
-        <b-col class="col-tabela-contratos-clientes">
-          <b-table
-              :fields="fieldsContratos"
-              :current-page="currentPage"
-              :per-page="perPage"
-              :filter="filter"
-              :filter-included-fields="filterOn"
-              :sort-by.sync="sortBy"
-              :sort-desc.sync="sortDesc"
-              :sort-direction="sortDirection"
-              head-variant="dark"
-              show-empty
-              small
-              @filtered="onFiltered"
-              striped
-              hover
-              outlined
-              no-border-collapse>
-          </b-table>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <h6>Parcelas do contrato: 1234</h6>
-        </b-col>
-      </b-row>
-      <b-row class="tabela-parcelas-clientes">
-        <b-col class="col-tabela-parcelas-clientes">
-          <b-table
-              :fields="fieldsParcelas"
-              :current-page="currentPage"
-              :per-page="perPage"
-              :filter="filter"
-              :filter-included-fields="filterOn"
-              :sort-by.sync="sortBy"
-              :sort-desc.sync="sortDesc"
-              :sort-direction="sortDirection"
-              show-empty
-              head-variant="dark"
-              small
-              @filtered="onFiltered"
-              striped
-              hover
-              outlined
-              no-border-collapse>
-          </b-table>
-        </b-col>
-      </b-row>
-      <b-row align-h="end">
-        <b-col cols="2">
-          <vs-button color="#707070" type="filled" icon="arrow_back" class="botao-salvar"
-                     @click="esconderModalContratos">
-            Sair
-          </vs-button>
-        </b-col>
-      </b-row>
-    </modal>
+    <ModalContrato :idContrato="idContratoModal" :visivel="modal_visivel" @esconder-modal="modal_visivel = $event"/>
   </b-container>
 </template>
 
@@ -381,11 +454,13 @@
 import api from '../../services/api'
 import Carregando from "../../components/shared/Carregando";
 import {atribuirCep} from "../../methods/global";
+import ModalContrato from "../../components/shared/ModalContrato";
 
 export default {
   name: "VisualizarCliente",
   components: {
-    Carregando
+    Carregando,
+    ModalContrato
   },
   data() {
     return {
@@ -397,21 +472,30 @@ export default {
         {key: 'nome', label: 'Nome', sortable: true, thClass: 'text-center'},
         {key: 'email', label: 'Email', sortable: true, thClass: 'text-center'},
         {key: 'cpf_cnpj', label: 'CPF ou CNPJ', sortable: true, thClass: 'text-center'},
-        {key: 'status', label: 'Status', class: 'text-center'},
+        {key: 'status', label: 'Status', sortable: true,class: 'text-center'},
+        {key: 'editar', label: ''},
+        {key: 'deletar', label: ''},
+      ],
+      fieldsTelefone:[
+        {key: 'numero', label: 'Número', sortable: true,thClass: 'text-center', tdClass:"td-centralizado"},
+        {key: 'descricao', label: 'Tipo', sortable: true,class: 'text-center', tdClass:"td-centralizado"},
+        {key: 'observacao', label: 'Observação', sortable: true, thClass: 'text-center', tdClass:"td-centralizado"},
         {key: 'editar', label: ''},
         {key: 'deletar', label: ''},
       ],
       fieldsContratos: [
-        {key: 'id', label: 'Contrato', class: 'text-center'},
-        {key: 'nome', label: 'Imóvel', thClass: 'text-center'},
-        {key: 'data_inicio', label: 'Data de Início', thClass: 'text-center'},
-        {key: 'vencimeno', label: 'Vencimento', thClass: 'text-center'},
-        {key: 'status', label: 'Status', class: 'text-center'},
+        {key: 'id', label: 'Contrato', sortable: true,class: 'text-center',tdClass:"td-centralizado"},
+        {key: 'nome', label: 'Imóvel', sortable: true,thClass: 'text-center',tdClass:"td-centralizado"},
+        {key: 'data_inicio', label: 'Data de Início', sortable: true,class: 'text-center',tdClass:"td-centralizado"},
+        {key: 'data_fim', label: 'Data de Término', sortable: true,class: 'text-center',tdClass:"td-centralizado"},
+        {key: 'status', label: 'Status',sortable: true, class: 'text-center',tdClass:"td-centralizado"},
+        {key: 'editar', label: ''},
       ],
-      fieldsParcelas: [
-        {key: 'valor', label: 'Valor', class: 'text-center'},
-        {key: 'vencimento', label: 'Vencimento', class: 'text-center'},
-        {key: 'status', label: 'Status', class: 'text-center'},
+      fieldsBoletos: [
+        {key: 'valor', label: 'Valor',sortable: true, class: 'text-center'},
+        {key: 'data_vencimento', label: 'Vencimento',sortable: true, class: 'text-center'},
+        {key: 'data_quitacao', label: 'Quitação',sortable: true, class: 'text-center'},
+        {key: 'status', label: 'Status',sortable: true, class: 'text-center'},
       ],
       totalRows: 1,
       currentPage: 1,
@@ -439,15 +523,24 @@ export default {
         numero: "",
         status: null,
         observacao: "",
-        tipo_cliente: ""
+        tipo_cliente: "",
+        id:0,
       },
-      telefones: [{id: "", numero: "", tipo: null}],
+      telefones: [],
+      telefone:{id: null, numero: "", id_tipo: null, observacao: "", tipo:""},
       tiposTelefone: [],
       tiposStatus: [],
       editar: false,
       estadosCivis: [],
       carregandoCep: false,
       contEditarCep: 0,
+      contratos: [],
+      idContrato: "",
+      boletos:[],
+      idContratoModal:'',
+      telefoneEditar:false,
+      indexTelefoneTabela:0,
+      modal_visivel:false
     }
   },
 
@@ -463,6 +556,14 @@ export default {
         this.totalRows = this.items.length
       }).catch(erro => {
         console.log(erro)
+      })
+    },
+    async inicializarTabTelefone(){
+      this.buscarTelefones()
+    },
+    async buscarTelefones(){
+      await api.get("/telefones", {params:{idCliente:this.cliente.id}}).then(consulta => {
+        this.telefones = consulta.data
       })
     },
     onFiltered(filteredItems) {
@@ -494,13 +595,15 @@ export default {
     async editarClienteModal(id) {
       await api.get('/cliente', {params: {idCliente: id}}).then(response => {
         this.cliente = response.data
-        this.telefones = []
-        for (let x = 0; x < response.data.numero_telefone.length; x++) {
-          let numero = response.data.numero_telefone[x]
-          let tipo = response.data.tipo_telefone[x]
-          let id = response.data.id_telefone[x]
-          this.telefones.push({id: id, numero: numero, tipo: tipo})
-        }
+        // this.telefones = []
+        // for (let x = 0; x < response.data.numero_telefone.length; x++) {
+        //   let numero = response.data.numero_telefone[x]
+        //   let tipo = response.data.tipo_telefone[x]
+        //   let id_tipo = response.data.id_tipo_telefone[x]
+        //   let observacao = response.data.observacao_telefone[x]
+        //   let id = response.data.id_telefone[x]
+        //   this.telefones.push({id: id, numero: numero, tipo: tipo, id_tipo: id_tipo, observacao: observacao})
+        // }
         this.mostrarModal()
         this.editar = true
       })
@@ -540,12 +643,46 @@ export default {
         })
       }
     },
-
     async buscarTipoTelefones() {
-      await api.get('/tipos_telefones').then(response => {
-        this.tiposTelefone = response.data
+      await api.get('/tipos_telefones').then(consulta => {
+        console.log(consulta.data)
+        for (let x = 0; x < consulta.data.length; x++) {
+          let id_tipo = {id: consulta.data[x].id, descricao: consulta.data[x].descricao}
+          let descricao = consulta.data[x].descricao
+          this.tiposTelefone.push({id_tipo: id_tipo, descricao: descricao})
+        }
       })
     },
+    async editarTelefone(telefone){
+      this.telefoneEditar = true
+      this.telefone = telefone.item
+      this.telefone.id_tipo = {id: telefone.item.id_tipo, descricao: telefone.item.tipo}
+      this.indexTelefoneTabela = telefone.index
+    },
+    alertaDeletarTelefone(telefone) {
+      this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar o telefone: ${telefone.item.numero} ?`, {
+        title: 'Deletar telefone',
+        buttonSize: 'sm',
+        okTitle: 'Deletar',
+        cancelTitle: 'Cancelar',
+        okVariant: 'danger',
+        footerClass: 'p-2',
+        centered: true
+      }).then(value => {
+        if (value) {
+          this.deletarTelefone(telefone)
+        }
+      })
+    },
+    async deletarTelefone(telefone){
+      console.log(telefone)
+      await api.post('/cliente/deletar/telefone', {idTelefone: telefone.item.id}).then(() => {
+        // this.telefones
+        this.telefones.splice(telefone.index, 1)
+      })
+    },
+
+
     async buscarTipoStatus() {
       await api.get('/cliente/tipos_status').then(response => {
         this.tiposStatus = response.data
@@ -563,12 +700,11 @@ export default {
       this.contEditarCep = 0
       this.editar = false
     },
-    mostrarModalContratos(cliente) {
-      this.cliente = cliente
-      this.$modal.show('contratos-cliente')
-    },
-    esconderModalContratos() {
-      this.$modal.hide('contratos-cliente')
+    async buscarContratos() {
+      await api.get('/cliente/contratos', {params:{idCliente:this.cliente.id}}).then((response) => {
+        console.log(response.data)
+        this.contratos = response.data
+      })
     },
     limparModal() {
       Object.keys(this.cliente).forEach(key => {
@@ -577,12 +713,20 @@ export default {
       this.telefones = [{numero: "", tipo: null}]
       this.cliente.status = null
       this.cliente.estado_civil = null
+      this.contratos = []
+      this.boletos = []
     },
     adicionarTelefone() {
-      this.telefones.push({
-        numero: '',
-        tipo: null
-      })
+      let id_descricao = this.telefone.id_tipo
+      this.telefone.id_tipo = id_descricao.id
+      this.telefone.tipo = id_descricao.descricao
+      if(this.telefoneEditar){
+        this.telefone = {id: null, numero: "", id_tipo: null, observacao: "", tipo:""}
+      }else{
+        this.telefones.push(this.telefone)
+        this.telefone = {id: null, numero: "", id_tipo: null, observacao: "", tipo:""}
+      }
+
     },
 
     async removerTelefone(index) {
@@ -647,9 +791,7 @@ export default {
       }
     },
     validarCamposObrigatorio() {
-      if (this.cliente['nome'] == "" || this.cliente['email'] == "" || this.cliente['rua'] == "" ||
-          this.cliente['cidade'] == "" || this.cliente['bairro'] == "" || this.cliente['estado'] == "" ||
-          this.cliente['cpf_cnpj'] == "" || this.cliente['numero'] == "" || this.cliente['cep'] == "") {
+      if (this.cliente['nome'] == "" || this.cliente['email'] == "" || this.cliente['tipo_cliente'] == "" ) {
         this.$vs.notify({
           text: `Campos obrigatorios vazio.`,
           position: 'top-center',
@@ -678,6 +820,17 @@ export default {
       if (dados.logradouro != "") {
         this.cliente.rua = dados.logradouro
       }
+    },
+    async selecionandoContrato(contrato){
+      this.idContrato = ("0000" + contrato[0].id).slice(-4)
+      await api.get('/cliente/contrato/boletos', {params:{idContrato: contrato[0].id}}).then(response => {
+        this.boletos = response.data
+      })
+    },
+    mostrarModalContrato(contrato){
+      this.$modal.show('modal-contrato')
+      this.modal_visivel = true
+      this.idContratoModal = contrato.id
     }
   },
   watch: {
@@ -792,7 +945,7 @@ export default {
 }
 
 .botao-adicionar-telefone {
-  margin-bottom: 8px;
+  margin-top: 16px;
 }
 
 .material-icons {
@@ -814,5 +967,8 @@ table#tabela-cliente .flip-list-move {
   transition: transform 0.4s;
 }
 
+.td-centralizado{
+  padding-top: 10px !important;
+}
 
 </style>

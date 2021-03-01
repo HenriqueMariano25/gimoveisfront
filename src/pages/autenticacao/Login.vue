@@ -10,7 +10,7 @@
       <b-row>
         <b-col>
           <form @submit.prevent v-on:keyup.enter="login">
-            <vs-input icon="person" label-placeholder="Usuário" class="w-100" v-model="usuario"/>
+            <vs-input icon="person" label-placeholder="Usuário" class="w-100" v-model="usuario" autofocus/>
             <vs-input type="password" icon="lock" label-placeholder="Senha" class="w-100" v-model='senha'/>
           </form>
         </b-col>

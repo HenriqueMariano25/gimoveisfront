@@ -82,11 +82,6 @@
               <vs-button type="flat" color="dark" @click="deletarImovelModal(row.item)" icon="delete"></vs-button>
             </div>
           </template>
-          <template #row-details>
-            <b-card>
-              <p>Detalhes do imóvel</p>
-            </b-card>
-          </template>
         </b-table>
       </b-col>
     </b-row>
@@ -280,7 +275,7 @@
             </b-col>
           </b-row>
         </b-tab>
-        <b-tab title="Inf. adicionais">
+        <b-tab title="Inf. adicionais" @click="tabInfAdicionais">
           <b-row>
             <b-col>
               <vs-input
@@ -319,25 +314,31 @@
             <b-col>
               <vs-input
                 label-placeholder="Valor da aquisição"
-                type="number"
                 v-model="imovel.valor_aquisicao"
                 class="input-personalizado"
+                ref="valor_aquisicao"
+                v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                        allowNegative: false, currency:'BRL'}"
               />
             </b-col>
             <b-col>
               <vs-input
                 label-placeholder="Valor da aquisiçao em Dólar"
-                type="number"
                 v-model="imovel.valor_aquisicao_dolar"
                 class="input-personalizado"
+                ref="valor_aquisicao_dolar"
+                v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                        allowNegative: false, currency:'USD'}"
               />
             </b-col>
             <b-col>
               <vs-input
                 label-placeholder="Valor atual"
-                type="number"
                 v-model="imovel.valor_atual"
                 class="input-personalizado"
+                ref="valor_atual"
+                v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                        allowNegative: false, currency:'BRL'}"
               />
             </b-col>
           </b-row>
@@ -413,16 +414,76 @@
             </b-col>
           </b-row>
         </b-tab>
-        <b-tab title="Despesas">
-          <b-row class="text-center">
+        <b-tab title="Despesas" :disabled="!editar">
+          <b-row>
+            <b-col >
+              <vs-input label-placeholder="Valor" ref="despesa_valor" v-model="despesa.valor" class="input-personalizado"
+                        v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                        allowNegative: false, currency:{prefix:'R$ '}}"/>
+            </b-col>
+            <b-col>
+              <vs-input label="Data" type="date" class="input-nascimento" v-model="despesa.data"/>
+            </b-col>
+            <b-col>
+              <vs-input label="Vencimento" type="date" class="input-nascimento" v-model="despesa.data_vencimento"/>
+            </b-col>
+            <b-col>
+              <b-form-group id="select-comodo" label="Tipo de despesa" v-model="despesa.tipo_despesa">
+                <b-form-select
+                    :options="tiposDespesas"
+                    value-field="id"
+                    v-model="despesa.tipo_despesa"
+                    text-field="descricao"
+                >
+                  <template #first>
+                    <b-form-select-option :value="null"
+                    >Selecione</b-form-select-option
+                    >
+                  </template>
+                </b-form-select>
+              </b-form-group>
+            </b-col>
+            <b-col>
+              <b-form-group id="select-comodo" label="Fixa ou Variável">
+                <b-form-select
+                    :options="fixaVariavel"
+                    value-field="valor"
+                    v-model="despesa.fixa_variavel"
+                    text-field="descricao"
+                >
+                  <template #first>
+                    <b-form-select-option :value="null"
+                    >Selecione</b-form-select-option
+                    >
+                  </template>
+                </b-form-select>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row align-v="center" style="padding-bottom: 10px;">
+            <b-col>
+              <vs-input label-placeholder="Descrição" class="mt-2" v-model="despesa.descricao"/>
+            </b-col>
             <b-col cols="auto">
               <vs-button
                 color="#5498ff"
                 type="filled"
                 icon="add"
                 class="botao-salvar"
+                @click.native="cadastrarDespesa"
+                v-if="!editandoDespesa"
               >
                 Adicionar despesa
+              </vs-button>
+              <vs-button
+                  color="#5498ff"
+                  type="filled"
+                  icon="add"
+                  class="botao-salvar"
+                  @click.native="salvarDespesaEditada"
+                  v-else
+              >
+                Salvar edição
               </vs-button>
             </b-col>
           </b-row>
@@ -435,8 +496,8 @@
                   bordered
                   head-variant="dark"
                   sort-icon-left
-                  :items="itemsContratoClientes"
                   :fields="cabecalhosDespesas"
+                  :items="despesas"
                   :current-page="currentPage"
                   :per-page="perPage"
                   :filter="filter"
@@ -447,32 +508,73 @@
                   show-empty
                   small
                   @filtered="onFiltered"
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
                   striped
                   hover
                   outlined
                   no-border-collapse
                   @row-clicked="(item) => $set(item, '_showDetails', !item._showDetails)"
               >
+                <template #cell(data)="row">
+                  {{ $dayjs(row.item.data).format('DD/MM/YYYY') }}
+                </template>
+                <template #cell(data_vencimento)="row" >
+                  <label v-if="row.item.data_vencimento">
+                    {{ $dayjs(row.item.data_vencimento).format('DD/MM/YYYY') }}
+                  </label>
+                </template>
+                <template #cell(editar)="row" >
+                  <div class="item-coluna-centralizada">
+                    <vs-button type="flat" color="dark" icon="edit" @click="editarDespesa(row)"></vs-button>
+                  </div>
+                </template>
+                <template #cell(deletar)="row">
+                  <div class="item-coluna-centralizada">
+                    <vs-button type="flat" color="dark" icon="delete" @click="deletarDespesa(row)"></vs-button>
+                  </div>
+                </template>
+                <template #table-colgroup>
+                  <col>
+                  <col>
+                  <col>
+                  <col>
+                  <col style="width: 15px">
+                  <col style="width: 15px">
+                </template>
+                <template #row-details="row">
+                  <b-card>
+                    <b-row>
+                      <b-col>
+                        <label><b>Descrição: </b>{{ row.item.descricao }}</label>
+                      </b-col>
+                    </b-row>
+                    <b-row>
+                      <b-col>
+                        <label><b>Fixa ou Variável: </b>{{ row.item.fixa_variavel }}</label>
+                      </b-col>
+                    </b-row>
+                  </b-card>
+                </template>
               </b-table>
             </b-col>
           </b-row>
         </b-tab>
-        <b-tab title="Contratos">
-          <b-row class="text-center mb-2">
-            <b-col cols="auto">
-              <vs-button
-                color="#5498ff"
-                type="filled"
-                icon="add"
-                class="botao-salvar"
-              >
-                Adicionar contrato
-              </vs-button>
-            </b-col>
-          </b-row>
+        <b-tab title="Contratos" :disabled="!editar">
+<!--          <b-row class="text-center mb-2">-->
+<!--            <b-col cols="auto">-->
+<!--              <vs-button-->
+<!--                color="#5498ff"-->
+<!--                type="filled"-->
+<!--                icon="add"       implantar essa ação futuramente-->
+<!--                class="botao-salvar"-->
+<!--              >-->
+<!--                Adicionar contrato-->
+<!--              </vs-button>-->
+<!--            </b-col>-->
+<!--          </b-row>-->
           <b-row>
             <b-col>
-              <p class="p-contratos">Contratos de:</p>
+              <p class="p-contratos">Contratos de: {{ imovel.nome }}</p>
             </b-col>
           </b-row>
           <b-row>
@@ -484,7 +586,6 @@
                 bordered
                 head-variant="dark"
                 sort-icon-left
-                :items="itemsContratoClientes"
                 :fields="cabecalhosContratosClientes"
                 :current-page="currentPage"
                 :per-page="perPage"
@@ -494,22 +595,42 @@
                 :sort-desc.sync="sortDesc"
                 :sort-direction="sortDirection"
                 show-empty
+                :items="contratos"
                 small
                 @filtered="onFiltered"
+                selectable
+                select-mode="single"
+                @row-selected="selecionandoContrato"
                 striped
                 hover
                 outlined
                 no-border-collapse
+                sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 00px)"
                 @row-clicked="
                   (item) => $set(item, '_showDetails', !item._showDetails)
                 "
               >
+                <template #cell(contrato)="row">
+                  <label>
+                    {{ ("0000" + row.item.contrato).slice(-4) }}
+                  </label>
+                </template>
+                <template #cell(data_inicio)="row">
+                  <label>
+                    {{ $dayjs(row.item.data_inicio).format('DD/MM/YYYY') }}
+                  </label>
+                </template>
+                <template #cell(data_fim)="row">
+                  <label>
+                    {{ $dayjs(row.item.data_fim).format('DD/MM/YYYY') }}
+                  </label>
+                </template>
               </b-table>
             </b-col>
           </b-row>
           <b-row>
             <b-col>
-              <p class="p-contratos">Boletos do contrato:</p>
+              <p class="p-contratos">Boletos do contrato: {{ idContrato }}</p>
             </b-col>
           </b-row>
           <b-row>
@@ -521,7 +642,7 @@
                 bordered
                 head-variant="dark"
                 sort-icon-left
-                :items="itemsContratoClientes"
+                :items="boletos"
                 :fields="cabecalhosContratosBoletos"
                 :current-page="currentPage"
                 :per-page="perPage"
@@ -535,12 +656,33 @@
                 @filtered="onFiltered"
                 striped
                 hover
+                sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 300px)"
                 outlined
                 no-border-collapse
                 @row-clicked="
                   (item) => $set(item, '_showDetails', !item._showDetails)
                 "
               >
+                <template #cell(id)="row">
+                  <label >
+                    {{ ("000000" + row.item.id).slice(-6) }}
+                  </label>
+                </template>
+                <template #cell(valor)="row">
+                  <label >
+                    R$ {{ row.item.valor }}
+                  </label>
+                </template>
+                <template #cell(data_vencimento)="row">
+                  <label>
+                    {{ $dayjs(row.item.data_vencimento).format('DD/MM/YYYY') }}
+                  </label>
+                </template>
+                <template #cell(data_quitacao)="row">
+                  <label v-if="(row.item.data_quitacao)">
+                    {{ $dayjs(row.item.data_quitacao).format('DD/MM/YYYY') }}
+                  </label>
+                </template>
               </b-table>
             </b-col>
           </b-row>
@@ -590,7 +732,8 @@
 <script>
 import api from "../../services/api";
 import Carregando from "../../components/shared/Carregando";
-import {atribuirCep} from "../../methods/global";
+import {atribuirCep, converterDinherioFloat} from "../../methods/global"
+import { setValue } from "vue-currency-input"
 
 export default {
   name: "VisualizarImovel",
@@ -599,8 +742,21 @@ export default {
   },
   data() {
     return {
+      real: {
+        decimal: ',',
+        thousands: '.',
+        prefix: 'R$ ',
+        suffix: '',
+        precision: 2,
+      },
+      dolar: {
+        decimal: ',',
+        thousands: '.',
+        prefix: 'US$ ',
+        suffix: '',
+        precision: 2,
+      },
       items: [],
-      itemsContratoClientes: [],
       transProps: {
         name: "flip-list",
       },
@@ -612,26 +768,26 @@ export default {
         { key: "deletar", label: "" },
       ],
       cabecalhosDespesas: [
-        { key: "categoria", label: "Categoria", sortable: true },
-        { key: "descricao", label: "Descricao", sortable: true },
-        { key: "data", label: "Data", sortable: true },
-        { key: "vencimento", label: "Vencimento" },
-        { key: "tipo", label: "Tipo" },
-        { key: "editar", label: "Editar" },
-        { key: "deletar", label: "Deletar" },
+        { key: "valor", label: "Valor", sortable: true, class: 'text-center' ,tdClass:"td-centralizado" },
+        { key: "data", label: "Data", sortable: true , class: 'text-center',tdClass:"td-centralizado"},
+        { key: "data_vencimento", label: "Vencimento", sortable: true , class: 'text-center',tdClass:"td-centralizado"},
+        { key: "descricao_tipo_despesa", label: "Tipo", sortable: true , thClass: 'text-center' ,tdClass:"td-centralizado"},
+        { key: "editar", label: "" },
+        { key: "deletar", label: "" },
       ],
       cabecalhosContratosClientes: [
-        { key: "contrato", label: "Contrato", sortable: true },
-        { key: "cliente", label: "Cliente", sortable: true },
-        { key: "data_inicio", label: "Data de início", sortable: true },
-        { key: "vencimento", label: "Vencimento" },
-        { key: "status", label: "Status" },
+        { key: "contrato", label: "Contrato", sortable: true, class: 'text-center'},
+        { key: "cliente", label: "Cliente", sortable: true, thClass: 'text-center' },
+        { key: "data_inicio", label: "Data de início", sortable: true, class: 'text-center' },
+        { key: "data_fim", label: "Data de Término", class: 'text-center', sortable: true  },
+        { key: "status", label: "Status", class: 'text-center', sortable: true  },
       ],
       cabecalhosContratosBoletos: [
-        { key: "valor", label: "Valor", sortable: true },
-        { key: "vencimento", label: "Vencimento" },
-        { key: "status", label: "Status" },
-        { key: "editar", label: "Editar" },
+        { key: "id", label: "Codigo", sortable: true, class: 'text-center' },
+        { key: "valor", label: "Valor", sortable: true, class: 'text-center' },
+        { key: "data_vencimento", label: "Vencimento", sortable: true, class: 'text-center' },
+        { key: "data_quitacao", label: "Quitação", sortable: true, class: 'text-center' },
+        { key: "status", label: "Status", sortable: true, class: 'text-center' },
       ],
       totalRows: 1,
       currentPage: 1,
@@ -669,12 +825,30 @@ export default {
         numero_cliente_luz: "",
         numero_cliente_agua: "",
       },
+      despesa:{
+        valor:"",
+        data:"",
+        data_vencimento:"",
+        tipo_despesa:null,
+        fixa_variavel:null,
+        descricao:""
+      },
       tiposStatus: [],
       tiposImoveis: [],
       tiposComodos: [],
+      tiposDespesas:[],
       comodos: [{ id: "", quantidade: 0, tipo: null }],
       editar: false,
-      carregandoCep:false
+      carregandoCep:false,
+      contratos:[],
+      idContrato:"",
+      boletos:"",
+      fixaVariavel:[
+        {valor:'fixa', descricao:'Fixa'},
+        {valor:'variavel', descricao:"Variável"}
+      ],
+      despesas:[],
+      editandoDespesa:false
     };
   },
 
@@ -702,6 +876,22 @@ export default {
         this.tiposComodos = response.data;
       });
     },
+    async buscarContratos(){
+      await api.get('/imoveis/contratos', {params:{idContrato:this.imovel.id}}).then(response => {
+        this.contratos = response.data
+      })
+    },
+    async buscarTiposDespesas(){
+      await api.get('/imoveis/despesas/tipo_despesas').then(consulta =>{
+        this.tiposDespesas = consulta.data
+      })
+    },
+    async buscarDespesas(){
+      await api.get('/imoveis/despesas', {params:{idImovel:this.imovel.id}}).then(consulta => {
+        this.despesas = Object.freeze(consulta.data)
+      })
+    },
+
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
@@ -745,6 +935,9 @@ export default {
       });
     },
     async editarImovel() {
+      this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao)
+      this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual)
+      this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar)
       if (this.validarCamposObrigatorio()) {
         await api.post(`/imovel/editar/${this.imovel.id}`, {
           data: this.imovel,
@@ -769,11 +962,19 @@ export default {
       this.$modal.show("modal-imovel");
       this.buscarTiposStatus();
       this.buscarTiposComodos();
+      if(this.editar){
+        this.buscarContratos()
+        this.buscarTiposDespesas()
+        this.buscarDespesas()
+      }
     },
     esconderModal() {
       this.$modal.hide("modal-imovel");
       this.limparModal();
       this.editar = false;
+      this.boletos = []
+      this.contratos = []
+      this.idContrato = ""
     },
     limparModal() {
       Object.keys(this.imovel).forEach((key) => {
@@ -781,15 +982,20 @@ export default {
       });
       this.imovel.id_status = null;
       this.imovel.tipo_imovel = null;
+      this.despesa = {
+        valor:"",
+        data:"",
+        data_vencimento:"",
+        tipo_despesa:null,
+        fixa_variavel:null,
+        descricao:""
+      }
     },
     async cadastrarImovel() {
+      this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao)
+      this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual)
+      this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar)
       if (this.validarCamposObrigatorio()) {
-        // let variaveisString = ['data_nascimento', 'identidade', 'status', 'estado_civil']
-        // for (let key in variaveisString) {
-        //   if (this.cliente[variaveisString[key]] == "") {
-        //     this.cliente[variaveisString[key]] = null
-        //   }
-        // }
         await api.post("/imovel/cadastrar", {
           data: this.imovel,
           comodos: this.comodos,
@@ -885,6 +1091,80 @@ export default {
           this.comodos = [{ id: "", quantidade: 0, tipo: null }]
         }
       }
+    },
+    async selecionandoContrato(contrato){
+      this.idContrato = ("0000" + contrato[0].contrato).slice(-4)
+      await api.get('/contrato/boletos', {params:{idContrato: contrato[0].contrato}}).then(response => {
+        this.boletos = response.data
+      })
+    },
+    async cadastrarDespesa(){
+      this.despesa.valor = converterDinherioFloat(this.despesa.valor)
+      await api.post('/imoveis/despesas/cadastrar', {despesa: this.despesa, idImovel: this.imovel.id}).then(() => {
+        this.buscarDespesas()
+        Object.keys(this.despesa).forEach((key) => {
+          this.despesa[key] = "";
+        });
+        this.despesa.fixa_variavel = null
+        this.despesa.tipo_despesa = null
+        this.despesa.valor = ""
+      })
+    },
+    tabInfAdicionais(){
+      setValue(this.$refs.valor_aquisicao, this.imovel.valor_aquisicao)
+      setValue(this.$refs.valor_aquisicao_dolar, this.imovel.valor_aquisicao_dolar)
+      setValue(this.$refs.valor_atual, this.imovel.valor_atual)
+    },
+    editarDespesa(despesa){
+      setValue(this.$refs.despesa_valor, despesa.item.valor)
+      this.despesa.data = despesa.item.data
+      this.despesa.data_vencimento = despesa.item.data_vencimento
+      this.despesa.descricao = despesa.item.descricao
+      this.despesa.fixa_variavel = despesa.item.fixa_variavel
+      this.despesa.tipo_despesa = despesa.item.id_tipo_despesa
+      this.despesa.id = despesa.item.id
+      this.editandoDespesa = true
+    },
+    async salvarDespesaEditada(){
+      this.despesa.valor = converterDinherioFloat(this.despesa.valor)
+      await api.post('/imoveis/despesas/editar', {despesa: this.despesa}).then(response => {
+        console.log(response)
+        this.despesa = {
+          valor:"",
+          data:"",
+          data_vencimento:"",
+          tipo_despesa:null,
+          fixa_variavel:null,
+          descricao:""
+        }
+        this.buscarDespesas()
+      })
+    },
+    async deletarDespesa(despesa){
+      this.despesa = {
+        valor:"",
+        data:"",
+        data_vencimento:"",
+        tipo_despesa:null,
+        fixa_variavel:null,
+        descricao:""
+      }
+      this.$bvModal.msgBoxConfirm(`Tem certeza que deseja remover essa despesa ?`, {
+        title: 'Remover despesa',
+        buttonSize: 'sm',
+        okTitle: 'Despesa',
+        cancelTitle: 'Cancelar',
+        okVariant: 'danger',
+        footerClass: 'p-2',
+        centered: true
+      }).then(value => {
+        if (value) {
+          let idDespesa = despesa.item.id
+          api.delete(`/imoveis/despesa/${idDespesa}/deletar`).then(() => {
+            this.buscarDespesas()
+          })
+        }
+      })
     },
   },
   watch: {
@@ -1035,4 +1315,9 @@ body {
 table#tabela-imovel .flip-list-move {
   transition: transform 0.3s;
 }
+
+.td-centralizado{
+  padding-top: 10px !important;
+}
+
 </style>

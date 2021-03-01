@@ -26,9 +26,8 @@
       <b-col class="col-tabela-responsaveis">
         <b-table
             id="tabela-contrato"
-            primary-key="nome_cliente"
+            primary-key="id"
             :tbody-transition-props="transProps"
-            tbody-tr-class="testesao"
             bordered
             head-variant="dark"
             sort-icon-left
@@ -43,13 +42,19 @@
             :sort-direction="sortDirection"
             show-empty
             small
+            :busy="carregandoContratos"
             @filtered="onFiltered"
             striped
             hover
             outlined
             sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
-            no-border-collapse
-            @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
+            no-border-collapse>
+          <template #table-busy>
+            <div class="text-center text-danger my-2">
+              <b-spinner class="align-middle"></b-spinner>
+              <strong class="ml-2">Carregando...</strong>
+            </div>
+          </template>
           <template #cell(id)="row">
             <p class="tr-contrato">{{ ("0000" + row.item.id).slice(-4) }}</p>
           </template>
@@ -64,7 +69,13 @@
           </template>
           <template #cell(status)="row">
             <p v-if="!row.item.nome_pdf" class="tr-contrato" style="color:red"><b>Falta PDF</b></p>
-            <p v-else class="tr-contrato">{{ row.item.status }}</p>
+            <p v-else class="tr-contrato text-capitalize">{{ row.item.status }}</p>
+          </template>
+          <template #cell(contrato)="row">
+            <div class="item-coluna-centralizada">
+              <vs-button type="flat" color="dark" :disabled="!row.item.url" target :href="row.item.url"
+                         icon="description"></vs-button>
+            </div>
           </template>
           <template #cell(editar)="row">
             <div class="item-coluna-centralizada">
@@ -84,14 +95,7 @@
             <col>
             <col style="width: 15px">
             <col style="width: 15px">
-          </template>
-          <template #row-details="row">
-            <b-card>
-              <vs-button v-if="row.item.url" target :href="row.item.url" color="#5498ff" type="filled" icon="description">
-                Contrato
-              </vs-button>
-              <label v-else><b>Pendência de contrato importado no sistema.</b></label>
-            </b-card>
+            <col style="width: 15px">
           </template>
         </b-table>
       </b-col>
@@ -136,9 +140,7 @@
       </b-row>
     </b-container>
     <!--  Fim da tabela-->
-    <modal name="modal-contrato" width="60%" height="auto" :scrollable="true"
-
-           class="modal-adicionando-responsavel">
+    <modal name="modal-contrato" id="modal-contrato" width="60%" height="auto" :scrollable="true" class="modal-adicionando-responsavel">
       <h3>Adicionando contrato</h3>
       <b-tabs content-class="mt-3">
         <b-tab title="Dados gerais" active>
@@ -194,7 +196,10 @@
                         class="input-nascimento"/>
             </b-col>
             <b-col>
-              <vs-input label-placeholder="Valor do Boleto" v-model="contrato.valor_boleto" class="input-personalizado"
+              <vs-input ref="valor_boleto" label-placeholder="Valor do Boleto" v-model="contrato.valor_boleto"
+                        class="input-personalizado"
+                        v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                        allowNegative: false, currency:'BRL'}"
               />
             </b-col>
           </b-row>
@@ -250,7 +255,7 @@
             <b-col>
               <b-table
                   id="tabela-boleto"
-                  primary-key="data_vencimento"
+                  primary-key="id"
                   :tbody-transition-props="transProps"
                   bordered
                   head-variant="dark"
@@ -326,7 +331,7 @@
 
       </b-row>
     </modal>
-    <modal name="modal-editar-boleto" width="60%" height="auto" :scrollable="true" :click-to-close="false"
+    <modal name="modal-editar-boleto"  width="60%" height="auto" :scrollable="true" :click-to-close="false"
            class="modal-adicionando-responsavel">
       <b-container>
         <b-row>
@@ -360,7 +365,7 @@
         <b-row align-h="end">
           <b-col cols="2">
             <vs-button color="#24a35a" type="filled" icon="save" class="botao-salvar"
-                       @click="editarBoleto">
+                       @click="editarBoleto" >
               Salvar
             </vs-button>
           </b-col>
@@ -380,6 +385,7 @@
 
 import api from '../../services/api'
 import dayjs from 'dayjs'
+import {converterDinherioFloat} from "../../methods/global";
 
 export default {
   name: "VisualizarContrato",
@@ -395,15 +401,16 @@ export default {
         {key: 'nome_responsavel', label: 'Responsável', sortable: true, thClass: 'text-center'},
         {key: 'nome_imovel', label: 'Imóvel', sortable: true, thClass: 'text-center'},
         {key: 'status', label: 'Status', class: 'text-center'},
+        {key: 'contrato', label: ''},
         {key: 'editar', label: ''},
         {key: 'deletar', label: ''},
       ],
       fieldsBoletos: [
         {key: 'id', label: 'Código', sortable: true, class: 'text-center'},
-        {key: 'data_vencimento', label: 'Vencimento', class: 'text-center'},
-        {key: 'valor', label: 'Valor', class: 'text-center'},
-        {key: 'data_quitacao', label: 'Data Quitação', class: 'text-center'},
-        {key: 'status', label: 'Status', class: 'text-center'},
+        {key: 'data_vencimento', label: 'Vencimento', sortable: true, class: 'text-center'},
+        {key: 'valor', label: 'Valor', sortable: true, class: 'text-center'},
+        {key: 'data_quitacao', label: 'Data Quitação', sortable: true, class: 'text-center'},
+        {key: 'status', label: 'Status', sortable: true, class: 'text-center'},
         {key: 'editar', label: '', class: 'text-center'},
       ],
       totalRows: 1,
@@ -429,7 +436,7 @@ export default {
         garantia: "",
         fiador: "",
         locador: "",
-        nome_pdf:""
+        nome_pdf: ""
       },
       boletos: [],
       boleto: {
@@ -448,7 +455,8 @@ export default {
       dayjs: dayjs,
       status_boleto: [],
       files: null,
-      btn_importa_desabilitado: true
+      btn_importa_desabilitado: true,
+      carregandoContratos: false
     }
   },
 
@@ -469,8 +477,11 @@ export default {
       })
     },
     async buscarContratos() {
+      this.carregandoContratos = true
       await api.get('/contratos').then(response => {
         this.items = response.data
+        console.log(response.data)
+        this.carregandoContratos = false
       })
     },
     async buscarBoletos(idContrato) {
@@ -510,19 +521,19 @@ export default {
     },
     async editarContratoModal(id) {
       await api.get('/contrato', {params: {idContrato: id}}).then(response => {
-        console.log(response)
         this.contrato = response.data[0]
+        this.contrato.valor_boleto = `R$ ${response.data[0].valor_boleto.replace('.',',')}`
         this.buscarBoletos(id)
         this.mostrarModal()
         this.editar = true
       })
     },
     async editarContrato() {
+      this.contrato.valor_boleto = converterDinherioFloat(this.contrato.valor_boleto)
       if (this.validarCamposObrigatorio()) {
         await api.post(`/contrato/editar`, {
           contrato: this.contrato,
         }).then(response => {
-          console.log(response)
           let codigo = response.data[0].id
           this.$vs.notify({
             text: `Contrato editado com sucesso: ${codigo} !`,
@@ -563,12 +574,13 @@ export default {
       })
     },
 
-    mostrarModal() {
+    async mostrarModal() {
       this.buscarResponsaveis()
       this.buscarClientes()
       this.buscarImoveis()
       this.$modal.show('modal-contrato')
     },
+
     esconderModal() {
       this.$modal.hide('modal-contrato');
       this.limparModal()
@@ -615,6 +627,7 @@ export default {
       })
     },
     async cadastrarContrato() {
+      this.contrato.valor_boleto = converterDinherioFloat(this.contrato.valor_boleto)
       if (this.validarCamposObrigatorio()) {
         if (this.validarDataInicioFim()) {
           await api.post('/contrato/cadastrar', {contrato: this.contrato}).then(() => {
@@ -675,25 +688,21 @@ export default {
     },
   },
   watch: {
-    'contrato.data_inicio': {
-      handler: function (inicio) {
-        if (inicio.length == 10) {
-          this.ativo_data_termino = true
-        } else {
-          this.ativo_data_termino = false
-          this.contrato.data_fim = ""
-          this.contrato.vigencia = ""
-        }
+    'contrato.data_inicio': function (inicio) {
+      if (inicio.length == 10) {
+        this.ativo_data_termino = true
+      } else {
+        this.ativo_data_termino = false
+        this.contrato.data_fim = ""
+        this.contrato.vigencia = ""
       }
     },
-    'contrato.data_fim': {
-      handler: function (fim) {
-        if (fim.length == 10) {
-          let inicio = this.contrato.data_inicio
-          this.contrato.vigencia = dayjs(fim).diff(inicio, 'month')
-        } else {
-          this.contrato.vigencia = ""
-        }
+    'contrato.data_fim': function (fim) {
+      if (fim.length == 10) {
+        let inicio = this.contrato.data_inicio
+        this.contrato.vigencia = dayjs(fim).diff(inicio, 'month')
+      } else {
+        this.contrato.vigencia = ""
       }
     },
   },
@@ -770,7 +779,7 @@ export default {
   margin-bottom: 10px;
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
+  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
 }
 
 .tabela-responsaveis {
@@ -779,7 +788,7 @@ export default {
   padding: 0;
   margin-bottom: 10px;
   border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
+  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
 }
 
 .col-tabela-responsaveis {
@@ -790,7 +799,7 @@ export default {
   border-top: 1px solid rgb(200, 200, 200);
   position: absolute;
   bottom: 0;
-  margin-left:-100px;
+  margin-left: -100px;
   width: 100%;
   padding: 10px 100px 15px 100px;
   background-color: white;
@@ -829,8 +838,8 @@ export default {
   content: 'Importar';
 }
 
-.p-contrato{
-  margin-top:15px;
+.p-contrato {
+  margin-top: 15px;
 }
 
 table#tabela-contrato .flip-list-move {
