@@ -361,60 +361,170 @@
             </b-col>
           </b-row>
         </b-tab>
-        <b-tab title="Cômodos">
+        <b-tab title="Cômodos" @click="inicilizarTabComodo" :disabled="imovel.id == ''">
+<!--          <b-row>-->
+<!--            <b-col cols="auto">-->
+<!--              <vs-button-->
+<!--                type="filled"-->
+<!--                icon="add"-->
+<!--                class="botao-salvar botao-adicionar-comodo"-->
+<!--                color="#5498ff"-->
+<!--                @click.prevent="adicionarComodo()"-->
+<!--                >Adicionar comôdo-->
+<!--              </vs-button>-->
+<!--            </b-col>-->
+<!--          </b-row>-->
           <b-row>
+            <b-col cols="3">
+              <b-form-group id="select-comodo" label="Tipo do comôdo">
+                <b-form-select
+                    :options="tiposComodos"
+                    value-field="id"
+                    text-field="descricao"
+                    v-model="comodo.id_tipo_comodo"
+                >
+                  <template #first>
+                    <b-form-select-option :value="null"
+                    >Selecione</b-form-select-option
+                    >
+                  </template>
+                </b-form-select>
+              </b-form-group>
+            </b-col>
+            <b-col>
+              <vs-input
+                  label-placeholder="Quantidade"
+                  type="number"
+                  class="input-personalizado"
+                  v-model="comodo.quantidade"
+              />
+            </b-col>
+            <b-col cols="6">
+              <vs-input
+                  label-placeholder="Descrição"
+                  type="text"
+                  class="input-personalizado"
+                  v-model="comodo.descricao"
+              />
+            </b-col>
             <b-col cols="auto">
               <vs-button
-                type="filled"
-                icon="add"
-                class="botao-salvar botao-adicionar-comodo"
-                color="#5498ff"
-                @click.prevent="adicionarComodo()"
-                >Adicionar comôdo
-              </vs-button>
+                  type="filled"
+                  icon="add"
+                  class="botao-salvar botao-adicionar-comodo"
+                  color="#5498ff"
+                  @click.prevent="adicionarComodo()"
+                  v-if="!editandoComodo"
+              />
+              <vs-button
+                  type="filled"
+                  icon="save"
+                  class="botao-salvar botao-adicionar-comodo"
+                  color="#5498ff"
+                  @click.prevent="salvarEdicaoComodo()"
+                  v-else
+              />
             </b-col>
           </b-row>
-          <b-row class="campos-comodos">
-            <b-col cols="6" v-for="(comodo, index) in comodos" :key="index">
-              <b-row>
-                <b-col cols="5">
-                  <b-form-group id="select-comodo" label="Tipo do comôdo">
-                    <b-form-select
-                      v-model="comodo.tipo"
-                      :options="tiposComodos"
-                      value-field="id"
-                      text-field="descricao"
-                    >
-                      <template #first>
-                        <b-form-select-option :value="null"
-                        >Selecione</b-form-select-option
-                        >
-                      </template>
-                    </b-form-select>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="5">
-                  <vs-input
-                      label-placeholder="Quantidade"
-                      type="number"
-                      v-model="comodo.quantidade"
-                      class="input-personalizado"
-                  />
-                </b-col>
-                <b-col cols="2" class="text-center botao-deletar-comodo">
-                  <vs-button
-                      type="flat"
-                      icon="delete"
-                      color="dark"
-                      class=""
-                      @click.native="removerComodo(index)"
-                  />
-                </b-col>
-              </b-row>
+          <b-row>
+            <b-col>
+              <b-table
+                  primary-key="nome"
+                  id="tabela-imovel"
+                  :tbody-transition-props="transProps"
+                  bordered
+                  head-variant="dark"
+                  sort-icon-left
+                  :fields="cabecalhosComodos"
+                  :items="comodos"
+                  :current-page="currentPage"
+                  :per-page="perPage"
+                  :filter="filter"
+                  :filter-included-fields="filterOn"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+                  show-empty
+                  small
+                  @filtered="onFiltered"
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
+                  striped
+                  hover
+                  :busy="carregandoComodos"
+                  outlined
+                  no-border-collapse
+                  @row-clicked="(item) => $set(item, '_showDetails', !item._showDetails)"
+              >
+                <template #table-colgroup>
+                  <col>
+                  <col>
+                  <col>
+                  <col style="width: 15px">
+                  <col style="width: 15px">
+                </template>
+                <template #table-busy>
+                  <div class="text-center text-danger my-2">
+                    <b-spinner class="align-middle"></b-spinner>
+                    <strong class="ml-2">Carregando...</strong>
+                  </div>
+                </template>
+                <template #cell(editar)="row" >
+                  <div class="item-coluna-centralizada">
+                    <vs-button type="flat" color="dark" icon="edit" @click="editarComodo(row)"></vs-button>
+                  </div>
+                </template>
+                <template #cell(deletar)="row">
+                  <div class="item-coluna-centralizada">
+                    <vs-button type="flat" color="dark" icon="delete" @click="deletarComodo(row)"></vs-button>
+                  </div>
+                </template>
+              </b-table>
             </b-col>
           </b-row>
+<!--          <b-row class="campos-comodos">-->
+<!--            <b-col cols="6" v-for="(comodo, index) in comodos" :key="index">-->
+<!--              <b-row>-->
+<!--                <b-col cols="5">-->
+<!--                  <b-form-group id="select-comodo" label="Tipo do comôdo">-->
+<!--                    <b-form-select-->
+<!--                      v-model="comodo.tipo"-->
+<!--                      :options="tiposComodos"-->
+<!--                      value-field="id"-->
+<!--                      text-field="descricao"-->
+<!--                    >-->
+<!--                      <template #first>-->
+<!--                        <b-form-select-option :value="null"-->
+<!--                        >Selecione</b-form-select-option-->
+<!--                        >-->
+<!--                      </template>-->
+<!--                    </b-form-select>-->
+<!--                  </b-form-group>-->
+<!--                </b-col>-->
+<!--                <b-col cols="5">-->
+<!--                  <vs-input-->
+<!--                      label-placeholder="Quantidade"-->
+<!--                      type="number"-->
+<!--                      v-model="comodo.quantidade"-->
+<!--                      class="input-personalizado"-->
+<!--                  />-->
+<!--                </b-col>-->
+<!--                <b-col cols="2" class="text-center botao-deletar-comodo">-->
+<!--                  <vs-button-->
+<!--                      type="flat"-->
+<!--                      icon="delete"-->
+<!--                      color="dark"-->
+<!--                      class=""-->
+<!--                      @click.native="removerComodo(index)"-->
+<!--                  />-->
+<!--                </b-col>-->
+<!--              </b-row>-->
+<!--            </b-col>-->
+<!--          </b-row>-->
         </b-tab>
-        <b-tab title="Despesas" :disabled="!editar">
+
+
+
+        <b-tab title="Despesas" :disabled="imovel.id == ''">
           <b-row>
             <b-col >
               <vs-input label-placeholder="Valor" ref="despesa_valor" v-model="despesa.valor" class="input-personalizado"
@@ -518,6 +628,9 @@
                 <template #cell(data)="row">
                   {{ $dayjs(row.item.data).format('DD/MM/YYYY') }}
                 </template>
+                <template #cell(valor)="row">
+                  <label>R$ {{ row.item.valor.replace('.',',') }}</label>
+                </template>
                 <template #cell(data_vencimento)="row" >
                   <label v-if="row.item.data_vencimento">
                     {{ $dayjs(row.item.data_vencimento).format('DD/MM/YYYY') }}
@@ -559,7 +672,7 @@
             </b-col>
           </b-row>
         </b-tab>
-        <b-tab title="Contratos" :disabled="!editar">
+        <b-tab title="Contratos" :disabled="imovel.id == ''">
 <!--          <b-row class="text-center mb-2">-->
 <!--            <b-col cols="auto">-->
 <!--              <vs-button-->
@@ -623,6 +736,16 @@
                 <template #cell(data_fim)="row">
                   <label>
                     {{ $dayjs(row.item.data_fim).format('DD/MM/YYYY') }}
+                  </label>
+                </template>
+                <template #cell(status)="row">
+                  <label v-if="!row.item.nome_pdf" style="color:red">
+                    <b>
+                      Falta PDF
+                    </b>
+                  </label>
+                  <label v-else>
+                    {{ row.item.status }}
                   </label>
                 </template>
               </b-table>
@@ -690,7 +813,7 @@
       </b-tabs>
       <div class="text-center">
         <b-row align-h="end">
-          <b-col cols="2">
+          <b-col cols="auto">
             <vs-button
                 v-if="editar == true"
                 color="#24a35a"
@@ -707,12 +830,22 @@
               type="filled"
               icon="save"
               class="botao-salvar"
-              @click.native="cadastrarImovel"
+              @click.native="cadastrarImovelSair(false)"
             >
               Salvar
             </vs-button>
           </b-col>
-          <b-col cols="2">
+          <b-col cols="auto">
+            <vs-button
+                color="#39a324"
+                type="filled"
+                icon="save"
+                class="botao-salvar"
+                @click.native="cadastrarImovelSair(true)" v-if="!editar">
+              Salvar e Sair
+            </vs-button>
+          </b-col>
+          <b-col cols="auto">
             <vs-button
               color="#707070"
               type="filled"
@@ -764,6 +897,13 @@ export default {
         { key: "nome", label: "Nome", sortable: true, thClass: 'text-center' },
         { key: "rua", label: "Rua", sortable: true, thClass: 'text-center' },
         { key: "status", label: "Status", sortable: true, class: 'text-center' },
+        { key: "editar", label: "" },
+        { key: "deletar", label: "" },
+      ],
+      cabecalhosComodos: [
+        { key: "tipo_comodo", label: "Tipo", sortable: true, class: 'text-center' ,tdClass:"td-centralizado" },
+        { key: "quantidade", label: "Quantidade", sortable: true , class: 'text-center',tdClass:"td-centralizado"},
+        { key: "descricao", label: "Descrição", sortable: true , class: 'text-center',tdClass:"td-centralizado"},
         { key: "editar", label: "" },
         { key: "deletar", label: "" },
       ],
@@ -833,11 +973,18 @@ export default {
         fixa_variavel:null,
         descricao:""
       },
+      comodo:{
+        id: "",
+        descricao: "",
+        id_tipo_comodo: null,
+        quantidade:""
+      },
       tiposStatus: [],
       tiposImoveis: [],
       tiposComodos: [],
       tiposDespesas:[],
-      comodos: [{ id: "", quantidade: 0, tipo: null }],
+      // comodos: [{ id: "", quantidade: 0, tipo: null }],
+
       editar: false,
       carregandoCep:false,
       contratos:[],
@@ -848,7 +995,10 @@ export default {
         {valor:'variavel', descricao:"Variável"}
       ],
       despesas:[],
-      editandoDespesa:false
+      editandoDespesa:false,
+      comodos:[],
+      carregandoComodos:false,
+      editandoComodo:false
     };
   },
 
@@ -869,11 +1019,6 @@ export default {
         this.totalRows = this.items.length;
       }).catch((erro) => {
         console.log(erro);
-      });
-    },
-    async buscarTiposComodos() {
-      await api.get("/imoveis/tipo_comodo").then((response) => {
-        this.tiposComodos = response.data;
       });
     },
     async buscarContratos(){
@@ -922,16 +1067,10 @@ export default {
 
     async editarImovelModal(imovel) {
       await api.get(`/imovel/`, { params: { id: imovel.id } }).then((response) => {
-        this.comodos = [];
-        this.imovel = response.data[0];
-        for (let x = 0; x < this.imovel.quantidade.length; x++) {
-          let quantidade = this.imovel.quantidade[x];
-          let tipo = this.imovel.tipo_comodo[x];
-          let id = this.imovel.id_comodo[x];
-          this.comodos.push({ id: id, quantidade: quantidade, tipo: tipo });
-        }
-        this.editar = true;
-        this.mostrarModal();
+        this.imovel = response.data[0]
+        this.editar = true
+        this.buscarComodos()
+        this.mostrarModal()
       });
     },
     async editarImovel() {
@@ -963,7 +1102,7 @@ export default {
     mostrarModal() {
       this.$modal.show("modal-imovel");
       this.buscarTiposStatus();
-      this.buscarTiposComodos();
+      // this.buscarTiposComodos();
       if(this.editar){
         this.buscarContratos()
         this.buscarTiposDespesas()
@@ -992,8 +1131,9 @@ export default {
         fixa_variavel:null,
         descricao:""
       }
+      this.comodos = []
     },
-    async cadastrarImovel() {
+    async cadastrarImovelSair(sair) {
       this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao)
       this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual)
       this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar)
@@ -1005,7 +1145,7 @@ export default {
           idUsuario: idUsuario
         }).then((response) => {
           let nomeImovel = response.data[0].nome;
-          this.esconderModal();
+          this.imovel.id = response.data[0].id
           this.$vs.notify({
             text: `Imóvel cadastrado com sucesso: ${nomeImovel} !`,
             position: "top-center",
@@ -1013,8 +1153,12 @@ export default {
             time: 6000,
             icon: "check_circle_outline",
           });
-          this.buscarImoveis();
-          this.limparModal();
+          console.log(sair)
+          if(sair){
+            this.esconderModal();
+            this.buscarImoveis();
+            this.limparModal();
+          }
         });
       }
     },
@@ -1060,42 +1204,37 @@ export default {
         this.imovel.rua = dados.logradouro;
       }
     },
-    adicionarComodo() {
-      this.comodos.push({
-        quantidade: 0,
-        tipo: null,
-      });
-    },
-    removerComodo(index) {
-      let comodo = this.comodos[index]
-      if (comodo.id) {
-        this.$bvModal.msgBoxConfirm(`Tem certeza que deseja remover esse cômodo ?`, {
-          title: 'Remover cômodo',
-          buttonSize: 'sm',
-          okTitle: 'Remover',
-          cancelTitle: 'Cancelar',
-          okVariant: 'danger',
-          footerClass: 'p-2',
-          centered: true
-        }).then(value => {
-          if (value) {
-            api.post('/imoveis/deletar/comodo', {idComodo: comodo.id}).then(() => {
-              if (this.comodos.length > 1) {
-                this.comodos.splice(index, 1)
-              } else {
-                this.comodos = [{ id: "", quantidade: 0, tipo: null }]
-              }
-            })
-          }
-        })
-      } else {
-        if (this.comodos.length > 1) {
-          this.comodos.splice(index, 1)
-        } else {
-          this.comodos = [{ id: "", quantidade: 0, tipo: null }]
-        }
-      }
-    },
+
+    // removerComodo(index) {
+    //   let comodo = this.comodos[index]
+    //   if (comodo.id) {
+    //     this.$bvModal.msgBoxConfirm(`Tem certeza que deseja remover esse cômodo ?`, {
+    //       title: 'Remover cômodo',
+    //       buttonSize: 'sm',
+    //       okTitle: 'Remover',
+    //       cancelTitle: 'Cancelar',
+    //       okVariant: 'danger',
+    //       footerClass: 'p-2',
+    //       centered: true
+    //     }).then(value => {
+    //       if (value) {
+    //         api.post('/imoveis/deletar/comodo', {idComodo: comodo.id}).then(() => {
+    //           if (this.comodos.length > 1) {
+    //             this.comodos.splice(index, 1)
+    //           } else {
+    //             this.comodos = [{ id: "", quantidade: 0, tipo: null }]
+    //           }
+    //         })
+    //       }
+    //     })
+    //   } else {
+    //     if (this.comodos.length > 1) {
+    //       this.comodos.splice(index, 1)
+    //     } else {
+    //       this.comodos = [{ id: "", quantidade: 0, tipo: null }]
+    //     }
+    //   }
+    // },
     async selecionandoContrato(contrato){
       this.idContrato = ("0000" + contrato[0].contrato).slice(-4)
       await api.get('/contrato/boletos', {params:{idContrato: contrato[0].contrato}}).then(response => {
@@ -1170,6 +1309,73 @@ export default {
         }
       })
     },
+
+    async buscarTiposComodos() {
+      await api.get("/imoveis/tipo_comodo").then((response) => {
+        this.tiposComodos = response.data;
+      });
+    },
+    async buscarComodos(){
+      this.carregandoComodos = true
+      let idImovel = this.imovel.id
+      await api.get('/imoveis/comodos', {params:{idImovel: idImovel}}).then(consulta => {
+        this.comodos = consulta.data
+        this.carregandoComodos = false
+      })
+    },
+    async adicionarComodo() {
+      // this.comodos.push({
+      //   quantidade: 0,
+      //   tipo: null,
+      // });
+      let idImovel = this.imovel.id
+      await api.post('/imoveis/comodo/cadastrar', {comodo: this.comodo, idImovel: idImovel}).then(() => {
+        this.buscarComodos()
+      })
+    },
+    async editarComodo(comodo){
+      console.log(comodo.item)
+      this.comodo.id_tipo_comodo = comodo.item.id_tipo_comodo
+      this.comodo.quantidade = comodo.item.quantidade
+      this.comodo.descricao = comodo.item.descricao
+      this.comodo.id = comodo.item.id
+      this.editandoComodo = true
+    },
+    async salvarEdicaoComodo(){
+      await api.post('/imoveis/comodo/editar', {comodo: this.comodo}).then(response => {
+        console.log(response)
+        this.comodo = {
+          id:"",
+          descricao:"",
+          id_tipo_comodo: null,
+          quantidade: ""
+        }
+        this.buscarComodos()
+      })
+    },
+
+    async deletarComodo(comodo){
+      let idComodo = comodo.item.id
+      this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar esse cômodo ?`, {
+        title: 'Deletar cômodo',
+        buttonSize: 'sm',
+        okTitle: 'Deletar',
+        cancelTitle: 'Cancelar',
+        okVariant: 'danger',
+        footerClass: 'p-2',
+        centered: true
+      }).then(value => {
+        if (value) {
+          api.delete('/imoveis/comodo/deletar', {params:{idComodo: idComodo}}).then(() => {
+            this.buscarComodos()
+          })
+        }
+      })
+    },
+
+    async inicilizarTabComodo(){
+      await this.buscarTiposComodos()
+    }
   },
   watch: {
     "imovel.cep": function(cep) {
@@ -1208,7 +1414,7 @@ body {
 }
 
 .botao-adicionar-comodo {
-  margin-bottom: 10px;
+  margin-top: 16px;
 }
 
 .vs-input--label {

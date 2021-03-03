@@ -146,7 +146,7 @@
         <b-tab title="Dados gerais" active>
           <b-row>
             <b-col>
-              <b-form-group id="select-contrato" label="Responsável">
+              <b-form-group id="select-contrato" label="Responsável*">
                 <b-form-select v-model="contrato.id_responsavel" :options="responsaveis" value-field="id"
                                text-field="nome">
                   <template #first>
@@ -156,7 +156,7 @@
               </b-form-group>
             </b-col>
             <b-col>
-              <b-form-group id="select-contrato" label="Cliente">
+              <b-form-group id="select-contrato" label="Cliente*">
                 <b-form-select v-model="contrato.id_cliente" :options="clientes" value-field="id"
                                text-field="nome">
                   <template #first>
@@ -166,7 +166,7 @@
               </b-form-group>
             </b-col>
             <b-col>
-              <b-form-group id="select-contrato" label="Imóvel">
+              <b-form-group id="select-contrato" label="Imóvel*">
                 <b-form-select v-model="contrato.id_imovel" :options="imoveis" value-field="id"
                                text-field="nome">
                   <template #first>
@@ -178,11 +178,11 @@
           </b-row>
           <b-row>
             <b-col>
-              <vs-input label="Data de Início" v-model="contrato.data_inicio" type="date"
+              <vs-input label="Data de Início*" v-model="contrato.data_inicio" type="date"
                         class="input-nascimento"/>
             </b-col>
             <b-col>
-              <vs-input label="Data de Término" v-model="contrato.data_fim" type="date"
+              <vs-input label="Data de Término*" v-model="contrato.data_fim" type="date"
                         class="input-nascimento" :disabled="!ativo_data_termino"/>
             </b-col>
             <b-col>
@@ -192,11 +192,14 @@
           </b-row>
           <b-row>
             <b-col>
-              <vs-input label="Vencimento" v-model="contrato.data_vencimento" type="date"
+              <vs-input label-placeholder="Carência" v-model="contrato.carencia" class="input-personalizado"/>
+            </b-col>
+            <b-col>
+              <vs-input label="Vencimento*" v-model="contrato.data_vencimento" type="date"
                         class="input-nascimento"/>
             </b-col>
             <b-col>
-              <vs-input ref="valor_boleto" label-placeholder="Valor do Boleto" v-model="contrato.valor_boleto"
+              <vs-input ref="valor_boleto" label-placeholder="Valor do Boleto*" v-model="contrato.valor_boleto"
                         class="input-personalizado"
                         v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
                         allowNegative: false, currency:'BRL'}"
@@ -204,9 +207,6 @@
             </b-col>
           </b-row>
           <b-row>
-            <b-col>
-              <vs-input label-placeholder="Carência" v-model="contrato.carencia" class="input-personalizado"/>
-            </b-col>
             <b-col>
               <vs-input label-placeholder="Garantia" v-model="contrato.garantia" class="input-personalizado"/>
             </b-col>
@@ -227,12 +227,15 @@
             <b-col>
               <b-form-file @change="importarPDF" type="file" ref="file" class="mt-3 arquivo-pdf" accept=".pdf"
                            placeholder="Escolha um arquivo para importar"
-                           drop-placeholder="Solte o arquivo aqui!">
+                           drop-placeholder="Solte o arquivo aqui!" :disabled="!editar">
               </b-form-file>
             </b-col>
             <b-col>
-              <p v-if="contrato.nome_pdf" style="color:green" class="p-contrato"><b>Contrato importado</b></p>
-              <p v-else style="color:red" class="p-contrato"><b>Contrato não importado</b></p>
+              <p v-if="!editar" class="p-contrato"><b>Para realizar a importação primeiro cadastre esse contrato</b></p>
+              <template v-else>
+                <p v-if="contrato.nome_pdf" style="color:green" class="p-contrato"><b>Contrato importado</b></p>
+                <p v-else style="color:red" class="p-contrato"><b>Contrato não importado</b></p>
+              </template>
             </b-col>
           </b-row>
           <b-row>
@@ -245,6 +248,7 @@
                     id="textarea"
                     rows="1s"
                     max-rows="6"
+                    v-model="contrato.observacao"
                 ></b-form-textarea>
               </b-form-group>
             </b-col>
@@ -282,7 +286,7 @@
                   <p class="tr-contrato">{{ dayjs(row.item.data_vencimento).format('DD/MM/YYYY') }}</p>
                 </template>
                 <template #cell(valor)="row">
-                  <p class="tr-contrato">R$ {{ row.item.valor }}</p>
+                  <label class="tr-contrato">R$ {{ row.item.valor.replace('.',',') }}</label>
                 </template>
                 <template #cell(status)="row">
                   <p class="tr-contrato">{{ row.item.status }}</p>
@@ -315,12 +319,20 @@
       </b-tabs>
       <b-row align-h="end">
         <b-col cols="auto">
-          <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="save" class="botao-salvar"
-                     @click.native="editarContrato">Salvar
+
+          <vs-button v-if="editar" color="#24a35a" type="filled" icon="save" class="botao-salvar"
+                     @click.native="editarContrato">
+            Salvar
           </vs-button>
           <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar"
-                     @click.native="cadastrarContrato">
+                     @click.native="cadastrarContrato(false)">
             Salvar
+          </vs-button>
+        </b-col>
+        <b-col cols="auto" v-if="!editar">
+          <vs-button color="#24a35a" type="filled" icon="save" class="botao-salvar"
+                     @click.native="cadastrarContrato(true)">
+            Salvar e Sair
           </vs-button>
         </b-col>
         <b-col cols="auto">
@@ -336,7 +348,7 @@
       <b-container>
         <b-row>
           <b-col>
-            <h4>Editando contrato: </h4>
+            <h4>Editando boleto: {{ ("000000" + boleto.id).slice(-6) }}</h4>
           </b-col>
         </b-row>
         <b-row>
@@ -349,7 +361,8 @@
                       class="input-nascimento"/>
           </b-col>
           <b-col>
-            <vs-input label-placeholder="Valor" v-model="boleto.valor" class="input-personalizado"/>
+            <vs-input label-placeholder="Valor" v-model="boleto.valor" class="input-personalizado" v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                        allowNegative: false, currency:'BRL'}"/>
           </b-col>
           <b-col>
             <b-form-group id="select-contrato" label="Status">
@@ -436,7 +449,8 @@ export default {
         garantia: "",
         fiador: "",
         locador: "",
-        nome_pdf: ""
+        nome_pdf: "",
+        observacao: ""
       },
       boletos: [],
       boleto: {
@@ -456,7 +470,8 @@ export default {
       status_boleto: [],
       files: null,
       btn_importa_desabilitado: true,
-      carregandoContratos: false
+      carregandoContratos: false,
+      recarregarContratos:false
     }
   },
 
@@ -480,7 +495,6 @@ export default {
       this.carregandoContratos = true
       await api.get('/contratos').then(response => {
         this.items = response.data
-        console.log(response.data)
         this.carregandoContratos = false
       })
     },
@@ -529,7 +543,7 @@ export default {
       })
     },
     async editarContrato() {
-      this.contrato.valor_boleto = converterDinherioFloat(this.contrato.valor_boleto)
+      this.contrato.valor_boleto_convertido = converterDinherioFloat(this.contrato.valor_boleto)
       if (this.validarCamposObrigatorio()) {
         let idUsuario = this.$store.state.usuario.id
         await api.post(`/contrato/editar`, {
@@ -587,6 +601,10 @@ export default {
       this.$modal.hide('modal-contrato');
       this.limparModal()
       this.editar = false
+      if(this.recarregarContratos){
+        this.buscarContratos()
+        this.recarregarContratos = false
+      }
     },
     limparModal() {
       Object.keys(this.contrato).forEach(key => {
@@ -609,32 +627,33 @@ export default {
       })
     },
     importarPDF(event) {
-      this.btn_importa_desabilitado = false
-      this.files = event.target.files
-      const formData = new FormData();
-      for (const i of Object.keys(this.files)) {
-        formData.append('files', this.files[i])
-      }
-      api.post(`/contrato/${this.contrato.id}/importar/pdf`, formData, {}).then((res) => {
-        console.log(res)
-        this.contrato.nome_pdf = res.data[0].nome
-        this.buscarContratos()
-        this.$vs.notify({
-          text: `Contrato importado com sucesso!`,
-          position: 'top-center',
-          color: 'success',
-          time: 4000,
-          icon: 'check_circle_outline'
+      if(this.editar) {
+        this.btn_importa_desabilitado = false
+        this.files = event.target.files
+        const formData = new FormData();
+        for (const i of Object.keys(this.files)) {
+          formData.append('files', this.files[i])
+        }
+        api.post(`/contrato/${this.contrato.id}/importar/pdf`, formData, {}).then((res) => {
+          this.contrato.nome_pdf = res.data[0].nome
+          this.buscarContratos()
+          this.$vs.notify({
+            text: `Contrato importado com sucesso!`,
+            position: 'top-center',
+            color: 'success',
+            time: 4000,
+            icon: 'check_circle_outline'
+          })
         })
-      })
+      }
     },
-    async cadastrarContrato() {
-      this.contrato.valor_boleto = converterDinherioFloat(this.contrato.valor_boleto)
+    async cadastrarContrato(sair) {
+      this.contrato.valor_boleto_convertido = converterDinherioFloat(this.contrato.valor_boleto)
       if (this.validarCamposObrigatorio()) {
         if (this.validarDataInicioFim()) {
           let idUsuario = this.$store.state.usuario.id
-          await api.post('/contrato/cadastrar', {contrato: this.contrato, idUsuario: idUsuario}).then(() => {
-            this.esconderModal()
+          await api.post('/contrato/cadastrar', {contrato: this.contrato, idUsuario: idUsuario}).then(response => {
+            this.contrato.id = response.data[0].id
             this.$vs.notify({
               text: `Contrato cadastrado com sucesso!`,
               position: 'top-center',
@@ -642,8 +661,15 @@ export default {
               time: 6000,
               icon: 'check_circle_outline'
             })
-            this.buscarContratos()
-            this.limparModal()
+            if(sair){
+              this.esconderModal()
+              this.buscarContratos()
+              this.limparModal()
+            }else{
+              this.recarregarContratos = true
+              this.editar = true
+              this.buscarBoletos(this.contrato.id)
+            }
           }).catch(erro => {
             this.$vs.notify({
               text: `${erro.response.data.erro}`,
@@ -660,7 +686,6 @@ export default {
       if (this.contrato['id_responsavel'] == "" || this.contrato['id_cliente'] == "" || this.contrato['id_imovel'] == "" ||
           this.contrato['data_inicio'] == "" || this.contrato['data_fim'] == "" ||
           this.contrato['valor_boleto'] == "" || this.contrato['data_vencimento'] == "") {
-        console.log(this.contrato)
         this.$vs.notify({
           text: `Campos obrigatorios vazio.`,
           position: 'top-center',
@@ -837,7 +862,7 @@ export default {
   margin-top: 10px !important;
 }
 
-.custom-file-input:lang(en) ~ .custom-file-label::after {
+.custom-file-input:lang(pt-br) ~ .custom-file-label::after {
   content: 'Importar';
 }
 

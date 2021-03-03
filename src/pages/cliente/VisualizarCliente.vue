@@ -256,7 +256,7 @@
             </b-col>
           </b-row>
         </b-tab>
-        <b-tab title="Telefones" @click="inicializarTabTelefone">
+        <b-tab title="Telefones" :disabled="!editar">
           <b-row>
             <b-col cols="3">
               <vs-input label-placeholder="Numero de telefone" v-model="telefone.numero"
@@ -264,7 +264,7 @@
             </b-col>
             <b-col cols="3">
               <b-form-group id="select-cliente" label="Tipo telefone">
-                <b-form-select :options="tiposTelefone" value-field="id_tipo" v-model="telefone.id_tipo"
+                <b-form-select :options="tiposTelefone" value-field="id" v-model="telefone.id_tipo_telefone"
                                text-field="descricao">
                   <template #first>
                     <b-form-select-option :value="null">Selecione</b-form-select-option>
@@ -275,7 +275,11 @@
             <b-col>
               <vs-input label-placeholder="Observação" class="input-personalizado" v-model="telefone.observacao"/>
             </b-col>
-            <b-col cols="auto">
+            <b-col cols="auto" v-if="telefoneEditar">
+              <vs-button type="filled" icon="add_ic_call" class="botao-salvar botao-adicionar-telefone" color="#5498ff"
+                         @click.prevent="salvarEdicaoTelefone()"/>
+            </b-col>
+            <b-col cols="auto" v-else>
               <vs-button type="filled" icon="add_ic_call" class="botao-salvar botao-adicionar-telefone" color="#5498ff"
                          @click.prevent="adicionarTelefone()"/>
             </b-col>
@@ -320,7 +324,7 @@
             </b-col>
           </b-row>
         </b-tab>
-        <b-tab title="Contratos" @click.prevent="buscarContratos">
+        <b-tab title="Contratos" @click.prevent="buscarContratos" :disabled="!editar">
           <b-row>
             <b-col>
               <h6>Contratos de: {{ cliente.nome }} </h6>
@@ -375,6 +379,16 @@
                     {{ $dayjs(row.item.data_fim).format('DD/MM/YYYY') }}
                   </label>
                 </template>
+                <template #cell(status)="row">
+                  <label v-if="!row.item.nome_pdf" style="color:red">
+                    <b>
+                      Falta PDF
+                    </b>
+                  </label>
+                  <label v-else>
+                    {{ row.item.status }}
+                  </label>
+                </template>
                 <template #cell(editar)="row">
                   <vs-button type="flat" color="dark" @mousedown.stop="mostrarModalContrato(row.item)" icon="edit"></vs-button>
                 </template>
@@ -420,9 +434,7 @@
                   </label>
                 </template>
                 <template #cell(valor)="row">
-                  <label>
-                    R$ {{ row.item.valor }}
-                  </label>
+                  <label>R$ {{ row.item.valor.replace('.',',') }}</label>
                 </template>
               </b-table>
             </b-col>
@@ -431,11 +443,17 @@
       </b-tabs>
       <b-row align-h="end">
         <b-col cols="2">
-          <vs-button v-if="editar == true" color="#24a35a" type="filled" icon="save" class="botao-salvar"
-                     @click="editarCliente">Salvar
-          </vs-button>
-          <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar" @click="cadastrarCliente">
+          <vs-button v-if="editar" color="#24a35a" type="filled" icon="save" class="botao-salvar"
+                     @click="editarCliente">
             Salvar
+          </vs-button>
+          <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar" @click="cadastrarCliente(false)">
+            Salvar
+          </vs-button>
+        </b-col>
+        <b-col cols="auto" v-if="!editar">
+          <vs-button color="#24a35a" type="filled" icon="save" class="botao-salvar" @click="cadastrarCliente(true)">
+            Salvar e Sair
           </vs-button>
         </b-col>
         <b-col cols="2">
@@ -524,10 +542,15 @@ export default {
         status: null,
         observacao: "",
         tipo_cliente: "",
-        id:0,
+        id:"",
       },
       telefones: [],
-      telefone:{id: null, numero: "", id_tipo: null, observacao: "", tipo:""},
+      telefone:{
+        id: "",
+        numero: "",
+        id_tipo_telefone: null,
+        observacao: "",
+      },
       tiposTelefone: [],
       tiposStatus: [],
       editar: false,
@@ -558,8 +581,11 @@ export default {
         console.log(erro)
       })
     },
-    async inicializarTabTelefone(){
-      this.buscarTelefones()
+
+    async buscarContratos() {
+      await api.get('/cliente/contratos', {params:{idCliente:this.cliente.id}}).then((response) => {
+        this.contratos = response.data
+      })
     },
     async buscarTelefones(){
       await api.get("/telefones", {params:{idCliente:this.cliente.id}}).then(consulta => {
@@ -595,15 +621,6 @@ export default {
     async editarClienteModal(id) {
       await api.get('/cliente', {params: {idCliente: id}}).then(response => {
         this.cliente = response.data
-        // this.telefones = []
-        // for (let x = 0; x < response.data.numero_telefone.length; x++) {
-        //   let numero = response.data.numero_telefone[x]
-        //   let tipo = response.data.tipo_telefone[x]
-        //   let id_tipo = response.data.id_tipo_telefone[x]
-        //   let observacao = response.data.observacao_telefone[x]
-        //   let id = response.data.id_telefone[x]
-        //   this.telefones.push({id: id, numero: numero, tipo: tipo, id_tipo: id_tipo, observacao: observacao})
-        // }
         this.mostrarModal()
         this.editar = true
       })
@@ -647,19 +664,44 @@ export default {
     },
     async buscarTipoTelefones() {
       await api.get('/tipos_telefones').then(consulta => {
-        console.log(consulta.data)
-        for (let x = 0; x < consulta.data.length; x++) {
-          let id_tipo = {id: consulta.data[x].id, descricao: consulta.data[x].descricao}
-          let descricao = consulta.data[x].descricao
-          this.tiposTelefone.push({id_tipo: id_tipo, descricao: descricao})
+        this.tiposTelefone = consulta.data
+        console.log(this.tiposTelefone)
+        // for (let x = 0; x < consulta.data.length; x++) {
+        //   let id_tipo = {id: consulta.data[x].id, descricao: consulta.data[x].descricao}
+        //   let descricao = consulta.data[x].descricao
+        //   this.tiposTelefone.push({id_tipo: id_tipo, descricao: descricao})
+        // }
+      })
+    },
+    async adicionarTelefone() {
+      let idCliente = this.cliente.id
+      await api.post('/cliente/telefone/cadastrar', {telefone: this.telefone, idCliente: idCliente}).then(() => {
+        this.buscarTelefones()
+        this.telefone = {
+          id: "",
+          numero: "",
+          id_tipo_telefone: null,
+          observacao: "",
         }
       })
     },
     async editarTelefone(telefone){
       this.telefoneEditar = true
-      this.telefone = telefone.item
-      this.telefone.id_tipo = {id: telefone.item.id_tipo, descricao: telefone.item.tipo}
-      this.indexTelefoneTabela = telefone.index
+      this.telefone.numero = telefone.item.numero
+      this.telefone.id = telefone.item.id
+      this.telefone.id_tipo_telefone = telefone.item.id_tipo_telefone
+      this.telefone.observacao = telefone.item.observacao
+    },
+    async salvarEdicaoTelefone(){
+      await api.post('/cliente/telefone/editar', {telefone: this.telefone}).then(() => {
+        this.buscarTelefones()
+        this.telefone = {
+          id: "",
+          numero: "",
+          id_tipo_telefone: null,
+          observacao: "",
+        }
+      })
     },
     alertaDeletarTelefone(telefone) {
       this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar o telefone: ${telefone.item.numero} ?`, {
@@ -677,13 +719,10 @@ export default {
       })
     },
     async deletarTelefone(telefone){
-      console.log(telefone)
-      await api.post('/cliente/deletar/telefone', {idTelefone: telefone.item.id}).then(() => {
-        // this.telefones
-        this.telefones.splice(telefone.index, 1)
+      await api.delete('/cliente/telefone/deletar', {params:{idTelefone: telefone.item.id}}).then(() => {
+        this.buscarTelefones()
       })
     },
-
 
     async buscarTipoStatus() {
       await api.get('/cliente/tipos_status').then(response => {
@@ -695,19 +734,18 @@ export default {
       this.$modal.show('modal-cliente')
       this.buscarTipoTelefones()
       this.buscarTipoStatus()
+      this.buscarTelefones()
     },
     esconderModal() {
       this.$modal.hide('modal-cliente');
       this.limparModal()
       this.contEditarCep = 0
       this.editar = false
+      if(this.recarregarClientes){
+        this.buscarClientes()
+      }
     },
-    async buscarContratos() {
-      await api.get('/cliente/contratos', {params:{idCliente:this.cliente.id}}).then((response) => {
-        console.log(response.data)
-        this.contratos = response.data
-      })
-    },
+
     limparModal() {
       Object.keys(this.cliente).forEach(key => {
         this.cliente[key] = ""
@@ -718,50 +756,8 @@ export default {
       this.contratos = []
       this.boletos = []
     },
-    adicionarTelefone() {
-      let id_descricao = this.telefone.id_tipo
-      this.telefone.id_tipo = id_descricao.id
-      this.telefone.tipo = id_descricao.descricao
-      if(this.telefoneEditar){
-        this.telefone = {id: null, numero: "", id_tipo: null, observacao: "", tipo:""}
-      }else{
-        this.telefones.push(this.telefone)
-        this.telefone = {id: null, numero: "", id_tipo: null, observacao: "", tipo:""}
-      }
 
-    },
-
-    async removerTelefone(index) {
-      let telefone = this.telefones[index]
-      if (telefone.id) {
-        this.$bvModal.msgBoxConfirm(`Tem certeza que deseja remover o telefone: ${telefone.numero} ?`, {
-          title: 'Remover telefone',
-          buttonSize: 'sm',
-          okTitle: 'Remover',
-          cancelTitle: 'Cancelar',
-          okVariant: 'danger',
-          footerClass: 'p-2',
-          centered: true
-        }).then(value => {
-          if (value) {
-            api.post('/cliente/deletar/telefone', {idTelefone: telefone.id}).then(() => {
-              if (this.telefones.length > 1) {
-                this.telefones.splice(index, 1)
-              } else {
-                this.telefones = [{id: "", numero: "", tipo: null}]
-              }
-            })
-          }
-        })
-      } else {
-        if (this.telefones.length > 1) {
-          this.telefones.splice(index, 1)
-        } else {
-          this.telefones = [{id: "", numero: "", tipo: null}]
-        }
-      }
-    },
-    async cadastrarCliente() {
+    async cadastrarCliente(sair) {
       if (this.validarCamposObrigatorio()) {
         let variaveisString = ['data_nascimento', 'identidade', 'status', 'estado_civil']
         for (let key in variaveisString) {
@@ -772,7 +768,7 @@ export default {
         let idUsuario = this.$store.state.usuario.id
         await api.post('/cliente/cadastrar', {data: this.cliente, telefones: this.telefones, idUsuario: idUsuario}, ).then(response => {
           let nomeCliente = response.data[0].nome
-          this.esconderModal()
+          this.cliente.id = response.data[0].id
           this.$vs.notify({
             text: `Cliente cadastrado com sucesso: ${nomeCliente} !`,
             position: 'top-center',
@@ -780,8 +776,14 @@ export default {
             time: 6000,
             icon: 'check_circle_outline'
           })
-          this.buscarClientes()
-          this.limparModal()
+          if(sair){
+            this.esconderModal()
+            this.buscarClientes()
+            this.limparModal()
+          }else{
+            this.recarregarClientes = true
+            this.editar = true
+          }
         }).catch(erro => {
           this.$vs.notify({
             text: `${erro.response.data.erro}`,
