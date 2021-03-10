@@ -2,7 +2,7 @@
   <b-container fluid >
     <b-row align-v="center" class="topo" >
       <b-col class="text-center">
-        <h1>Gimoveis</h1>
+        <h1>GImóveis</h1>
       </b-col>
       <b-col cols="auto">
         <b-row>
@@ -19,10 +19,10 @@
               </b-col>
             </b-row>
           </b-col>
-          <b-col cols="auto" class="m-0">
-            <b-img right src="https://picsum.photos/250/250/?image=54" rounded="circle" alt="Circle image" width="60px"
-                   class="img-perfil"/>
-          </b-col>
+<!--          <b-col cols="auto" class="m-0">-->
+<!--            <b-img right src="https://picsum.photos/250/250/?image=54" rounded="circle" alt="Circle image" width="60px"-->
+<!--                   class="img-perfil"/>-->
+<!--          </b-col>-->
         </b-row>
       </b-col>
     </b-row>

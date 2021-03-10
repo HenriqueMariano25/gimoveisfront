@@ -142,7 +142,7 @@
     <!--  Fim da tabela-->
     <modal name="modal-contrato" id="modal-contrato" width="60%" height="auto" :scrollable="true" class="modal-adicionando-responsavel">
       <h3>Adicionando contrato</h3>
-      <b-tabs content-class="mt-3">
+      <b-tabs content-class="mt-3" v-model="tabBoleto">
         <b-tab title="Dados gerais" active>
           <b-row>
             <b-col>
@@ -283,25 +283,31 @@
                   no-border-collapse
                   @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
                 <template #cell(data_vencimento)="row">
-                  <p class="tr-contrato">{{ dayjs(row.item.data_vencimento).format('DD/MM/YYYY') }}</p>
+                  <label class="tr-contrato">{{ dayjs(row.item.data_vencimento).format('DD/MM/YYYY') }}</label>
                 </template>
                 <template #cell(valor)="row">
                   <label class="tr-contrato">R$ {{ row.item.valor.replace('.',',') }}</label>
                 </template>
                 <template #cell(status)="row">
-                  <p class="tr-contrato">{{ row.item.status }}</p>
+                  <label class="tr-contrato">{{ row.item.status }}</label>
                 </template>
                 <template #cell(id)="row">
-                  <p class="tr-contrato">{{ ("000000" + row.item.id).slice(-6) }}</p>
+                  <label class="tr-contrato">{{ ("000000" + row.item.id).slice(-6) }}</label>
                 </template>
                 <template #cell(data_quitacao)="row">
-                  <p v-if="row.item.data_quitacao != null" class="tr-contrato">
-                    {{ dayjs(row.item.data_quitacao).format('DD/MM/YYYY') }}</p>
-                  <p v-else class="tr-contrato">{{ row.item.data_quitacao }}</p>
+                  <label v-if="row.item.data_quitacao != null && row.item.data_quitacao != ''" class="tr-contrato">
+                    {{ dayjs(row.item.data_quitacao).format('DD/MM/YYYY') }}</label>
+                  <label v-else class="tr-contrato">{{ row.item.data_quitacao }}</label>
                 </template>
                 <template #cell(editar)="row">
                   <div class="item-coluna-centralizada">
                     <vs-button type="flat" color="dark" @click="editarBoletoModal(row.item)" icon="edit"></vs-button>
+                  </div>
+                </template>
+                <template #cell(deletar)="row">
+                  <div class="item-coluna-centralizada">
+                    <vs-button v-if="row.item.status == 'Pago'" :disabled="true" type="flat" color="dark" @click="deletarBoletoAlerta(row)" icon="delete"></vs-button>
+                    <vs-button v-else type="flat" color="dark" @click="deletarBoletoAlerta(row)" icon="delete"></vs-button>
                   </div>
                 </template>
                 <template #table-colgroup>
@@ -311,6 +317,7 @@
                   <col>
                   <col>
                   <col style="width: 15px">
+                  <col style="width: 15px">
                 </template>
               </b-table>
             </b-col>
@@ -318,7 +325,13 @@
         </b-tab>
       </b-tabs>
       <b-row align-h="end">
-        <b-col cols="auto">
+        <b-col cols="auto" align="left">
+          <vs-button v-if="tabBoleto == 2" color="#24a35a" type="filled" icon="save" class="botao-salvar"
+                     @click.native="mostrarModalAdicionarBoleto()">
+            Adicionar Boleto
+          </vs-button>
+        </b-col>
+        <b-col cols="auto" class="ml-auto">
 
           <vs-button v-if="editar" color="#24a35a" type="filled" icon="save" class="botao-salvar"
                      @click.native="editarContrato">
@@ -361,7 +374,7 @@
                       class="input-nascimento"/>
           </b-col>
           <b-col>
-            <vs-input label-placeholder="Valor" v-model="boleto.valor" class="input-personalizado" v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+            <vs-input label-placeholder="Valor" ref="inputValor" v-model="boleto.valor" class="input-personalizado" v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
                         allowNegative: false, currency:'BRL'}"/>
           </b-col>
           <b-col>
@@ -385,6 +398,54 @@
           <b-col cols="2">
             <vs-button color="#707070" type="filled" icon="clear" class="botao-salvar"
                        @click="esconderModalEditarBoleto">
+              Cancelar
+            </vs-button>
+          </b-col>
+        </b-row>
+      </b-container>
+    </modal>
+    <modal name="modal-adicionar-boleto"  width="60%" height="auto" :scrollable="true" :click-to-close="false"
+           class="modal-adicionando-responsavel">
+      <b-container>
+        <b-row>
+          <b-col>
+            <h4>Adicionando boleto:</h4>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <vs-input label="Data Vencimento" v-model="boleto.data_vencimento" type="date"
+                      class="input-nascimento"/>
+          </b-col>
+          <b-col>
+            <vs-input label="Data Quitação" v-model="boleto.data_quitacao" type="date"
+                      class="input-nascimento"/>
+          </b-col>
+          <b-col>
+            <vs-input label-placeholder="Valor" ref="inputValor" v-model="boleto.valor" class="input-personalizado" v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                        allowNegative: false, currency:'BRL'}"/>
+          </b-col>
+          <b-col>
+            <b-form-group id="select-contrato" label="Status">
+              <b-form-select v-model="boleto.id_status_boleto" :options="status_boleto" value-field="id"
+                             text-field="descricao">
+                <template #first>
+                  <b-form-select-option :value="null">Selecione</b-form-select-option>
+                </template>
+              </b-form-select>
+            </b-form-group>
+          </b-col>
+        </b-row>
+        <b-row align-h="end">
+          <b-col cols="2">
+            <vs-button color="#24a35a" type="filled" icon="save" class="botao-salvar"
+                       @click.native="adicionarBoleto">
+              Salvar
+            </vs-button>
+          </b-col>
+          <b-col cols="2">
+            <vs-button color="#707070" type="filled" icon="clear" class="botao-salvar"
+                       @click.native="esconderModalAdicionarBoleto">
               Cancelar
             </vs-button>
           </b-col>
@@ -425,6 +486,7 @@ export default {
         {key: 'data_quitacao', label: 'Data Quitação', sortable: true, class: 'text-center'},
         {key: 'status', label: 'Status', sortable: true, class: 'text-center'},
         {key: 'editar', label: '', class: 'text-center'},
+        {key: 'deletar', label: '', class: 'text-center'},
       ],
       totalRows: 1,
       currentPage: 1,
@@ -455,6 +517,7 @@ export default {
       boletos: [],
       boleto: {
         valor: "",
+        valor_formatado: "",
         data_vencimento: "",
         data_quitacao: "",
         id: "",
@@ -471,7 +534,8 @@ export default {
       files: null,
       btn_importa_desabilitado: true,
       carregandoContratos: false,
-      recarregarContratos:false
+      recarregarContratos:false,
+      tabBoleto: 0
     }
   },
 
@@ -575,15 +639,17 @@ export default {
     },
     editarBoletoModal(boleto) {
       api.get('/contrato/boleto', {params: {idBoleto: boleto.id}}).then(response => {
-        this.boleto = response.data[0]
         this.buscarStatusBoleto()
         this.mostrarModalEditarBoleto()
+        this.boleto = response.data[0]
+        this.boleto.valor = `R$ ${response.data[0].valor.replace('.',',')}`
       })
     },
     editarBoleto() {
       if (this.boleto.data_quitacao == null) {
         this.boleto.data_quitacao = ''
       }
+      this.boleto.valor = converterDinherioFloat(this.boleto.valor)
       api.post('/contrato/boleto/editar', {boleto: this.boleto}).then(response => {
         this.buscarBoletos(response.data[0].id_contrato)
         this.esconderModalEditarBoleto()
@@ -620,6 +686,8 @@ export default {
     },
     esconderModalEditarBoleto() {
       this.$modal.hide('modal-editar-boleto');
+      this.boleto = {}
+      this.boleto.id_status_boleto = null
     },
     limparModalEditarBoleto() {
       Object.keys(this.boleto).forEach(key => {
@@ -646,6 +714,49 @@ export default {
           })
         })
       }
+    },
+    mostrarModalAdicionarBoleto() {
+      this.$modal.show('modal-adicionar-boleto')
+      this.buscarStatusBoleto()
+    },
+    esconderModalAdicionarBoleto() {
+      this.$modal.hide('modal-adicionar-boleto')
+      this.boleto = {}
+      this.boleto.id_status_boleto = null
+    },
+    async adicionarBoleto(){
+      this.boleto.valor = converterDinherioFloat(this.boleto.valor)
+      if(this.boleto.data_quitacao == "" || this.boleto.data_quitacao == null){
+        this.boleto.data_quitacao = ""
+      }
+      await api.post('/contrato/boleto/cadastrar', {boleto: this.boleto, idContrato: this.contrato.id}).then(response => {
+        console.log(response)
+        this.esconderModalAdicionarBoleto()
+        this.buscarBoletos(this.contrato.id)
+      })
+    },
+    async deletarBoletoAlerta(boleto){
+      console.log(boleto.item)
+      this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar o boleto: ${("000000" + boleto.item.id).slice(-6)} ?`, {
+        title: 'Deletar boleto',
+        buttonSize: 'sm',
+        okTitle: 'Deletar',
+        cancelTitle: 'Cancelar',
+        okVariant: 'danger',
+        footerClass: 'p-2',
+        centered: true
+      }).then(value => {
+        if (value) {
+          // this.deletarContrato(contrato)
+          this.deletarBoleto(boleto.item.id)
+        }
+      })
+    },
+    async deletarBoleto(idBoleto){
+      await api.delete('/contrato/boleto/deletar', {params:{idBoleto: idBoleto}}).then(response => {
+        console.log(response)
+        this.buscarBoletos(this.contrato.id)
+      })
     },
     async cadastrarContrato(sair) {
       this.contrato.valor_boleto_convertido = converterDinherioFloat(this.contrato.valor_boleto)

@@ -5,7 +5,7 @@
     </div>
     <div class="login-base">
       <div class="titulo text-center">
-        <h1>GIMÓVEIS</h1>
+        <h1>GImóveis</h1>
       </div>
       <b-row>
         <b-col>

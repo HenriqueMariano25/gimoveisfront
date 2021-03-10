@@ -353,7 +353,7 @@
                   selectable
                   select-mode="single"
                   @row-selected="selecionandoContrato"
-                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 300px)"
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 200px)"
                   outlined
                   no-border-collapse>
                 <template #table-colgroup>
@@ -421,11 +421,16 @@
                   bordered
                   hover
                   outlined
-                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 300px)"
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 200px)"
                   no-border-collapse>
                 <template #cell(data_vencimento)="row">
                   <label>
                     {{ $dayjs(row.item.data_vencimento).format('DD/MM/YYYY') }}
+                  </label>
+                </template>
+                <template #cell(id)="row">
+                  <label>
+                    {{ ("000000" + row.item.id).slice(-6) }}
                   </label>
                 </template>
                 <template #cell(data_quitacao)="row">
@@ -510,8 +515,9 @@ export default {
         {key: 'editar', label: ''},
       ],
       fieldsBoletos: [
-        {key: 'valor', label: 'Valor',sortable: true, class: 'text-center'},
+        {key: 'id', label: 'Código',sortable: true, class: 'text-center'},
         {key: 'data_vencimento', label: 'Vencimento',sortable: true, class: 'text-center'},
+        {key: 'valor', label: 'Valor',sortable: true, class: 'text-center'},
         {key: 'data_quitacao', label: 'Quitação',sortable: true, class: 'text-center'},
         {key: 'status', label: 'Status',sortable: true, class: 'text-center'},
       ],
@@ -621,16 +627,23 @@ export default {
     async editarClienteModal(id) {
       await api.get('/cliente', {params: {idCliente: id}}).then(response => {
         this.cliente = response.data
+        console.log(this.cliente)
         this.mostrarModal()
         this.editar = true
       })
     },
     async editarCliente() {
       if (this.validarCamposObrigatorio()) {
-        let variaveisString = ['data_nascimento', 'identidade', 'status', 'estado_civil']
+        let variaveisString = ['status', 'estado_civil']
         for (let key in variaveisString) {
           if (this.cliente[variaveisString[key]] == "") {
             this.cliente[variaveisString[key]] = null
+          }
+        }
+        let variaveisString2 = ['data_nascimento', 'identidade',]
+        for (let key in variaveisString2) {
+          if (this.cliente[variaveisString2[key]] == null) {
+            this.cliente[variaveisString2[key]] = ""
           }
         }
         let idUsuario = this.$store.state.usuario.id
@@ -651,7 +664,6 @@ export default {
           this.limparModal()
           this.esconderModal()
         }).catch(erro => {
-
           this.$vs.notify({
             text: `${erro.response.data.erro}`,
             position: 'top-center',
@@ -665,12 +677,6 @@ export default {
     async buscarTipoTelefones() {
       await api.get('/tipos_telefones').then(consulta => {
         this.tiposTelefone = consulta.data
-        console.log(this.tiposTelefone)
-        // for (let x = 0; x < consulta.data.length; x++) {
-        //   let id_tipo = {id: consulta.data[x].id, descricao: consulta.data[x].descricao}
-        //   let descricao = consulta.data[x].descricao
-        //   this.tiposTelefone.push({id_tipo: id_tipo, descricao: descricao})
-        // }
       })
     },
     async adicionarTelefone() {
@@ -734,7 +740,10 @@ export default {
       this.$modal.show('modal-cliente')
       this.buscarTipoTelefones()
       this.buscarTipoStatus()
-      this.buscarTelefones()
+      this.buscarEstadosCivis()
+      if(this.editar){
+        this.buscarTelefones()
+      }
     },
     esconderModal() {
       this.$modal.hide('modal-cliente');
@@ -761,8 +770,14 @@ export default {
       if (this.validarCamposObrigatorio()) {
         let variaveisString = ['data_nascimento', 'identidade', 'status', 'estado_civil']
         for (let key in variaveisString) {
-          if (this.cliente[variaveisString[key]] == "") {
-            this.cliente[variaveisString[key]] = null
+          if (this.cliente[variaveisString[key]] == null) {
+            this.cliente[variaveisString[key]] = ""
+          }
+        }
+        let variaveisString2 = ['data_nascimento', 'identidade',]
+        for (let key in variaveisString2) {
+          if (this.cliente[variaveisString2[key]] == null) {
+            this.cliente[variaveisString2[key]] = ""
           }
         }
         let idUsuario = this.$store.state.usuario.id

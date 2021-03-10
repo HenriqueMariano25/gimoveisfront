@@ -314,7 +314,7 @@
             <b-col>
               <vs-input
                 label-placeholder="Valor da aquisição"
-                v-model="imovel.valor_aquisicao"
+                v-model="imovel.valor_aquisicao_mascara"
                 class="input-personalizado"
                 ref="valor_aquisicao"
                 v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
@@ -324,7 +324,7 @@
             <b-col>
               <vs-input
                 label-placeholder="Valor da aquisiçao em Dólar"
-                v-model="imovel.valor_aquisicao_dolar"
+                v-model="imovel.valor_aquisicao_dolar_mascara"
                 class="input-personalizado"
                 ref="valor_aquisicao_dolar"
                 v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
@@ -334,7 +334,7 @@
             <b-col>
               <vs-input
                 label-placeholder="Valor atual"
-                v-model="imovel.valor_atual"
+                v-model="imovel.valor_atual_mascara"
                 class="input-personalizado"
                 ref="valor_atual"
                 v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
@@ -360,20 +360,23 @@
               />
             </b-col>
           </b-row>
+          <b-row>
+            <b-col>
+              <b-form-group
+                  id="textarea"
+                  label="Observação"
+                  label-for="input-1">
+                <b-form-textarea
+                    id="textarea"
+                    v-model="imovel.observacao"
+                    rows="3"
+                    max-rows="6"
+                ></b-form-textarea>
+              </b-form-group>
+            </b-col>
+          </b-row>
         </b-tab>
         <b-tab title="Cômodos" @click="inicilizarTabComodo" :disabled="imovel.id == ''">
-<!--          <b-row>-->
-<!--            <b-col cols="auto">-->
-<!--              <vs-button-->
-<!--                type="filled"-->
-<!--                icon="add"-->
-<!--                class="botao-salvar botao-adicionar-comodo"-->
-<!--                color="#5498ff"-->
-<!--                @click.prevent="adicionarComodo()"-->
-<!--                >Adicionar comôdo-->
-<!--              </vs-button>-->
-<!--            </b-col>-->
-<!--          </b-row>-->
           <b-row>
             <b-col cols="3">
               <b-form-group id="select-comodo" label="Tipo do comôdo">
@@ -481,49 +484,7 @@
               </b-table>
             </b-col>
           </b-row>
-<!--          <b-row class="campos-comodos">-->
-<!--            <b-col cols="6" v-for="(comodo, index) in comodos" :key="index">-->
-<!--              <b-row>-->
-<!--                <b-col cols="5">-->
-<!--                  <b-form-group id="select-comodo" label="Tipo do comôdo">-->
-<!--                    <b-form-select-->
-<!--                      v-model="comodo.tipo"-->
-<!--                      :options="tiposComodos"-->
-<!--                      value-field="id"-->
-<!--                      text-field="descricao"-->
-<!--                    >-->
-<!--                      <template #first>-->
-<!--                        <b-form-select-option :value="null"-->
-<!--                        >Selecione</b-form-select-option-->
-<!--                        >-->
-<!--                      </template>-->
-<!--                    </b-form-select>-->
-<!--                  </b-form-group>-->
-<!--                </b-col>-->
-<!--                <b-col cols="5">-->
-<!--                  <vs-input-->
-<!--                      label-placeholder="Quantidade"-->
-<!--                      type="number"-->
-<!--                      v-model="comodo.quantidade"-->
-<!--                      class="input-personalizado"-->
-<!--                  />-->
-<!--                </b-col>-->
-<!--                <b-col cols="2" class="text-center botao-deletar-comodo">-->
-<!--                  <vs-button-->
-<!--                      type="flat"-->
-<!--                      icon="delete"-->
-<!--                      color="dark"-->
-<!--                      class=""-->
-<!--                      @click.native="removerComodo(index)"-->
-<!--                  />-->
-<!--                </b-col>-->
-<!--              </b-row>-->
-<!--            </b-col>-->
-<!--          </b-row>-->
         </b-tab>
-
-
-
         <b-tab title="Despesas" :disabled="imovel.id == ''">
           <b-row>
             <b-col >
@@ -738,6 +699,11 @@
                     {{ $dayjs(row.item.data_fim).format('DD/MM/YYYY') }}
                   </label>
                 </template>
+                <template #cell(editar)="row">
+                  <div class="item-coluna-centralizada">
+                    <vs-button type="flat" color="dark" icon="edit" @mousedown.stop="mostrarModalContrato(row)"></vs-button>
+                  </div>
+                </template>
                 <template #cell(status)="row">
                   <label v-if="!row.item.nome_pdf" style="color:red">
                     <b>
@@ -787,7 +753,7 @@
                 "
               >
                 <template #cell(id)="row">
-                  <label >
+                  <label>
                     {{ ("000000" + row.item.id).slice(-6) }}
                   </label>
                 </template>
@@ -835,13 +801,13 @@
               Salvar
             </vs-button>
           </b-col>
-          <b-col cols="auto">
+          <b-col cols="auto" v-if="!editar">
             <vs-button
                 color="#39a324"
                 type="filled"
                 icon="save"
                 class="botao-salvar"
-                @click.native="cadastrarImovelSair(true)" v-if="!editar">
+                @click.native="cadastrarImovelSair(true)">
               Salvar e Sair
             </vs-button>
           </b-col>
@@ -859,6 +825,7 @@
         </b-row>
       </div>
     </modal>
+    <ModalContrato :idContrato="idContratoModal" :visivel="modal_visivel" @esconder-modal="modal_visivel = $event"/>
   </b-container>
 </template>
 
@@ -867,11 +834,13 @@ import api from "../../services/api";
 import Carregando from "../../components/shared/Carregando";
 import {atribuirCep, converterDinherioFloat} from "../../methods/global"
 import { setValue } from "vue-currency-input"
+import ModalContrato from "../../components/shared/ModalContrato";
 
 export default {
   name: "VisualizarImovel",
   components:{
-    Carregando
+    Carregando,
+    ModalContrato
   },
   data() {
     return {
@@ -916,11 +885,12 @@ export default {
         { key: "deletar", label: "" },
       ],
       cabecalhosContratosClientes: [
-        { key: "contrato", label: "Contrato", sortable: true, class: 'text-center'},
-        { key: "cliente", label: "Cliente", sortable: true, thClass: 'text-center' },
-        { key: "data_inicio", label: "Data de início", sortable: true, class: 'text-center' },
-        { key: "data_fim", label: "Data de Término", class: 'text-center', sortable: true  },
-        { key: "status", label: "Status", class: 'text-center', sortable: true  },
+        { key: "contrato", label: "Contrato", sortable: true, class: 'text-center', tdClass:"td-centralizado"},
+        { key: "cliente", label: "Cliente", sortable: true, thClass: 'text-center' , tdClass:"td-centralizado"},
+        { key: "data_inicio", label: "Data de início", sortable: true, class: 'text-center', tdClass:"td-centralizado" },
+        { key: "data_fim", label: "Data de Término", class: 'text-center', sortable: true, tdClass:"td-centralizado"  },
+        { key: "status", label: "Status", class: 'text-center', sortable: true, tdClass:"td-centralizado"  },
+        { key: "editar", label: ""},
       ],
       cabecalhosContratosBoletos: [
         { key: "id", label: "Codigo", sortable: true, class: 'text-center' },
@@ -962,8 +932,12 @@ export default {
         valor_aquisicao: "",
         valor_atual: "",
         valor_aquisicao_dolar: "",
+        valor_aquisicao_mascara: "",
+        valor_atual_mascara: "",
+        valor_aquisicao_dolar_mascara: "",
         numero_cliente_luz: "",
         numero_cliente_agua: "",
+        observacao:""
       },
       despesa:{
         valor:"",
@@ -998,7 +972,9 @@ export default {
       editandoDespesa:false,
       comodos:[],
       carregandoComodos:false,
-      editandoComodo:false
+      editandoComodo:false,
+      idContratoModal:"",
+      modal_visivel:false
     };
   },
 
@@ -1117,6 +1093,12 @@ export default {
       this.contratos = []
       this.idContrato = ""
     },
+    mostrarModalContrato(contrato){
+      console.log(contrato)
+      this.$modal.show('modal-contrato')
+      this.modal_visivel = true
+      this.idContratoModal = contrato.item.contrato
+    },
     limparModal() {
       Object.keys(this.imovel).forEach((key) => {
         this.imovel[key] = "";
@@ -1131,12 +1113,13 @@ export default {
         fixa_variavel:null,
         descricao:""
       }
+      this.despesas = []
       this.comodos = []
     },
     async cadastrarImovelSair(sair) {
-      this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao)
-      this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual)
-      this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar)
+      this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao_mascara)
+      this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual_mascara)
+      this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar_mascara)
       let idUsuario = this.$store.state.usuario.id
       if (this.validarCamposObrigatorio()) {
         await api.post("/imovel/cadastrar", {
@@ -1158,6 +1141,9 @@ export default {
             this.esconderModal();
             this.buscarImoveis();
             this.limparModal();
+          }else{
+            this.buscarTiposDespesas()
+            this.editar = true
           }
         });
       }
@@ -1331,6 +1317,8 @@ export default {
       let idImovel = this.imovel.id
       await api.post('/imoveis/comodo/cadastrar', {comodo: this.comodo, idImovel: idImovel}).then(() => {
         this.buscarComodos()
+        this.comodo = {}
+        this.comodo.id_tipo_comodo = null
       })
     },
     async editarComodo(comodo){

@@ -46,7 +46,7 @@
             striped
             hover
             outlined
-            sticky-header
+            sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 00px)"
             no-border-collapse
             @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
           <template #cell(nome)="row">
@@ -380,7 +380,7 @@ export default {
             text: `${erro.response.data.erro}`,
             position: 'top-center',
             color: 'danger',
-            time: 40000,
+            time: 6000,
             icon: 'check_circle_outline'
           })
         })
