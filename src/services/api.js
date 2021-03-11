@@ -1,9 +1,11 @@
 import axios from 'axios'
 import store from "../services/store";
 
+const baseURLLocal = 'http://localhost:3000/'
+const baseURLWeb = 'https://gimoveis-api.herokuapp.com/'
+
 const api = axios.create({
-    baseURL: 'http://localhost:3000/',
-    // baseURL: 'http://192.168.2.43:3000/',
+    baseURL: process.env.NODE_ENV === "production" ? baseURLWeb : baseURLLocal,
     headers: {
         'Accept':'application/json',
         'Content': 'application/json',
