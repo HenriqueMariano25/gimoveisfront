@@ -159,7 +159,7 @@
           </b-form-group>
         </b-col>
         <b-col cols="4">
-          <vs-input onKeyDown="if(this.value.length==15 && event.keyCode!=8) return false;" type="text"
+          <vs-input onKeyDown="if(this.value.length==18 && event.keyCode!=8) return false;" type="text"
                     v-mask="['###.###.###-##', '##.###.###/####-##']" label-placeholder="CPF ou CNPJ*"
                     v-model="responsavel.cpf_cnpj" class="input-personalizado"/>
         </b-col>

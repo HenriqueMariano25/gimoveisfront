@@ -193,7 +193,7 @@
               <vs-input label-placeholder="Email*" v-model="cliente.email" class="input-personalizado"/>
             </b-col>
             <b-col cols="3">
-              <vs-input onKeyDown="if(this.value.length==15 && event.keyCode!=8) return false;" type="text"
+              <vs-input onKeyDown="if(this.value.length==18 && event.keyCode!=8) return false;" type="text"
                         v-mask="['###.###.###-##', '##.###.###/####-##']" label-placeholder="CPF ou CNPJ*"
                         v-model="cliente.cpf_cnpj"
                         class="input-personalizado"/>
