@@ -73,18 +73,24 @@
           </template>
           <template #cell(contrato)="row">
             <div class="item-coluna-centralizada">
-              <vs-button type="flat" color="dark" :disabled="!row.item.url" target :href="row.item.url"
-                         icon="description"></vs-button>
+              <vs-tooltip text="Mostrar contrato">
+                <vs-button type="flat" color="dark" :disabled="!row.item.url" target :href="row.item.url"
+                           icon="description"></vs-button>
+              </vs-tooltip>
             </div>
           </template>
           <template #cell(editar)="row">
             <div class="item-coluna-centralizada">
-              <vs-button type="flat" color="dark" @click="editarContratoModal(row.item.id)" icon="edit"></vs-button>
+              <vs-tooltip text="Editar">
+                <vs-button type="flat" color="dark" @click="editarContratoModal(row.item.id)" icon="edit"></vs-button>
+              </vs-tooltip>
             </div>
           </template>
           <template #cell(deletar)="row">
             <div class="item-coluna-centralizada">
-              <vs-button type="flat" color="dark" @click="deletarContratoModal(row.item)" icon="delete"></vs-button>
+              <vs-tooltip text="Deletar">
+                <vs-button type="flat" color="dark" @click="deletarContratoModal(row.item)" icon="delete"></vs-button>
+              </vs-tooltip>
             </div>
           </template>
           <template #table-colgroup>
@@ -140,7 +146,8 @@
       </b-row>
     </b-container>
     <!--  Fim da tabela-->
-    <modal name="modal-contrato" id="modal-contrato" width="60%" height="auto" :scrollable="true" class="modal-adicionando-responsavel">
+    <modal name="modal-contrato" id="modal-contrato" width="60%" height="auto" :scrollable="true"
+           class="modal-adicionando-responsavel">
       <h3>Adicionando contrato</h3>
       <b-tabs content-class="mt-3" v-model="tabBoleto">
         <b-tab title="Dados gerais" active>
@@ -212,7 +219,7 @@
             </b-col>
             <b-col>
               <b-form-group id="select-contrato" label="Fiador">
-                <b-form-select v-model="contrato.fiador" :options="clientes" value-field="id"
+                <b-form-select v-model="contrato.fiador" :options="idFiador" value-field="id"
                                text-field="descricao">
                   <template #first>
                     <b-form-select-option :value="null">Selecione</b-form-select-option>
@@ -286,7 +293,7 @@
                   <label class="tr-contrato">{{ dayjs(row.item.data_vencimento).format('DD/MM/YYYY') }}</label>
                 </template>
                 <template #cell(valor)="row">
-                  <label class="tr-contrato">R$ {{ row.item.valor.replace('.',',') }}</label>
+                  <label class="tr-contrato">R$ {{ row.item.valor.replace('.', ',') }}</label>
                 </template>
                 <template #cell(status)="row">
                   <label class="tr-contrato">{{ row.item.status }}</label>
@@ -301,13 +308,19 @@
                 </template>
                 <template #cell(editar)="row">
                   <div class="item-coluna-centralizada">
-                    <vs-button type="flat" color="dark" @click="editarBoletoModal(row.item)" icon="edit"></vs-button>
+                    <vs-tooltip text="Editar">
+                      <vs-button type="flat" color="dark" @click="editarBoletoModal(row.item)" icon="edit"></vs-button>
+                    </vs-tooltip>
                   </div>
                 </template>
                 <template #cell(deletar)="row">
                   <div class="item-coluna-centralizada">
-                    <vs-button v-if="row.item.status == 'Pago'" :disabled="true" type="flat" color="dark" @click="deletarBoletoAlerta(row)" icon="delete"></vs-button>
-                    <vs-button v-else type="flat" color="dark" @click="deletarBoletoAlerta(row)" icon="delete"></vs-button>
+                    <vs-tooltip text="Deletar">
+                      <vs-button v-if="row.item.status == 'Pago'" :disabled="true" type="flat" color="dark"
+                                 @click="deletarBoletoAlerta(row)" icon="delete"></vs-button>
+                      <vs-button v-else type="flat" color="dark" @click="deletarBoletoAlerta(row)"
+                                 icon="delete"></vs-button>
+                    </vs-tooltip>
                   </div>
                 </template>
                 <template #table-colgroup>
@@ -356,7 +369,7 @@
 
       </b-row>
     </modal>
-    <modal name="modal-editar-boleto"  width="60%" height="auto" :scrollable="true" :click-to-close="false"
+    <modal name="modal-editar-boleto" width="60%" height="auto" :scrollable="true" :click-to-close="false"
            class="modal-adicionando-responsavel">
       <b-container>
         <b-row>
@@ -374,7 +387,8 @@
                       class="input-nascimento"/>
           </b-col>
           <b-col>
-            <vs-input label-placeholder="Valor" ref="inputValor" v-model="boleto.valor" class="input-personalizado" v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+            <vs-input label-placeholder="Valor" ref="inputValor" v-model="boleto.valor" class="input-personalizado"
+                      v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
                         allowNegative: false, currency:'BRL'}"/>
           </b-col>
           <b-col>
@@ -389,13 +403,13 @@
           </b-col>
         </b-row>
         <b-row align-h="end">
-          <b-col cols="2">
+          <b-col cols="auto">
             <vs-button color="#24a35a" type="filled" icon="save" class="botao-salvar"
-                       @click="editarBoleto" >
+                       @click="editarBoleto">
               Salvar
             </vs-button>
           </b-col>
-          <b-col cols="2">
+          <b-col cols="auto">
             <vs-button color="#707070" type="filled" icon="clear" class="botao-salvar"
                        @click="esconderModalEditarBoleto">
               Cancelar
@@ -404,7 +418,7 @@
         </b-row>
       </b-container>
     </modal>
-    <modal name="modal-adicionar-boleto"  width="60%" height="auto" :scrollable="true" :click-to-close="false"
+    <modal name="modal-adicionar-boleto" width="60%" height="auto" :scrollable="true" :click-to-close="false"
            class="modal-adicionando-responsavel">
       <b-container>
         <b-row>
@@ -422,7 +436,8 @@
                       class="input-nascimento"/>
           </b-col>
           <b-col>
-            <vs-input label-placeholder="Valor" ref="inputValor" v-model="boleto.valor" class="input-personalizado" v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+            <vs-input label-placeholder="Valor" ref="inputValor" v-model="boleto.valor" class="input-personalizado"
+                      v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
                         allowNegative: false, currency:'BRL'}"/>
           </b-col>
           <b-col>
@@ -509,7 +524,7 @@ export default {
         valor_boleto: "",
         carencia: "",
         garantia: "",
-        fiador: "",
+        fiador: null,
         locador: "",
         nome_pdf: "",
         observacao: ""
@@ -534,8 +549,9 @@ export default {
       files: null,
       btn_importa_desabilitado: true,
       carregandoContratos: false,
-      recarregarContratos:false,
-      tabBoleto: 0
+      recarregarContratos: false,
+      tabBoleto: 0,
+      idFiador: []
     }
   },
 
@@ -553,6 +569,11 @@ export default {
     async buscarImoveis() {
       await api.get('/contrato/imoveis').then(response => {
         this.imoveis = response.data
+      })
+    },
+    async buscarIdFiador() {
+      await api.get('/contrato/id_fiador').then(response => {
+        this.idFiador = response.data
       })
     },
     async buscarContratos() {
@@ -600,7 +621,7 @@ export default {
     async editarContratoModal(id) {
       await api.get('/contrato', {params: {idContrato: id}}).then(response => {
         this.contrato = response.data[0]
-        this.contrato.valor_boleto = `R$ ${response.data[0].valor_boleto.replace('.',',')}`
+        this.contrato.valor_boleto = `R$ ${response.data[0].valor_boleto.replace('.', ',')}`
         this.buscarBoletos(id)
         this.mostrarModal()
         this.editar = true
@@ -642,7 +663,7 @@ export default {
         this.buscarStatusBoleto()
         this.mostrarModalEditarBoleto()
         this.boleto = response.data[0]
-        this.boleto.valor = `R$ ${response.data[0].valor.replace('.',',')}`
+        this.boleto.valor = `R$ ${response.data[0].valor.replace('.', ',')}`
       })
     },
     editarBoleto() {
@@ -660,6 +681,7 @@ export default {
       this.buscarResponsaveis()
       this.buscarClientes()
       this.buscarImoveis()
+      this.buscarIdFiador()
       this.$modal.show('modal-contrato')
     },
 
@@ -667,7 +689,7 @@ export default {
       this.$modal.hide('modal-contrato');
       this.limparModal()
       this.editar = false
-      if(this.recarregarContratos){
+      if (this.recarregarContratos) {
         this.buscarContratos()
         this.recarregarContratos = false
       }
@@ -695,7 +717,7 @@ export default {
       })
     },
     importarPDF(event) {
-      if(this.editar) {
+      if (this.editar) {
         this.btn_importa_desabilitado = false
         this.files = event.target.files
         const formData = new FormData();
@@ -724,18 +746,21 @@ export default {
       this.boleto = {}
       this.boleto.id_status_boleto = null
     },
-    async adicionarBoleto(){
+    async adicionarBoleto() {
       this.boleto.valor = converterDinherioFloat(this.boleto.valor)
-      if(this.boleto.data_quitacao == "" || this.boleto.data_quitacao == null){
+      if (this.boleto.data_quitacao == "" || this.boleto.data_quitacao == null) {
         this.boleto.data_quitacao = ""
       }
-      await api.post('/contrato/boleto/cadastrar', {boleto: this.boleto, idContrato: this.contrato.id}).then(response => {
+      await api.post('/contrato/boleto/cadastrar', {
+        boleto: this.boleto,
+        idContrato: this.contrato.id
+      }).then(response => {
         console.log(response)
         this.esconderModalAdicionarBoleto()
         this.buscarBoletos(this.contrato.id)
       })
     },
-    async deletarBoletoAlerta(boleto){
+    async deletarBoletoAlerta(boleto) {
       console.log(boleto.item)
       this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar o boleto: ${("000000" + boleto.item.id).slice(-6)} ?`, {
         title: 'Deletar boleto',
@@ -752,8 +777,8 @@ export default {
         }
       })
     },
-    async deletarBoleto(idBoleto){
-      await api.delete('/contrato/boleto/deletar', {params:{idBoleto: idBoleto}}).then(response => {
+    async deletarBoleto(idBoleto) {
+      await api.delete('/contrato/boleto/deletar', {params: {idBoleto: idBoleto}}).then(response => {
         console.log(response)
         this.buscarBoletos(this.contrato.id)
       })
@@ -772,11 +797,11 @@ export default {
               time: 6000,
               icon: 'check_circle_outline'
             })
-            if(sair){
+            if (sair) {
               this.esconderModal()
               this.buscarContratos()
               this.limparModal()
-            }else{
+            } else {
               this.recarregarContratos = true
               this.editar = true
               this.buscarBoletos(this.contrato.id)

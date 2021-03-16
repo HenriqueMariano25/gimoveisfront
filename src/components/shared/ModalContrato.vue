@@ -150,7 +150,9 @@
                 </template>
                 <template #cell(editar)="row">
                   <div class="item-coluna-centralizada">
-                    <vs-button type="flat" color="dark" @mousedown.stop="mostrarModalEditarBoleto(row.item)" icon="edit"></vs-button>
+                    <vs-tooltip text="Editar">
+                      <vs-button type="flat" color="dark" @mousedown.stop="mostrarModalEditarBoleto(row.item)" icon="edit"></vs-button>
+                    </vs-tooltip>
                   </div>
                 </template>
                 <template #table-colgroup>

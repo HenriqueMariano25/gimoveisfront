@@ -59,10 +59,14 @@
             <p class="tr-responsavel">{{ row.item.cpf_cnpj }}</p>
           </template>
           <template #cell(editar)="row">
-            <vs-button type="flat" color="dark" @click="editarResponsavelModal(row.item.id)" icon="edit"></vs-button>
+            <vs-tooltip text="Editar">
+              <vs-button type="flat" color="dark" @click="editarResponsavelModal(row.item.id)" icon="edit"></vs-button>
+            </vs-tooltip>
           </template>
           <template #cell(deletar)="row">
-            <vs-button type="flat" color="dark" @click="deletarResponsavelModal(row.item)" icon="delete"></vs-button>
+            <vs-tooltip text="Deletar">
+              <vs-button type="flat" color="dark" @click="deletarResponsavelModal(row.item)" icon="delete"></vs-button>
+            </vs-tooltip>
           </template>
           <template #table-colgroup>
             <col>
@@ -363,7 +367,10 @@ export default {
     async cadastrarResponsavel() {
       if (this.validarCamposObrigatorio()) {
         let idUsuario = this.$store.state.usuario.id
-        await api.post('/responsavel/cadastrar', {responsavel: this.responsavel, idUsuario: idUsuario}).then(response => {
+        await api.post('/responsavel/cadastrar', {
+          responsavel: this.responsavel,
+          idUsuario: idUsuario
+        }).then(response => {
           let nomeResponsavel = response.data[0].nome
           this.esconderModal()
           this.$vs.notify({

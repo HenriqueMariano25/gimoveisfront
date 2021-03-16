@@ -67,7 +67,9 @@
           </template>
           <template #cell(editar)="row" >
             <div class="item-coluna-centralizada">
-            <vs-button type="flat" color="dark" @click="editarImovelModal(row.item)" icon="edit"></vs-button>
+              <vs-tooltip text="Editar">
+                <vs-button type="flat" color="dark" @click="editarImovelModal(row.item)" icon="edit"></vs-button>
+              </vs-tooltip>
             </div>
           </template>
           <template #table-colgroup>
@@ -79,7 +81,9 @@
           </template>
           <template #cell(deletar)="row" >
             <div class="item-coluna-centralizada">
-              <vs-button type="flat" color="dark" @click="deletarImovelModal(row.item)" icon="delete"></vs-button>
+              <vs-tooltip text="Deletar">
+                <vs-button type="flat" color="dark" @click="deletarImovelModal(row.item)" icon="delete"></vs-button>
+              </vs-tooltip>
             </div>
           </template>
         </b-table>
@@ -473,12 +477,16 @@
                 </template>
                 <template #cell(editar)="row" >
                   <div class="item-coluna-centralizada">
-                    <vs-button type="flat" color="dark" icon="edit" @click="editarComodo(row)"></vs-button>
+                    <vs-tooltip text="Editar">
+                      <vs-button type="flat" color="dark" icon="edit" @click="editarComodo(row)"></vs-button>
+                    </vs-tooltip>
                   </div>
                 </template>
                 <template #cell(deletar)="row">
                   <div class="item-coluna-centralizada">
-                    <vs-button type="flat" color="dark" icon="delete" @click="deletarComodo(row)"></vs-button>
+                    <vs-tooltip text="Deletar">
+                      <vs-button type="flat" color="dark" icon="delete" @click="deletarComodo(row)"></vs-button>
+                    </vs-tooltip>
                   </div>
                 </template>
               </b-table>
@@ -599,12 +607,16 @@
                 </template>
                 <template #cell(editar)="row" >
                   <div class="item-coluna-centralizada">
-                    <vs-button type="flat" color="dark" icon="edit" @click="editarDespesa(row)"></vs-button>
+                    <vs-tooltip text="Editar">
+                      <vs-button type="flat" color="dark" icon="edit" @click="editarDespesa(row)"></vs-button>
+                    </vs-tooltip>
                   </div>
                 </template>
                 <template #cell(deletar)="row">
                   <div class="item-coluna-centralizada">
-                    <vs-button type="flat" color="dark" icon="delete" @click="deletarDespesa(row)"></vs-button>
+                    <vs-tooltip text="Deletar">
+                      <vs-button type="flat" color="dark" icon="delete" @click="deletarDespesa(row)"></vs-button>
+                    </vs-tooltip>
                   </div>
                 </template>
                 <template #table-colgroup>
@@ -701,7 +713,9 @@
                 </template>
                 <template #cell(editar)="row">
                   <div class="item-coluna-centralizada">
-                    <vs-button type="flat" color="dark" icon="edit" @mousedown.stop="mostrarModalContrato(row)"></vs-button>
+                    <vs-tooltip text="Editar">
+                      <vs-button type="flat" color="dark" icon="edit" @mousedown.stop="mostrarModalContrato(row)"></vs-button>
+                    </vs-tooltip>
                   </div>
                 </template>
                 <template #cell(status)="row">
@@ -974,7 +988,8 @@ export default {
       carregandoComodos:false,
       editandoComodo:false,
       idContratoModal:"",
-      modal_visivel:false
+      modal_visivel:false,
+      recarregarImovel:false
     };
   },
 
@@ -1071,6 +1086,15 @@ export default {
           this.buscarImoveis();
           this.limparModal();
           this.esconderModal();
+        }).catch(erro => {
+          console.log(erro)
+          this.$vs.notify({
+            text: `${erro.response.data.erro}`,
+            position: 'top-center',
+            color: 'danger',
+            time: 4000,
+            icon: 'check_circle_outline'
+          })
         });
       }
     },
@@ -1092,6 +1116,9 @@ export default {
       this.boletos = []
       this.contratos = []
       this.idContrato = ""
+      if(this.recarregarImovel){
+        this.buscarImoveis()
+      }
     },
     mostrarModalContrato(contrato){
       console.log(contrato)
@@ -1142,9 +1169,19 @@ export default {
             this.buscarImoveis();
             this.limparModal();
           }else{
+            this.recarregarImovel = true
             this.buscarTiposDespesas()
             this.editar = true
           }
+        }).catch(erro => {
+          console.log(erro)
+          this.$vs.notify({
+            text: `${erro.response.data.erro}`,
+            position: 'top-center',
+            color: 'danger',
+            time: 4000,
+            icon: 'check_circle_outline'
+          })
         });
       }
     },

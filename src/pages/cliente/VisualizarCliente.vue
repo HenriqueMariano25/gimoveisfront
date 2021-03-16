@@ -62,10 +62,14 @@
             <label class="tr-cliente">{{ row.item.status }}</label>
           </template>
           <template #cell(editar)="row">
-            <vs-button type="flat" color="dark" @click="editarClienteModal(row.item.id)" icon="edit"></vs-button>
+            <vs-tooltip text="Editar">
+              <vs-button type="flat" color="dark" @click="editarClienteModal(row.item.id)" icon="edit"></vs-button>
+            </vs-tooltip>
           </template>
           <template #cell(deletar)="row">
-            <vs-button type="flat" color="dark" @click="deletarClienteModal(row.item)" icon="delete"></vs-button>
+            <vs-tooltip text="Deletar">
+              <vs-button type="flat" color="dark" @click="deletarClienteModal(row.item)" icon="delete"></vs-button>
+            </vs-tooltip>
           </template>
           <template #table-colgroup>
             <col>
@@ -315,10 +319,14 @@
                   <col style="width: 15px">
                 </template>
                 <template #cell(editar)="row">
-                  <vs-button type="flat" color="dark" @click="editarTelefone(row)" icon="edit"></vs-button>
+                  <vs-tooltip text="Editar">
+                    <vs-button type="flat" color="dark" @click="editarTelefone(row)" icon="edit"></vs-button>
+                  </vs-tooltip>
                 </template>
                 <template #cell(deletar)="row">
-                  <vs-button type="flat" color="dark" @click="alertaDeletarTelefone(row)" icon="delete"></vs-button>
+                  <vs-tooltip text="Deletar">
+                    <vs-button type="flat" color="dark" @click="alertaDeletarTelefone(row)" icon="delete"></vs-button>
+                  </vs-tooltip>
                 </template>
               </b-table>
             </b-col>
@@ -390,7 +398,9 @@
                   </label>
                 </template>
                 <template #cell(editar)="row">
-                  <vs-button type="flat" color="dark" @mousedown.stop="mostrarModalContrato(row.item)" icon="edit"></vs-button>
+                  <vs-tooltip text="Editar">
+                    <vs-button type="flat" color="dark" @mousedown.stop="mostrarModalContrato(row.item)" icon="edit"></vs-button>
+                  </vs-tooltip>
                 </template>
               </b-table>
             </b-col>
@@ -447,7 +457,7 @@
         </b-tab>
       </b-tabs>
       <b-row align-h="end">
-        <b-col cols="2">
+        <b-col cols="auto">
           <vs-button v-if="editar" color="#24a35a" type="filled" icon="save" class="botao-salvar"
                      @click="editarCliente">
             Salvar
@@ -461,7 +471,7 @@
             Salvar e Sair
           </vs-button>
         </b-col>
-        <b-col cols="2">
+        <b-col cols="auto">
           <vs-button color="#707070" type="filled" icon="clear" class="botao-salvar" @click.native="esconderModal">
             Cancelar
           </vs-button>
@@ -627,9 +637,8 @@ export default {
     async editarClienteModal(id) {
       await api.get('/cliente', {params: {idCliente: id}}).then(response => {
         this.cliente = response.data
-        console.log(this.cliente)
-        this.mostrarModal()
         this.editar = true
+        this.mostrarModal()
       })
     },
     async editarCliente() {
@@ -707,6 +716,7 @@ export default {
           id_tipo_telefone: null,
           observacao: "",
         }
+        this.telefoneEditar = false
       })
     },
     alertaDeletarTelefone(telefone) {
@@ -753,6 +763,7 @@ export default {
       if(this.recarregarClientes){
         this.buscarClientes()
       }
+
     },
 
     limparModal() {
@@ -764,6 +775,13 @@ export default {
       this.cliente.estado_civil = null
       this.contratos = []
       this.boletos = []
+      this.telefone = {
+        id: "",
+        numero: "",
+        id_tipo_telefone: null,
+        observacao: ""
+      }
+      this.telefoneEditar = false
     },
 
     async cadastrarCliente(sair) {
