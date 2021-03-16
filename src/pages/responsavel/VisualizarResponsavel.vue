@@ -175,9 +175,15 @@
       <Carregando :visivel="carregandoCep"/>
       <b-row>
         <b-col cols="2">
-          <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                    onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" label-placeholder="CEP*"
-                    v-model="responsavel.cep" class="input-personalizado" v-mask="'#####-###'"/>
+          <vs-input
+              type="text"
+              label-placeholder="CEP*"
+              v-model="responsavel.cep"
+              class="input-personalizado"
+              v-mask="'#####-###'"
+              @focusout="buscarEndereco"
+              @focusin="cepAtual"
+          />
         </b-col>
         <b-col cols="5">
           <vs-input label-placeholder="Rua*" v-model="responsavel.rua" class="input-personalizado"/>
@@ -268,7 +274,8 @@ export default {
       },
       editar: false,
       estadosCivis: [],
-      carregandoCep: false
+      carregandoCep: false,
+      cep_atual:''
     }
   },
 
@@ -410,42 +417,51 @@ export default {
       }
     },
     atribuirCep(dados) {
-      if (this.editar != true) {
-        this.responsavel.bairro = ""
-        this.responsavel.cidade = ""
-        this.responsavel.estado = ""
-        this.responsavel.complemento = ""
-        this.responsavel.rua = ""
-        if (dados.bairro != "") {
-          this.responsavel['bairro'] = dados.bairro
-        }
-        if (dados.localidade != "") {
-          this.responsavel.cidade = dados.localidade
-        }
-        if (dados.uf != "") {
-          this.responsavel.estado = dados.uf
-        }
-        if (dados.complemento != "") {
-          this.responsavel.complemento = dados.complemento
-        }
-        if (dados.logradouro != "") {
-          this.responsavel.rua = dados.logradouro
+      if (dados.bairro != "") {
+        this.responsavel.bairro = dados.bairro
+      }
+      if (dados.localidade != "") {
+        this.responsavel.cidade = dados.localidade
+      }
+      if (dados.uf != "") {
+        this.responsavel.estado = dados.uf
+      }
+      if (dados.complemento != "") {
+        this.responsavel.complemento = dados.complemento
+      }
+      if (dados.logradouro != "") {
+        this.responsavel.rua = dados.logradouro
+      }
+    },
+    cepAtual(){
+      this.cep_atual = this.responsavel.cep
+    },
+    buscarEndereco(){
+      if(this.cep_atual != this.responsavel.cep){
+        if (atribuirCep(this.responsavel.cep)) {
+          if (this.responsavel.cep.length == 9) {
+            this.carregandoCep = true
+          }
+          atribuirCep(this.responsavel.cep).then(response => {
+            this.carregandoCep = false
+            this.atribuirCep(response)
+          })
         }
       }
     },
   },
   watch: {
-    'responsavel.cep': function (cep) {
-      if (atribuirCep(cep)) {
-        if (cep.length == 9) {
-          this.carregandoCep = true
-        }
-        atribuirCep(cep).then(response => {
-          this.carregandoCep = false
-          this.atribuirCep(response)
-        })
-      }
-    },
+    // 'responsavel.cep': function (cep) {
+    //   if (atribuirCep(cep)) {
+    //     if (cep.length == 9) {
+    //       this.carregandoCep = true
+    //     }
+    //     atribuirCep(cep).then(response => {
+    //       this.carregandoCep = false
+    //       this.atribuirCep(response)
+    //     })
+    //   }
+    // },
   },
   async mounted() {
     this.buscarResponsaveis()

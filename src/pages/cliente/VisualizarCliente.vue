@@ -210,10 +210,15 @@
           <Carregando :visivel="carregandoCep"/>
           <b-row>
             <b-col cols="2">
-              <vs-input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                        onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;"
-                        label-placeholder="CEP" v-model="cliente.cep" class="input-personalizado"
-                        v-mask="'#####-###'"/>
+              <vs-input
+                  type="text"
+                  label-placeholder="CEP"
+                  v-model="cliente.cep"
+                  class="input-personalizado"
+                  v-mask="'#####-###'"
+                  @focusout="buscarEndereco"
+                  @focusin="cepAtual"
+              />
             </b-col>
             <b-col cols="5">
               <vs-input label-placeholder="Rua" v-model="cliente.rua" class="input-personalizado"/>
@@ -579,7 +584,8 @@ export default {
       idContratoModal:'',
       telefoneEditar:false,
       indexTelefoneTabela:0,
-      modal_visivel:false
+      modal_visivel:false,
+      cep_atual:''
     }
   },
 
@@ -786,10 +792,10 @@ export default {
 
     async cadastrarCliente(sair) {
       if (this.validarCamposObrigatorio()) {
-        let variaveisString = ['data_nascimento', 'identidade', 'status', 'estado_civil']
+        let variaveisString = ['status', 'estado_civil']
         for (let key in variaveisString) {
-          if (this.cliente[variaveisString[key]] == null) {
-            this.cliente[variaveisString[key]] = ""
+          if (this.cliente[variaveisString[key]] == "") {
+            this.cliente[variaveisString[key]] = null
           }
         }
         let variaveisString2 = ['data_nascimento', 'identidade',]
@@ -869,20 +875,36 @@ export default {
       this.$modal.show('modal-contrato')
       this.modal_visivel = true
       this.idContratoModal = contrato.id
-    }
+    },
+    cepAtual(){
+      this.cep_atual = this.cliente.cep
+    },
+    buscarEndereco(){
+      if(this.cep_atual != this.cliente.cep){
+        if (atribuirCep(this.cliente.cep)) {
+          if (this.cliente.cep.length == 9) {
+            this.carregandoCep = true
+          }
+          atribuirCep(this.cliente.cep).then(response => {
+            this.carregandoCep = false
+            this.atribuirCep(response)
+          })
+        }
+      }
+    },
   },
   watch: {
-    'cliente.cep': function (cep) {
-      if (atribuirCep(cep)) {
-        if (cep.length == 9) {
-          this.carregandoCep = true
-        }
-        atribuirCep(cep).then(response => {
-          this.carregandoCep = false
-          this.atribuirCep(response)
-        })
-      }
-    }
+    // 'cliente.cep': function (cep) {
+    //   if (atribuirCep(cep)) {
+    //     if (cep.length == 9) {
+    //       this.carregandoCep = true
+    //     }
+    //     atribuirCep(cep).then(response => {
+    //       this.carregandoCep = false
+    //       this.atribuirCep(response)
+    //     })
+    //   }
+    // }
   },
   async mounted() {
     this.buscarClientes()

@@ -192,10 +192,11 @@
             </b-col>
             <b-col>
               <vs-input
-                type="number"
+                type="text"
                 label-placeholder="Funesbom"
                 v-model="imovel.funesbom"
                 class="input-personalizado"
+                v-mask="'#######-#'"
               />
             </b-col>
             <b-col cols="3">
@@ -219,16 +220,18 @@
               </b-form-group>
             </b-col>
           </b-row>
+<!--          onkeypress="return event.charCode >= 48 && event.charCode <= 57"-->
+<!--          onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;"-->
           <b-row>
             <b-col cols="2">
               <vs-input
                 type="text"
-                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;"
+                v-mask="'#####-###'"
                 label-placeholder="CEP*"
                 v-model="imovel.cep"
-                v-mask="'#####-###'"
                 class="input-personalizado"
+                @focusout="buscarEndereco"
+                @focusin="cepAtual"
               />
             </b-col>
             <Carregando :visivel="carregandoCep"/>
@@ -496,9 +499,19 @@
         <b-tab title="Despesas" :disabled="imovel.id == ''">
           <b-row>
             <b-col >
-              <vs-input label-placeholder="Valor" ref="despesa_valor" v-model="despesa.valor" class="input-personalizado"
-                        v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
-                        allowNegative: false, currency:{prefix:'R$ '}}"/>
+              <vs-input
+                  label-placeholder="Valor*"
+                  ref="despesa_valor"
+                  v-model="despesa.valor"
+                  class="input-personalizado"
+                  v-currency="{
+                    precision: 2,
+                    autoDecimalMode: true,
+                    distractionFree: false,
+                    allowNegative: false,
+                    currency:{prefix:'R$ '}
+                  }"
+              />
             </b-col>
             <b-col>
               <vs-input label="Data" type="date" class="input-nascimento" v-model="despesa.data"/>
@@ -507,7 +520,7 @@
               <vs-input label="Vencimento" type="date" class="input-nascimento" v-model="despesa.data_vencimento"/>
             </b-col>
             <b-col>
-              <b-form-group id="select-comodo" label="Tipo de despesa" v-model="despesa.tipo_despesa">
+              <b-form-group id="select-comodo" label="Tipo de despesa*" v-model="despesa.tipo_despesa">
                 <b-form-select
                     :options="tiposDespesas"
                     value-field="id"
@@ -523,7 +536,7 @@
               </b-form-group>
             </b-col>
             <b-col>
-              <b-form-group id="select-comodo" label="Fixa ou Variável">
+              <b-form-group id="select-comodo" label="Fixa ou Variável*" >
                 <b-form-select
                     :options="fixaVariavel"
                     value-field="valor"
@@ -595,7 +608,9 @@
                   @row-clicked="(item) => $set(item, '_showDetails', !item._showDetails)"
               >
                 <template #cell(data)="row">
-                  {{ $dayjs(row.item.data).format('DD/MM/YYYY') }}
+                  <label v-if="row.item.data">
+                    {{ $dayjs(row.item.data).format('DD/MM/YYYY') }}
+                  </label>
                 </template>
                 <template #cell(valor)="row">
                   <label>R$ {{ row.item.valor.replace('.',',') }}</label>
@@ -989,7 +1004,8 @@ export default {
       editandoComodo:false,
       idContratoModal:"",
       modal_visivel:false,
-      recarregarImovel:false
+      recarregarImovel:false,
+      cep_atual:""
     };
   },
 
@@ -1121,7 +1137,6 @@ export default {
       }
     },
     mostrarModalContrato(contrato){
-      console.log(contrato)
       this.$modal.show('modal-contrato')
       this.modal_visivel = true
       this.idContratoModal = contrato.item.contrato
@@ -1163,7 +1178,6 @@ export default {
             time: 6000,
             icon: "check_circle_outline",
           });
-          console.log(sair)
           if(sair){
             this.esconderModal();
             this.buscarImoveis();
@@ -1293,8 +1307,7 @@ export default {
     },
     async salvarDespesaEditada(){
       this.despesa.valor = converterDinherioFloat(this.despesa.valor)
-      await api.post('/imoveis/despesas/editar', {despesa: this.despesa}).then(response => {
-        console.log(response)
+      await api.post('/imoveis/despesas/editar', {despesa: this.despesa}).then(() => {
         this.despesa = {
           valor:"",
           data:"",
@@ -1359,7 +1372,6 @@ export default {
       })
     },
     async editarComodo(comodo){
-      console.log(comodo.item)
       this.comodo.id_tipo_comodo = comodo.item.id_tipo_comodo
       this.comodo.quantidade = comodo.item.quantidade
       this.comodo.descricao = comodo.item.descricao
@@ -1367,8 +1379,7 @@ export default {
       this.editandoComodo = true
     },
     async salvarEdicaoComodo(){
-      await api.post('/imoveis/comodo/editar', {comodo: this.comodo}).then(response => {
-        console.log(response)
+      await api.post('/imoveis/comodo/editar', {comodo: this.comodo}).then(() => {
         this.comodo = {
           id:"",
           descricao:"",
@@ -1400,20 +1411,37 @@ export default {
 
     async inicilizarTabComodo(){
       await this.buscarTiposComodos()
-    }
-  },
-  watch: {
-    "imovel.cep": function(cep) {
-      if (atribuirCep(cep)) {
-        if (cep.length == 9) {
-          this.carregandoCep = true
+    },
+
+    cepAtual(){
+      this.cep_atual = this.imovel.cep
+    },
+    buscarEndereco(){
+      if(this.cep_atual != this.imovel.cep){
+        if (atribuirCep(this.imovel.cep)) {
+          if (this.imovel.cep.length == 9) {
+            this.carregandoCep = true
+          }
+          atribuirCep(this.imovel.cep).then(response => {
+            this.carregandoCep = false
+            this.atribuirCep(response)
+          })
         }
-        atribuirCep(cep).then(response => {
-          this.carregandoCep = false
-          this.atribuirCep(response)
-        })
       }
     },
+  },
+  watch: {
+    // "imovel.cep": function(cep) {
+    //   if (atribuirCep(cep)) {
+    //     if (cep.length == 9) {
+    //       this.carregandoCep = true
+    //     }
+    //     atribuirCep(cep).then(response => {
+    //       this.carregandoCep = false
+    //       this.atribuirCep(response)
+    //     })
+    //   }
+    // },
   },
   async mounted() {
     this.buscarImoveis();
