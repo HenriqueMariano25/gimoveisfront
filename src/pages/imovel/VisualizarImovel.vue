@@ -136,7 +136,7 @@
     <!--  Fim da tabela-->
     <modal
       name="modal-imovel"
-      width="60%"
+      width="90%"
       height="auto"
       :scrollable="true"
       :click-to-close="false"
@@ -1210,7 +1210,7 @@ export default {
           this.imovel["cpf_cnpj"] == "" ||
           this.imovel["numero"] == "" ||
           this.imovel["cep"] == "" ||
-          this.imovel["tipo_imovel"] == ""
+          this.imovel["tipo_imovel"] == null
       ){
         this.$vs.notify({
           text: `Campos obrigatorios vazio.`,

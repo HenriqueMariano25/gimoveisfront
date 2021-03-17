@@ -238,11 +238,17 @@
               </b-form-file>
             </b-col>
             <b-col>
-              <p v-if="!editar" class="p-contrato"><b>Para realizar a importação primeiro cadastre esse contrato</b></p>
-              <template v-else>
-                <p v-if="contrato.nome_pdf" style="color:green" class="p-contrato"><b>Contrato importado</b></p>
-                <p v-else style="color:red" class="p-contrato"><b>Contrato não importado</b></p>
-              </template>
+              <div v-if="carregandoImportarPDF">
+                <label class="p-contrato"  style="margin-bottom: 2px; margin-right: 5px;"><b>Importando... </b></label>
+                <b-spinner label="Loading..." small ></b-spinner>
+              </div>
+              <div v-else>
+                <p v-if="!editar" class="p-contrato"><b>Para realizar a importação primeiro cadastre esse contrato</b></p>
+                <template v-else>
+                  <p v-if="contrato.nome_pdf" style="color:green" class="p-contrato"><b>Contrato importado</b></p>
+                  <p v-else style="color:red" class="p-contrato"><b>Contrato não importado</b></p>
+                </template>
+              </div>
             </b-col>
           </b-row>
           <b-row>
@@ -551,7 +557,8 @@ export default {
       carregandoContratos: false,
       recarregarContratos: false,
       tabBoleto: 0,
-      idFiador: []
+      idFiador: [],
+      carregandoImportarPDF:false
     }
   },
 
@@ -718,6 +725,7 @@ export default {
     },
     importarPDF(event) {
       if (this.editar) {
+        this.carregandoImportarPDF = true
         this.btn_importa_desabilitado = false
         this.files = event.target.files
         const formData = new FormData();
@@ -734,6 +742,7 @@ export default {
             time: 4000,
             icon: 'check_circle_outline'
           })
+          this.carregandoImportarPDF = false
         })
       }
     },
