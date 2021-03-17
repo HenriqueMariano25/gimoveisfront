@@ -136,7 +136,7 @@
     <!--  Fim da tabela-->
     <modal
       name="modal-imovel"
-      width="90%"
+      width="60%"
       height="auto"
       :scrollable="true"
       :click-to-close="false"
@@ -600,7 +600,7 @@
                   show-empty
                   small
                   @filtered="onFiltered"
-                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 100px)"
                   striped
                   hover
                   outlined
@@ -1075,9 +1075,9 @@ export default {
     async editarImovelModal(imovel) {
       await api.get(`/imovel/`, { params: { id: imovel.id } }).then((response) => {
         this.imovel = response.data[0]
-        this.editar = true
         this.buscarComodos()
         this.mostrarModal()
+        this.editar = true
       });
     },
     async editarImovel() {
@@ -1241,37 +1241,6 @@ export default {
         this.imovel.rua = dados.logradouro;
       }
     },
-
-    // removerComodo(index) {
-    //   let comodo = this.comodos[index]
-    //   if (comodo.id) {
-    //     this.$bvModal.msgBoxConfirm(`Tem certeza que deseja remover esse cômodo ?`, {
-    //       title: 'Remover cômodo',
-    //       buttonSize: 'sm',
-    //       okTitle: 'Remover',
-    //       cancelTitle: 'Cancelar',
-    //       okVariant: 'danger',
-    //       footerClass: 'p-2',
-    //       centered: true
-    //     }).then(value => {
-    //       if (value) {
-    //         api.post('/imoveis/deletar/comodo', {idComodo: comodo.id}).then(() => {
-    //           if (this.comodos.length > 1) {
-    //             this.comodos.splice(index, 1)
-    //           } else {
-    //             this.comodos = [{ id: "", quantidade: 0, tipo: null }]
-    //           }
-    //         })
-    //       }
-    //     })
-    //   } else {
-    //     if (this.comodos.length > 1) {
-    //       this.comodos.splice(index, 1)
-    //     } else {
-    //       this.comodos = [{ id: "", quantidade: 0, tipo: null }]
-    //     }
-    //   }
-    // },
     async selecionandoContrato(contrato){
       this.idContrato = ("0000" + contrato[0].contrato).slice(-4)
       await api.get('/contrato/boletos', {params:{idContrato: contrato[0].contrato}}).then(response => {
