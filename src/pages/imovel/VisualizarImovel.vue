@@ -136,7 +136,7 @@
     <!--  Fim da tabela-->
     <modal
       name="modal-imovel"
-      width="60%"
+      width='90%'
       height="auto"
       :scrollable="true"
       :click-to-close="false"
@@ -447,16 +447,11 @@
                   sort-icon-left
                   :fields="cabecalhosComodos"
                   :items="comodos"
-                  :current-page="currentPage"
-                  :per-page="perPage"
-                  :filter="filter"
-                  :filter-included-fields="filterOn"
                   :sort-by.sync="sortBy"
                   :sort-desc.sync="sortDesc"
                   :sort-direction="sortDirection"
                   show-empty
                   small
-                  @filtered="onFiltered"
                   sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
                   striped
                   hover
@@ -496,7 +491,7 @@
             </b-col>
           </b-row>
         </b-tab>
-        <b-tab title="Despesas" :disabled="imovel.id == ''">
+        <b-tab title="Despesas" :disabled="imovel.id == ''" @click="buscarDespesas">
           <b-row>
             <b-col >
               <vs-input
@@ -535,7 +530,9 @@
                 </b-form-select>
               </b-form-group>
             </b-col>
-            <b-col>
+          </b-row>
+          <b-row align-v="center" style="padding-bottom: 10px;">
+            <b-col cols="3">
               <b-form-group id="select-comodo" label="Fixa ou Variável*" >
                 <b-form-select
                     :options="fixaVariavel"
@@ -551,8 +548,6 @@
                 </b-form-select>
               </b-form-group>
             </b-col>
-          </b-row>
-          <b-row align-v="center" style="padding-bottom: 10px;">
             <b-col>
               <vs-input label-placeholder="Descrição" class="mt-2" v-model="despesa.descricao"/>
             </b-col>
@@ -565,17 +560,15 @@
                 @click.native="cadastrarDespesa"
                 v-if="!editandoDespesa"
               >
-                Adicionar despesa
               </vs-button>
               <vs-button
                   color="#5498ff"
                   type="filled"
-                  icon="add"
+                  icon="save"
                   class="botao-salvar"
                   @click.native="salvarDespesaEditada"
                   v-else
               >
-                Salvar edição
               </vs-button>
             </b-col>
           </b-row>
@@ -583,20 +576,13 @@
             <b-col class="col-tabela-imoveis">
               <b-table
                   primary-key="nome"
-                  id="tabela-imovel"
                   :tbody-transition-props="transProps"
+                  id="tabela-imovel"
                   bordered
                   head-variant="dark"
                   sort-icon-left
                   :fields="cabecalhosDespesas"
                   :items="despesas"
-                  :current-page="currentPage"
-                  :per-page="perPage"
-                  :filter="filter"
-                  :filter-included-fields="filterOn"
-                  :sort-by.sync="sortBy"
-                  :sort-desc.sync="sortDesc"
-                  :sort-direction="sortDirection"
                   show-empty
                   small
                   @filtered="onFiltered"
@@ -605,7 +591,6 @@
                   hover
                   outlined
                   no-border-collapse
-                  @row-clicked="(item) => $set(item, '_showDetails', !item._showDetails)"
               >
                 <template #cell(data)="row">
                   <label v-if="row.item.data">
@@ -986,8 +971,6 @@ export default {
       tiposImoveis: [],
       tiposComodos: [],
       tiposDespesas:[],
-      // comodos: [{ id: "", quantidade: 0, tipo: null }],
-
       editar: false,
       carregandoCep:false,
       contratos:[],
@@ -1005,7 +988,7 @@ export default {
       idContratoModal:"",
       modal_visivel:false,
       recarregarImovel:false,
-      cep_atual:""
+      cep_atual:"",
     };
   },
 
@@ -1040,7 +1023,8 @@ export default {
     },
     async buscarDespesas(){
       await api.get('/imoveis/despesas', {params:{idImovel:this.imovel.id}}).then(consulta => {
-        this.despesas = Object.freeze(consulta.data)
+        this.despesas = consulta.data
+        this.rows = consulta.data.length
       })
     },
 
@@ -1074,10 +1058,12 @@ export default {
 
     async editarImovelModal(imovel) {
       await api.get(`/imovel/`, { params: { id: imovel.id } }).then((response) => {
-        this.imovel = response.data[0]
-        this.buscarComodos()
-        this.mostrarModal()
         this.editar = true
+        this.imovel = response.data[0]
+        this.buscarDespesas()
+        this.buscarComodos()
+        this.buscarContratos()
+        this.mostrarModal()
       });
     },
     async editarImovel() {
@@ -1118,12 +1104,8 @@ export default {
     mostrarModal() {
       this.$modal.show("modal-imovel");
       this.buscarTiposStatus();
-      // this.buscarTiposComodos();
-      if(this.editar){
-        this.buscarContratos()
-        this.buscarTiposDespesas()
-        this.buscarDespesas()
-      }
+      this.buscarTiposComodos();
+      this.buscarTiposDespesas()
     },
     esconderModal() {
       this.$modal.hide("modal-imovel");
@@ -1329,10 +1311,6 @@ export default {
       })
     },
     async adicionarComodo() {
-      // this.comodos.push({
-      //   quantidade: 0,
-      //   tipo: null,
-      // });
       let idImovel = this.imovel.id
       await api.post('/imoveis/comodo/cadastrar', {comodo: this.comodo, idImovel: idImovel}).then(() => {
         this.buscarComodos()
@@ -1552,4 +1530,7 @@ table#tabela-imovel .flip-list-move {
   padding-top: 10px !important;
 }
 
+.modal-adicionando-imovel{
+  margin-left:25px;
+}
 </style>
