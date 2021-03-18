@@ -1,5 +1,5 @@
 <template>
-  <b-container>
+  <b-container fluid>
     <b-row class="barra-top-imovel " align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Imóveis</h1>
