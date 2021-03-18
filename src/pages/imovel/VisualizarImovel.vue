@@ -89,7 +89,7 @@
         </b-table>
       </b-col>
     </b-row>
-    <b-container fluid class="divider-personalizado">
+    <b-container fluid class="divider-personalizado" style="margin-left: -75px">
       <b-row align-v="end" >
         <b-col class="" cols="auto">
           <b-pagination
@@ -1495,7 +1495,7 @@ body {
   border-top: 1px solid rgb(200, 200, 200);
   position: absolute;
   bottom: 0;
-  margin-left:-75px;
+  margin-left:-100px;
   width: 100%;
   padding: 10px 100px 15px 100px;
   background-color: white;
