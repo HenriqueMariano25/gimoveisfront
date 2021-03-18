@@ -1068,9 +1068,9 @@ export default {
       });
     },
     async editarImovel() {
-      this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao)
-      this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual)
-      this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar)
+      this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao_mascara)
+      this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual_mascara)
+      this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar_mascara)
       if (this.validarCamposObrigatorio()) {
         let idUsuario = this.$store.state.usuario.id
         await api.post(`/imovel/editar/${this.imovel.id}`, {
