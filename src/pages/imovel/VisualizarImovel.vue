@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid>
+  <b-container>
     <b-row class="barra-top-imovel " align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Imóveis</h1>
@@ -559,6 +559,7 @@
                 class="botao-salvar"
                 @click.native="cadastrarDespesa"
                 v-if="!editandoDespesa"
+
               >
               </vs-button>
               <vs-button
@@ -1268,6 +1269,7 @@ export default {
           descricao:""
         }
         this.buscarDespesas()
+        this.editandoDespesa = false
       })
     },
     async deletarDespesa(despesa){
