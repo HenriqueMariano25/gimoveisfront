@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid>
+  <b-container fluid style="padding-right:15px;padding-left:75px">
     <b-row class="barra-top-imovel " align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Imóveis</h1>
@@ -1495,7 +1495,7 @@ body {
   border-top: 1px solid rgb(200, 200, 200);
   position: absolute;
   bottom: 0;
-  margin-left:-100px;
+  margin-left:-75px;
   width: 100%;
   padding: 10px 100px 15px 100px;
   background-color: white;
