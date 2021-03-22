@@ -297,18 +297,10 @@
             <b-col>
               <b-table
                   :fields="fieldsTelefone"
-                  :current-page="currentPage"
-                  :per-page="perPage"
-                  :filter="filter"
-                  :filter-included-fields="filterOn"
-                  :sort-by.sync="sortBy"
-                  :sort-desc.sync="sortDesc"
-                  :sort-direction="sortDirection"
                   head-variant="dark"
                   show-empty
                   :items="telefones"
                   small
-                  @filtered="onFiltered"
                   striped
                   hover
                   bordered
