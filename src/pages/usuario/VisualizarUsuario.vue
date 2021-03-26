@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid>
+  <b-container fluid style="padding-right:15px;padding-left:75px">
     <b-row class="barra-top-usuario" align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Usuários</h1>
@@ -78,7 +78,7 @@
         </b-table>
       </b-col>
     </b-row>
-    <b-container fluid class="divider-personalizado">
+    <b-container fluid class="divider-personalizado" style="margin-left: -75px">
       <b-row align-v="end">
         <b-col class="" cols="auto">
           <b-pagination
@@ -118,7 +118,7 @@
       </b-row>
     </b-container>
     <!--  Fim da tabela-->
-    <modal name="usuario-modal" width="60%" height="auto" :scrollable="true" :click-to-close="false">
+    <modal name="usuario-modal" width="90%" height="auto" :scrollable="true" :click-to-close="false" class="modal-usuario">
       <h3>Adicionando usuário</h3>
       <b-row align-v="center">
         <b-col cols="6">
@@ -429,5 +429,9 @@ export default {
 
 table#tabela-usuario .flip-list-move {
   transition: transform 0.4s;
+}
+
+.modal-usuario{
+  margin-left:25px;
 }
 </style>

@@ -1,5 +1,11 @@
 <template>
-  <modal name="modal-editar-boleto"  width="60%" height="auto" :scrollable="true" :click-to-close="false">
+  <modal name="modal-editar-boleto"
+         width="90%"
+         height="auto"
+         :scrollable="true"
+         :click-to-close="false"
+         class="modal-editando-boleto"
+  >
     <b-container>
       <b-row>
         <b-col>
@@ -110,5 +116,9 @@ export default {
 </script>
 
 <style scoped>
+
+.modal-editando-boleto{
+  margin-left:25px;
+}
 
 </style>

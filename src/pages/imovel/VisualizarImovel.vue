@@ -383,7 +383,7 @@
             </b-col>
           </b-row>
         </b-tab>
-        <b-tab title="Cômodos" @click="inicilizarTabComodo" :disabled="imovel.id == ''">
+        <b-tab title="Cômodos" :disabled="imovel.id == ''">
           <b-row>
             <b-col cols="3">
               <b-form-group id="select-comodo" label="Tipo do comôdo">
@@ -491,7 +491,7 @@
             </b-col>
           </b-row>
         </b-tab>
-        <b-tab title="Despesas" :disabled="imovel.id == ''" @click="buscarDespesas">
+        <b-tab title="Despesas" :disabled="imovel.id == ''">
           <b-row>
             <b-col >
               <vs-input
@@ -1065,6 +1065,7 @@ export default {
         this.buscarComodos()
         this.buscarContratos()
         this.mostrarModal()
+        this.tabInfAdicionais()
       });
     },
     async editarImovel() {
@@ -1358,9 +1359,6 @@ export default {
       })
     },
 
-    async inicilizarTabComodo(){
-      await this.buscarTiposComodos()
-    },
 
     cepAtual(){
       this.cep_atual = this.imovel.cep

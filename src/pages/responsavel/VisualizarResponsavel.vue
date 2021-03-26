@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid>
+  <b-container fluid style="padding-right:15px;padding-left:75px">
     <b-row class="barra-top-responsavel " align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Responsável</h1>
@@ -98,7 +98,7 @@
         </b-table>
       </b-col>
     </b-row>
-    <b-container fluid class="divider-personalizado">
+    <b-container fluid class="divider-personalizado" style="margin-left: -75px">
       <b-row align-v="end">
         <b-col class="" cols="auto">
           <b-pagination
@@ -138,8 +138,8 @@
       </b-row>
     </b-container>
     <!--  Fim da tabela-->
-    <modal name="modal-responsavel" width="60%" height="auto" :scrollable="true" :click-to-close="false"
-           class="modal-adicionando-responsavel">
+    <modal name="modal-responsavel" width="90%" height="auto" :scrollable="true" :click-to-close="false"
+           class="modal-responsavel">
       <h3>Adicionando responsável</h3>
       <b-row align-v="center">
         <b-col cols="8">
@@ -574,5 +574,9 @@ export default {
 
 table#tabela-responsavel .flip-list-move {
   transition: transform 0.4s;
+}
+
+.modal-responsavel{
+  margin-left:25px;
 }
 </style>

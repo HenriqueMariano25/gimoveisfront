@@ -1,7 +1,7 @@
 <template>
   <div>
-    <modal name="modal-contrato" width="60%" height="auto" :scrollable="true" :click-to-close="false"
-           class="modal-adicionando-cliente">
+    <modal name="modal-contrato" width="90%" height="auto" :scrollable="true" :click-to-close="false"
+           class="modal-contrato">
       <h3>Editando contrato</h3>
       <b-tabs content-class="mt-3">
         <b-tab title="Dados gerais" active>
@@ -385,4 +385,8 @@ export default {
   margin-top: 6px;
   margin-bottom: 0px;
 }
+.modal-contrato{
+  margin-left:25px;
+}
+
 </style>

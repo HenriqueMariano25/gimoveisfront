@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid>
+  <b-container fluid style="padding-right:15px;padding-left:75px">
     <b-row class="barra-top-cliente " align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Clientes</h1>
@@ -110,7 +110,7 @@
         </b-table>
       </b-col>
     </b-row>
-    <b-container fluid class="divider-personalizado">
+    <b-container fluid class="divider-personalizado" style="margin-left: -75px">
       <b-row align-v="end">
         <b-col class="" cols="auto">
           <b-pagination
@@ -150,8 +150,13 @@
       </b-row>
     </b-container>
     <!--  Fim da tabela-->
-    <modal name="modal-cliente" width="60%" height="auto" :scrollable="true" :click-to-close="false"
-           class="modal-adicionando-cliente">
+    <modal
+        name="modal-cliente"
+        width="90%"
+        height="auto"
+        :scrollable="true"
+        :click-to-close="false"
+        class="modal-adicionando-cliente">
       <h3>Adicionando cliente</h3>
       <b-tabs content-class="mt-3">
         <b-tab title="Dados gerais" active>
@@ -159,7 +164,8 @@
             <b-col>
               <b-form-radio-group v-slot="{ ariaDescribedby }" v-model="cliente.tipo_cliente">
                 <b-form-radio :aria-describedby="ariaDescribedby" value="pessoa física">Pessoa física*</b-form-radio>
-                <b-form-radio :aria-describedby="ariaDescribedby" value="pessoa jurícida">Pessoa jurídica*</b-form-radio>
+                <b-form-radio :aria-describedby="ariaDescribedby" value="pessoa jurícida">Pessoa jurídica*
+                </b-form-radio>
               </b-form-radio-group>
             </b-col>
           </b-row>
@@ -396,7 +402,8 @@
                 </template>
                 <template #cell(editar)="row">
                   <vs-tooltip text="Editar">
-                    <vs-button type="flat" color="dark" @mousedown.stop="mostrarModalContrato(row.item)" icon="edit"></vs-button>
+                    <vs-button type="flat" color="dark" @mousedown.stop="mostrarModalContrato(row.item)"
+                               icon="edit"></vs-button>
                   </vs-tooltip>
                 </template>
               </b-table>
@@ -446,7 +453,7 @@
                   </label>
                 </template>
                 <template #cell(valor)="row">
-                  <label>R$ {{ row.item.valor.replace('.',',') }}</label>
+                  <label>R$ {{ row.item.valor.replace('.', ',') }}</label>
                 </template>
               </b-table>
             </b-col>
@@ -459,7 +466,8 @@
                      @click="editarCliente">
             Salvar
           </vs-button>
-          <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar" @click="cadastrarCliente(false)">
+          <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar"
+                     @click="cadastrarCliente(false)">
             Salvar
           </vs-button>
         </b-col>
@@ -502,31 +510,31 @@ export default {
         {key: 'nome', label: 'Nome', sortable: true, thClass: 'text-center'},
         {key: 'email', label: 'Email', sortable: true, thClass: 'text-center'},
         {key: 'cpf_cnpj', label: 'CPF ou CNPJ', sortable: true, thClass: 'text-center'},
-        {key: 'status', label: 'Status', sortable: true,class: 'text-center'},
+        {key: 'status', label: 'Status', sortable: true, class: 'text-center'},
         {key: 'editar', label: ''},
         {key: 'deletar', label: ''},
       ],
-      fieldsTelefone:[
-        {key: 'numero', label: 'Número', sortable: true,thClass: 'text-center', tdClass:"td-centralizado"},
-        {key: 'descricao', label: 'Tipo', sortable: true,class: 'text-center', tdClass:"td-centralizado"},
-        {key: 'observacao', label: 'Observação', sortable: true, thClass: 'text-center', tdClass:"td-centralizado"},
+      fieldsTelefone: [
+        {key: 'numero', label: 'Número', sortable: true, thClass: 'text-center', tdClass: "td-centralizado"},
+        {key: 'descricao', label: 'Tipo', sortable: true, class: 'text-center', tdClass: "td-centralizado"},
+        {key: 'observacao', label: 'Observação', sortable: true, thClass: 'text-center', tdClass: "td-centralizado"},
         {key: 'editar', label: ''},
         {key: 'deletar', label: ''},
       ],
       fieldsContratos: [
-        {key: 'id', label: 'Contrato', sortable: true,class: 'text-center',tdClass:"td-centralizado"},
-        {key: 'nome', label: 'Imóvel', sortable: true,thClass: 'text-center',tdClass:"td-centralizado"},
-        {key: 'data_inicio', label: 'Data de Início', sortable: true,class: 'text-center',tdClass:"td-centralizado"},
-        {key: 'data_fim', label: 'Data de Término', sortable: true,class: 'text-center',tdClass:"td-centralizado"},
-        {key: 'status', label: 'Status',sortable: true, class: 'text-center',tdClass:"td-centralizado"},
+        {key: 'id', label: 'Contrato', sortable: true, class: 'text-center', tdClass: "td-centralizado"},
+        {key: 'nome', label: 'Imóvel', sortable: true, thClass: 'text-center', tdClass: "td-centralizado"},
+        {key: 'data_inicio', label: 'Data de Início', sortable: true, class: 'text-center', tdClass: "td-centralizado"},
+        {key: 'data_fim', label: 'Data de Término', sortable: true, class: 'text-center', tdClass: "td-centralizado"},
+        {key: 'status', label: 'Status', sortable: true, class: 'text-center', tdClass: "td-centralizado"},
         {key: 'editar', label: ''},
       ],
       fieldsBoletos: [
-        {key: 'id', label: 'Código',sortable: true, class: 'text-center'},
-        {key: 'data_vencimento', label: 'Vencimento',sortable: true, class: 'text-center'},
-        {key: 'valor', label: 'Valor',sortable: true, class: 'text-center'},
-        {key: 'data_quitacao', label: 'Quitação',sortable: true, class: 'text-center'},
-        {key: 'status', label: 'Status',sortable: true, class: 'text-center'},
+        {key: 'id', label: 'Código', sortable: true, class: 'text-center'},
+        {key: 'data_vencimento', label: 'Vencimento', sortable: true, class: 'text-center'},
+        {key: 'valor', label: 'Valor', sortable: true, class: 'text-center'},
+        {key: 'data_quitacao', label: 'Quitação', sortable: true, class: 'text-center'},
+        {key: 'status', label: 'Status', sortable: true, class: 'text-center'},
       ],
       totalRows: 1,
       currentPage: 1,
@@ -555,10 +563,10 @@ export default {
         status: null,
         observacao: "",
         tipo_cliente: "",
-        id:"",
+        id: "",
       },
       telefones: [],
-      telefone:{
+      telefone: {
         id: "",
         numero: "",
         id_tipo_telefone: null,
@@ -572,12 +580,12 @@ export default {
       contEditarCep: 0,
       contratos: [],
       idContrato: "",
-      boletos:[],
-      idContratoModal:'',
-      telefoneEditar:false,
-      indexTelefoneTabela:0,
-      modal_visivel:false,
-      cep_atual:''
+      boletos: [],
+      idContratoModal: '',
+      telefoneEditar: false,
+      indexTelefoneTabela: 0,
+      modal_visivel: false,
+      cep_atual: ''
     }
   },
 
@@ -597,12 +605,12 @@ export default {
     },
 
     async buscarContratos() {
-      await api.get('/cliente/contratos', {params:{idCliente:this.cliente.id}}).then((response) => {
+      await api.get('/cliente/contratos', {params: {idCliente: this.cliente.id}}).then((response) => {
         this.contratos = response.data
       })
     },
-    async buscarTelefones(){
-      await api.get("/telefones", {params:{idCliente:this.cliente.id}}).then(consulta => {
+    async buscarTelefones() {
+      await api.get("/telefones", {params: {idCliente: this.cliente.id}}).then(consulta => {
         this.telefones = consulta.data
       })
     },
@@ -698,14 +706,14 @@ export default {
         }
       })
     },
-    async editarTelefone(telefone){
+    async editarTelefone(telefone) {
       this.telefoneEditar = true
       this.telefone.numero = telefone.item.numero
       this.telefone.id = telefone.item.id
       this.telefone.id_tipo_telefone = telefone.item.id_tipo_telefone
       this.telefone.observacao = telefone.item.observacao
     },
-    async salvarEdicaoTelefone(){
+    async salvarEdicaoTelefone() {
       await api.post('/cliente/telefone/editar', {telefone: this.telefone}).then(() => {
         this.buscarTelefones()
         this.telefone = {
@@ -732,8 +740,8 @@ export default {
         }
       })
     },
-    async deletarTelefone(telefone){
-      await api.delete('/cliente/telefone/deletar', {params:{idTelefone: telefone.item.id}}).then(() => {
+    async deletarTelefone(telefone) {
+      await api.delete('/cliente/telefone/deletar', {params: {idTelefone: telefone.item.id}}).then(() => {
         this.buscarTelefones()
       })
     },
@@ -749,7 +757,7 @@ export default {
       this.buscarTipoTelefones()
       this.buscarTipoStatus()
       this.buscarEstadosCivis()
-      if(this.editar){
+      if (this.editar) {
         this.buscarTelefones()
       }
     },
@@ -758,7 +766,7 @@ export default {
       this.limparModal()
       this.contEditarCep = 0
       this.editar = false
-      if(this.recarregarClientes){
+      if (this.recarregarClientes) {
         this.buscarClientes()
       }
 
@@ -797,7 +805,11 @@ export default {
           }
         }
         let idUsuario = this.$store.state.usuario.id
-        await api.post('/cliente/cadastrar', {data: this.cliente, telefones: this.telefones, idUsuario: idUsuario}, ).then(response => {
+        await api.post('/cliente/cadastrar', {
+          data: this.cliente,
+          telefones: this.telefones,
+          idUsuario: idUsuario
+        },).then(response => {
           let nomeCliente = response.data[0].nome
           this.cliente.id = response.data[0].id
           this.$vs.notify({
@@ -807,11 +819,11 @@ export default {
             time: 6000,
             icon: 'check_circle_outline'
           })
-          if(sair){
+          if (sair) {
             this.esconderModal()
             this.buscarClientes()
             this.limparModal()
-          }else{
+          } else {
             this.recarregarClientes = true
             this.editar = true
           }
@@ -827,7 +839,7 @@ export default {
       }
     },
     validarCamposObrigatorio() {
-      if (this.cliente['nome'] == "" || this.cliente['email'] == "" || this.cliente['tipo_cliente'] == "" ) {
+      if (this.cliente['nome'] == "" || this.cliente['email'] == "" || this.cliente['tipo_cliente'] == "") {
         this.$vs.notify({
           text: `Campos obrigatorios vazio.`,
           position: 'top-center',
@@ -857,22 +869,22 @@ export default {
         this.cliente.rua = dados.logradouro
       }
     },
-    async selecionandoContrato(contrato){
+    async selecionandoContrato(contrato) {
       this.idContrato = ("0000" + contrato[0].id).slice(-4)
-      await api.get('/cliente/contrato/boletos', {params:{idContrato: contrato[0].id}}).then(response => {
+      await api.get('/cliente/contrato/boletos', {params: {idContrato: contrato[0].id}}).then(response => {
         this.boletos = response.data
       })
     },
-    mostrarModalContrato(contrato){
+    mostrarModalContrato(contrato) {
       this.$modal.show('modal-contrato')
       this.modal_visivel = true
       this.idContratoModal = contrato.id
     },
-    cepAtual(){
+    cepAtual() {
       this.cep_atual = this.cliente.cep
     },
-    buscarEndereco(){
-      if(this.cep_atual != this.cliente.cep){
+    buscarEndereco() {
+      if (this.cep_atual != this.cliente.cep) {
         if (atribuirCep(this.cliente.cep)) {
           if (this.cliente.cep.length == 9) {
             this.carregandoCep = true
@@ -1019,8 +1031,12 @@ table#tabela-cliente .flip-list-move {
   transition: transform 0.4s;
 }
 
-.td-centralizado{
+.td-centralizado {
   padding-top: 10px !important;
+}
+
+.modal-adicionando-cliente{
+  margin-left:25px;
 }
 
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid>
+  <b-container fluid style="padding-right:15px;padding-left:75px">
     <b-row class="barra-top-contrato" align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Contrato</h1>
@@ -106,7 +106,7 @@
         </b-table>
       </b-col>
     </b-row>
-    <b-container fluid class="divider-personalizado">
+    <b-container fluid class="divider-personalizado" style="margin-left: -75px">
       <b-row align-v="end">
         <b-col class="" cols="auto">
           <b-pagination
@@ -146,8 +146,8 @@
       </b-row>
     </b-container>
     <!--  Fim da tabela-->
-    <modal name="modal-contrato" id="modal-contrato" width="60%" height="auto" :scrollable="true"
-           class="modal-adicionando-responsavel">
+    <modal name="modal-contrato" id="modal-contrato" width="90%" height="auto" :scrollable="true"
+           class="modal-contrato">
       <h3>Adicionando contrato</h3>
       <b-tabs content-class="mt-3" v-model="tabBoleto">
         <b-tab title="Dados gerais" active>
@@ -375,8 +375,8 @@
 
       </b-row>
     </modal>
-    <modal name="modal-editar-boleto" width="60%" height="auto" :scrollable="true" :click-to-close="false"
-           class="modal-adicionando-responsavel">
+    <modal name="modal-editar-boleto" width="90%" height="auto" :scrollable="true" :click-to-close="false"
+           class="modal-contrato">
       <b-container>
         <b-row>
           <b-col>
@@ -424,8 +424,8 @@
         </b-row>
       </b-container>
     </modal>
-    <modal name="modal-adicionar-boleto" width="60%" height="auto" :scrollable="true" :click-to-close="false"
-           class="modal-adicionando-responsavel">
+    <modal name="modal-adicionar-boleto" width="90%" height="auto" :scrollable="true" :click-to-close="false"
+           class="modal-contrato">
       <b-container>
         <b-row>
           <b-col>
@@ -1021,5 +1021,9 @@ table#tabela-contrato .flip-list-move {
 
 table#tabela-boleto .flip-list-move {
   transition: transform 0.4s;
+}
+
+.modal-contrato{
+  margin-left:25px;
 }
 </style>
