@@ -153,12 +153,22 @@
                 class="input-personalizado"
               />
             </b-col>
-            <b-col cols="5">
-              <vs-input
-                label-placeholder="Proprietário*"
-                v-model="imovel.proprietario"
-                class="input-personalizado"
-              />
+<!--            <b-col cols="5">-->
+<!--              <vs-input-->
+<!--                label-placeholder="Proprietário*"-->
+<!--                v-model="imovel.proprietario"-->
+<!--                class="input-personalizado"-->
+<!--              />-->
+<!--            </b-col>-->
+            <b-col>
+              <b-form-group id="select-imovel" label="Proprietário*">
+                <b-form-select v-model="imovel.id_responsavel" :options="proprietarios" value-field="id"
+                               text-field="nome">
+                  <template #first>
+                    <b-form-select-option :value="null">Selecione</b-form-select-option>
+                  </template>
+                </b-form-select>
+              </b-form-group>
             </b-col>
             <b-col>
               <b-form-group
@@ -184,7 +194,7 @@
           <b-row>
             <b-col>
               <vs-input
-                type="number"
+                type="text"
                 label-placeholder="Inscrição Municipal"
                 v-model="imovel.inscricao_municipal"
                 class="input-personalizado"
@@ -926,7 +936,7 @@ export default {
       imovel: {
         id: "",
         nome: "",
-        proprietario: "",
+        id_responsavel: null,
         status: "",
         id_status: null,
         inscricao_municipal: "",
@@ -990,6 +1000,7 @@ export default {
       modal_visivel:false,
       recarregarImovel:false,
       cep_atual:"",
+      proprietarios:[]
     };
   },
 
@@ -1028,6 +1039,12 @@ export default {
         this.rows = consulta.data.length
       })
     },
+    async buscarProprietarios() {
+      await api.get('/imoveis/proprietarios').then(response => {
+        this.proprietarios = response.data
+      })
+    },
+
 
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length;
@@ -1108,6 +1125,7 @@ export default {
       this.buscarTiposStatus();
       this.buscarTiposComodos();
       this.buscarTiposDespesas()
+      this.buscarProprietarios()
     },
     esconderModal() {
       this.$modal.hide("modal-imovel");
@@ -1129,8 +1147,9 @@ export default {
       Object.keys(this.imovel).forEach((key) => {
         this.imovel[key] = "";
       });
-      this.imovel.id_status = null;
-      this.imovel.tipo_imovel = null;
+      this.imovel.id_status = null
+      this.imovel.tipo_imovel = null
+      this.imovel.id_responsavel = null
       this.despesa = {
         valor:"",
         data:"",
@@ -1186,7 +1205,7 @@ export default {
     validarCamposObrigatorio() {
       if (
           this.imovel["nome"] == "" ||
-          this.imovel["proprietario"] == "" ||
+          this.imovel["id_responsavel"] == "" ||
           this.imovel["rua"] == "" ||
           this.imovel["cidade"] == "" ||
           this.imovel["bairro"] == "" ||
