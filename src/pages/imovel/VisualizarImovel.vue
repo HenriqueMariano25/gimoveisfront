@@ -612,7 +612,6 @@
                   </label>
                 </template>
                 <template #cell(valor)="row">
-                  {{ row.item.valor }}
                   <label>R$ {{ row.item.valor.replace('.',',') }}</label>
                 </template>
                 <template #cell(data_vencimento)="row" >
