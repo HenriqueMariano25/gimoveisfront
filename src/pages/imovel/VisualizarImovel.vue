@@ -468,7 +468,6 @@
                   :busy="carregandoComodos"
                   outlined
                   no-border-collapse
-                  @row-clicked="(item) => $set(item, '_showDetails', !item._showDetails)"
               >
                 <template #table-colgroup>
                   <col>
@@ -602,6 +601,7 @@
                   hover
                   outlined
                   no-border-collapse
+                  @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
               >
                 <template #cell(data)="row">
                   <label v-if="row.item.data">
