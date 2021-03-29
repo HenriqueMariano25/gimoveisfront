@@ -209,7 +209,7 @@
                         class="input-personalizado"/>
             </b-col>
             <b-col cols="3">
-              <vs-input onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" type="number"
+              <vs-input type="text"
                         label-placeholder="Identidade" v-model="cliente.identidade" class="input-personalizado"/>
             </b-col>
           </b-row>

@@ -168,8 +168,7 @@
                     v-model="responsavel.cpf_cnpj" class="input-personalizado"/>
         </b-col>
         <b-col cols="4">
-          <vs-input onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;" type="number"
-                    label-placeholder="Identidade" v-model="responsavel.identidade" class="input-personalizado"/>
+          <vs-input type="text" label-placeholder="Identidade" v-model="responsavel.identidade" class="input-personalizado"/>
         </b-col>
       </b-row>
       <Carregando :visivel="carregandoCep"/>
