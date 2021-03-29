@@ -645,7 +645,10 @@
                   <b-card>
                     <b-row>
                       <b-col>
-                        <label><b>Data: </b>{{ $dayjs(row.item.data).format('DD/MM/YYYY') }}</label>
+                        <label v-if="row.item.data">
+                          <b>Data: </b>{{ $dayjs(row.item.data).format('DD/MM/YYYY') }}
+                        </label>
+                        <label v-else><b>Data: </b>Sem data</label>
                       </b-col>
                     </b-row>
                     <b-row>
