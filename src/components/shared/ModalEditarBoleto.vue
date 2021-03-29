@@ -109,7 +109,7 @@ export default {
   },
   watch: {
     'visivelBoleto': function (valor) {
-      if (valor) this.inicializar()
+      if(valor) this.inicializar()
     },
   }
 }

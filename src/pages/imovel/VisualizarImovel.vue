@@ -612,6 +612,7 @@
                   </label>
                 </template>
                 <template #cell(valor)="row">
+                  {{ row.item.valor }}
                   <label>R$ {{ row.item.valor.replace('.',',') }}</label>
                 </template>
                 <template #cell(data_vencimento)="row" >
@@ -1003,7 +1004,8 @@ export default {
       modal_visivel:false,
       recarregarImovel:false,
       cep_atual:"",
-      proprietarios:[]
+      proprietarios:[],
+      primeiraTabInfAdicionais:false
     };
   },
 
@@ -1085,13 +1087,14 @@ export default {
         this.buscarComodos()
         this.buscarContratos()
         this.mostrarModal()
-        this.tabInfAdicionais()
       });
     },
     async editarImovel() {
-      this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao_mascara)
-      this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual_mascara)
-      this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar_mascara)
+      console.log(this.imovel.valor_aquisicao.includes(','))
+      if(this.imovel.valor_aquisicao.includes(',')) this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao_mascara)
+      if(this.imovel.valor_atual.includes(',')) this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual_mascara)
+      if(this.imovel.valor_aquisicao_dolar.includes(',')) this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar_mascara)
+
       if (this.validarCamposObrigatorio()) {
         let idUsuario = this.$store.state.usuario.id
         await api.post(`/imovel/editar/${this.imovel.id}`, {
@@ -1140,6 +1143,7 @@ export default {
       if(this.recarregarImovel){
         this.buscarImoveis()
       }
+      this.primeiraTabInfAdicionais = false
     },
     mostrarModalContrato(contrato){
       this.$modal.show('modal-contrato')
@@ -1266,9 +1270,12 @@ export default {
       })
     },
     tabInfAdicionais(){
-      setValue(this.$refs.valor_aquisicao, this.imovel.valor_aquisicao)
-      setValue(this.$refs.valor_aquisicao_dolar, this.imovel.valor_aquisicao_dolar)
-      setValue(this.$refs.valor_atual, this.imovel.valor_atual)
+      if(this.primeiraTabInfAdicionais === false){
+        setValue(this.$refs.valor_aquisicao, this.imovel.valor_aquisicao)
+        setValue(this.$refs.valor_aquisicao_dolar, this.imovel.valor_aquisicao_dolar)
+        setValue(this.$refs.valor_atual, this.imovel.valor_atual)
+      }
+      this.primeiraTabInfAdicionais = true
     },
     editarDespesa(despesa){
       setValue(this.$refs.despesa_valor, despesa.item.valor)
