@@ -645,6 +645,11 @@
                   <b-card>
                     <b-row>
                       <b-col>
+                        <label><b>Data: </b>{{ $dayjs(row.item.data).format('DD/MM/YYYY') }}</label>
+                      </b-col>
+                    </b-row>
+                    <b-row>
+                      <b-col>
                         <label><b>Descrição: </b>{{ row.item.descricao }}</label>
                       </b-col>
                     </b-row>
@@ -660,18 +665,6 @@
           </b-row>
         </b-tab>
         <b-tab title="Contratos" :disabled="imovel.id == ''">
-<!--          <b-row class="text-center mb-2">-->
-<!--            <b-col cols="auto">-->
-<!--              <vs-button-->
-<!--                color="#5498ff"-->
-<!--                type="filled"-->
-<!--                icon="add"       implantar essa ação futuramente-->
-<!--                class="botao-salvar"-->
-<!--              >-->
-<!--                Adicionar contrato-->
-<!--              </vs-button>-->
-<!--            </b-col>-->
-<!--          </b-row>-->
           <b-row>
             <b-col>
               <p class="p-contratos">Contratos de: {{ imovel.nome }}</p>
@@ -906,7 +899,7 @@ export default {
       ],
       cabecalhosDespesas: [
         { key: "valor", label: "Valor", sortable: true, class: 'text-center' ,tdClass:"td-centralizado" },
-        { key: "data", label: "Data", sortable: true , class: 'text-center',tdClass:"td-centralizado"},
+        { key: "descricao", label: "Descrição", sortable: true ,tdClass:"td-centralizado"},
         { key: "data_vencimento", label: "Vencimento", sortable: true , class: 'text-center',tdClass:"td-centralizado"},
         { key: "descricao_tipo_despesa", label: "Tipo", sortable: true , thClass: 'text-center' ,tdClass:"td-centralizado"},
         { key: "editar", label: "" },
