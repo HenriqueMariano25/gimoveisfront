@@ -22,8 +22,8 @@
         </b-form-group>
       </b-col>
     </b-row>
-    <b-row class="tabela-responsaveis">
-      <b-col class="col-tabela-responsaveis">
+    <b-row class="tabela-contratos">
+      <b-col class="col-tabela-contratos">
         <b-table
             id="tabela-contrato"
             primary-key="id"
@@ -138,6 +138,9 @@
                 size="sm"
             ></b-form-select>
           </b-form-group>
+        </b-col>
+        <b-col>
+          <h6>Total: {{ this.totalRows }}</h6>
         </b-col>
         <b-col class="ml-auto" cols="auto" style="margin-bottom: -5px">
           <vs-button color="#24a35a" type="filled" icon="note_add" @click="mostrarModal">Adicionar
@@ -288,7 +291,6 @@
                   :sort-direction="sortDirection"
                   show-empty
                   small
-                  @filtered="onFiltered"
                   striped
                   hover
                   outlined
@@ -587,6 +589,7 @@ export default {
       this.carregandoContratos = true
       await api.get('/contratos').then(response => {
         this.items = response.data
+        this.totalRows = this.items.length
         this.carregandoContratos = false
       })
     },
@@ -955,7 +958,7 @@ export default {
   box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
 }
 
-.tabela-responsaveis {
+.tabela-contratos {
   background-color: white;
   margin: 0;
   padding: 0;
@@ -964,7 +967,7 @@ export default {
   box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
 }
 
-.col-tabela-responsaveis {
+.col-tabela-contratos {
   padding-top: 15px;
 }
 

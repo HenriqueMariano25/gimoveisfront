@@ -122,6 +122,9 @@
             ></b-form-select>
           </b-form-group>
         </b-col>
+        <b-col>
+          <h6>Total: {{ this.totalRows }}</h6>
+        </b-col>
         <b-col class="ml-auto" cols="auto" style="margin-bottom: -5px">
           <vs-button
             color="#24a35a"
