@@ -852,7 +852,7 @@ export default {
     validarCamposObrigatorio() {
       if (this.contrato['id_responsavel'] == "" || this.contrato['id_cliente'] == "" || this.contrato['id_imovel'] == "" ||
           this.contrato['data_inicio'] == "" || this.contrato['data_fim'] == "" ||
-          this.contrato['valor_boleto'] == "" || this.contrato['data_vencimento'] == "" || this.contrato['status']) {
+          this.contrato['valor_boleto'] == "" || this.contrato['data_vencimento'] == "" || this.contrato['status'] == null) {
         this.$vs.notify({
           text: `Campos obrigatórios vazio.`,
           position: 'top-center',
