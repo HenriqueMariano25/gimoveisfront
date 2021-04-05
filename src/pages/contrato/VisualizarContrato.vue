@@ -188,6 +188,16 @@
           </b-row>
           <b-row>
             <b-col>
+              <b-form-group id="select-contrato" label="Status*">
+                <b-form-select v-model="contrato.status" :options="status_contrato" value-field="id"
+                               text-field="descricao">
+                  <template #first>
+                    <b-form-select-option :value="null">Selecione</b-form-select-option>
+                  </template>
+                </b-form-select>
+              </b-form-group>
+            </b-col>
+            <b-col>
               <vs-input label="Data de Início*" v-model="contrato.data_inicio" type="date"
                         class="input-nascimento"/>
             </b-col>
@@ -535,7 +545,8 @@ export default {
         fiador: null,
         locador: "",
         nome_pdf: "",
-        observacao: ""
+        observacao: "",
+        status:null
       },
       boletos: [],
       boleto: {
@@ -546,6 +557,7 @@ export default {
         id: "",
         id_status_boleto: null,
       },
+      status_contrato:[],
       editar: false,
       responsaveis: [],
       clientes: [],
@@ -601,6 +613,11 @@ export default {
     async buscarStatusBoleto() {
       await api.get('/contrato/boleto/status').then(response => {
         this.status_boleto = response.data
+      })
+    },
+    async buscarStatusContrato(){
+      await api.get('/contrato/status').then(consulta => {
+        this.status_contrato = consulta.data
       })
     },
 
@@ -692,6 +709,7 @@ export default {
       this.buscarClientes()
       this.buscarImoveis()
       this.buscarIdFiador()
+      this.buscarStatusContrato()
       this.$modal.show('modal-contrato')
     },
 
@@ -711,6 +729,7 @@ export default {
       this.contrato.id_cliente = null
       this.contrato.id_imovel = null
       this.contrato.id_responsavel = null
+      this.contrato.status = null
       this.boletos = []
     },
     mostrarModalEditarBoleto() {
@@ -833,9 +852,9 @@ export default {
     validarCamposObrigatorio() {
       if (this.contrato['id_responsavel'] == "" || this.contrato['id_cliente'] == "" || this.contrato['id_imovel'] == "" ||
           this.contrato['data_inicio'] == "" || this.contrato['data_fim'] == "" ||
-          this.contrato['valor_boleto'] == "" || this.contrato['data_vencimento'] == "") {
+          this.contrato['valor_boleto'] == "" || this.contrato['data_vencimento'] == "" || this.contrato['status']) {
         this.$vs.notify({
-          text: `Campos obrigatorios vazio.`,
+          text: `Campos obrigatórios vazio.`,
           position: 'top-center',
           color: 'danger',
           time: 4000,
