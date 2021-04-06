@@ -230,16 +230,16 @@
             <b-col>
               <vs-input label-placeholder="Garantia" v-model="contrato.garantia" class="input-personalizado"/>
             </b-col>
-            <b-col>
-              <b-form-group id="select-contrato" label="Fiador">
-                <b-form-select v-model="contrato.fiador" :options="idFiador" value-field="id"
-                               text-field="descricao">
-                  <template #first>
-                    <b-form-select-option :value="null">Selecione</b-form-select-option>
-                  </template>
-                </b-form-select>
-              </b-form-group>
-            </b-col>
+<!--            <b-col>-->
+<!--              <b-form-group id="select-contrato" label="Fiador">-->
+<!--                <b-form-select v-model="contrato.fiador" :options="idFiador" value-field="id"-->
+<!--                               text-field="descricao">-->
+<!--                  <template #first>-->
+<!--                    <b-form-select-option :value="null">Selecione</b-form-select-option>-->
+<!--                  </template>-->
+<!--                </b-form-select>-->
+<!--              </b-form-group>-->
+<!--            </b-col>-->
           </b-row>
         </b-tab>
         <b-tab title="Inf. adicionais">
@@ -252,11 +252,12 @@
             </b-col>
             <b-col>
               <div v-if="carregandoImportarPDF">
-                <label class="p-contrato"  style="margin-bottom: 2px; margin-right: 5px;"><b>Importando... </b></label>
-                <b-spinner label="Loading..." small ></b-spinner>
+                <label class="p-contrato" style="margin-bottom: 2px; margin-right: 5px;"><b>Importando... </b></label>
+                <b-spinner label="Loading..." small></b-spinner>
               </div>
               <div v-else>
-                <p v-if="!editar" class="p-contrato"><b>Para realizar a importação primeiro cadastre esse contrato</b></p>
+                <p v-if="!editar" class="p-contrato"><b>Para realizar a importação primeiro cadastre esse contrato</b>
+                </p>
                 <template v-else>
                   <p v-if="contrato.nome_pdf" style="color:green" class="p-contrato"><b>Contrato importado</b></p>
                   <p v-else style="color:red" class="p-contrato"><b>Contrato não importado</b></p>
@@ -354,10 +355,80 @@
             </b-col>
           </b-row>
         </b-tab>
+        <b-tab title="Fiador" :disabled="!editar">
+          <b-row>
+            <b-col cols="auto">
+              <vs-button color="#24a35a" type="filled" icon="add" class="botao-salvar"
+                         @click="mostrarModalFiador()">
+                Adicionar Fiador
+              </vs-button>
+            </b-col>
+          </b-row>
+          <b-row class="mt-2">
+            <b-col>
+              <b-table
+                  id="tabela-boleto"
+                  primary-key="id"
+                  :tbody-transition-props="transProps"
+                  bordered
+                  head-variant="dark"
+                  sort-icon-left
+                  :items="fiadores"
+                  :fields="fieldsFiador"
+                  :current-page="currentPage"
+                  :per-page="perPage"
+                  :filter="filter"
+                  :filter-included-fields="filterOn"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+                  show-empty
+                  small
+                  striped
+                  hover
+                  outlined
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
+                  no-border-collapse
+                  >
+                <template #cell(nome)="row">
+                  <p class="tr-contrato">{{ row.item.nome }}</p>
+                </template>
+                <template #cell(email)="row">
+                  <p class="tr-contrato">{{ row.item.email }}</p>
+                </template>
+                <template #cell(cpf_cnpj)="row">
+                  <p class="tr-contrato">{{ row.item.cpf_cnpj }}</p>
+                </template>
+                <template #cell(editar)="row">
+                  <div class="item-coluna-centralizada">
+                    <vs-tooltip text="Editar">
+                      <vs-button type="flat" color="dark" @click.native="editarFiadorModal(row.item)" icon="edit"></vs-button>
+                    </vs-tooltip>
+                  </div>
+                </template>
+                <template #cell(deletar)="row">
+                  <div class="item-coluna-centralizada">
+                    <vs-tooltip text="Deletar">
+                      <vs-button type="flat" color="dark" @click.native="deletarFiadorAlerta(row)"
+                                 icon="delete"></vs-button>
+                    </vs-tooltip>
+                  </div>
+                </template>
+                <template #table-colgroup>
+                  <col>
+                  <col>
+                  <col>
+                  <col style="width: 15px">
+                  <col style="width: 15px">
+                </template>
+              </b-table>
+            </b-col>
+          </b-row>
+        </b-tab>
       </b-tabs>
       <b-row align-h="end">
         <b-col cols="auto" align="left">
-          <vs-button v-if="tabBoleto == 2" color="#24a35a" type="filled" icon="save" class="botao-salvar"
+          <vs-button v-if="tabBoleto == 2" color="#24a35a" type="filled" icon="add" class="botao-salvar"
                      @click.native="mostrarModalAdicionarBoleto()">
             Adicionar Boleto
           </vs-button>
@@ -385,6 +456,101 @@
           </vs-button>
         </b-col>
 
+      </b-row>
+    </modal>
+    <modal name="modal-fiador" id="modal-fiador" width="90%" height="auto" :scrollable="true" class="modal-contrato">
+      <b-row>
+        <b-col>
+          <h1>Adicionando fiador{{fiador.id}}</h1>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col cols="5">
+          <vs-input label-placeholder="Nome" v-model="fiador.nome" class="input-personalizado"/>
+        </b-col>
+        <b-col>
+          <b-form-group id="select-contrato" label="Estado Civil">
+            <b-form-select v-model="fiador.estado_civil" :options="estadosCivis" value-field="id"
+                           text-field="descricao">
+              <template #first>
+                <b-form-select-option :value="null">Selecione</b-form-select-option>
+              </template>
+            </b-form-select>
+          </b-form-group>
+        </b-col>
+        <b-col>
+          <vs-input label="Data de Nascimento" v-model="fiador.data_nascimento" type="date"
+                    class="input-nascimento"/>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col cols="5">
+          <vs-input label-placeholder="Email" v-model="fiador.email" class="input-personalizado"
+          />
+        </b-col>
+        <b-col>
+          <vs-input onKeyDown="if(this.value.length==18 && event.keyCode!=8) return false;" type="text"
+                    v-mask="['###.###.###-##', '##.###.###/####-##']" label-placeholder="CPF ou CNPJ"
+                    v-model="fiador.cpf_cnpj"
+                    class="input-personalizado"/>
+        </b-col>
+        <b-col>
+          <vs-input type="text"
+                    label-placeholder="Identidade" v-model="fiador.identidade" class="input-personalizado"/>
+        </b-col>
+      </b-row>
+      <Carregando :visivel="carregandoCep"/>
+      <b-row>
+        <b-col cols="2">
+          <vs-input
+              type="text"
+              label-placeholder="CEP"
+              v-model="fiador.cep"
+              class="input-personalizado"
+              v-mask="'#####-###'"
+              @focusout="buscarEndereco"
+              @focusin="cepAtual"
+          />
+        </b-col>
+        <b-col cols="5">
+          <vs-input label-placeholder="Rua" v-model="fiador.rua" class="input-personalizado"/>
+        </b-col>
+        <b-col cols="2">
+          <vs-input label-placeholder="Número" v-model="fiador.numero" class="input-personalizado"/>
+        </b-col>
+        <b-col cols="3">
+          <vs-input label-placeholder="Complemento" v-model="fiador.complemento" class="input-personalizado"/>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col>
+          <vs-input label-placeholder="Bairro" v-model="fiador.bairro" class="input-personalizado"/>
+        </b-col>
+        <b-col>
+          <vs-input label-placeholder="Cidade" v-model="fiador.cidade" class="input-personalizado"/>
+        </b-col>
+        <b-col cols="2">
+          <vs-input label-placeholder="UF" v-model="fiador.estado" class="input-personalizado" maxlength="2"/>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col cols="auto" class="ml-auto" v-if="!fiador.id">
+          <vs-button color="#24a35a" type="filled" icon="save" class="botao-salvar"
+                     @click="cadastrarFiador()">
+            Salvar
+          </vs-button>
+        </b-col>
+        <b-col cols="auto" class="ml-auto" v-else>
+          <vs-button color="#24a35a" type="filled" icon="save" class="botao-salvar"
+                     @click="editarFiador()">
+            Salvar
+          </vs-button>
+        </b-col>
+        <b-col cols="auto">
+          <vs-button color="#707070" type="filled" icon="clear" class="botao-salvar" @click="esconderModalFiador">
+            Cancelar
+          </vs-button>
+        </b-col>
       </b-row>
     </modal>
     <modal name="modal-editar-boleto" width="90%" height="auto" :scrollable="true" :click-to-close="false"
@@ -492,10 +658,14 @@
 
 import api from '../../services/api'
 import dayjs from 'dayjs'
-import {converterDinherioFloat} from "../../methods/global";
+import {atribuirCep, converterDinherioFloat} from "../../methods/global";
+import Carregando from "@/components/shared/Carregando";
 
 export default {
   name: "VisualizarContrato",
+  components: {
+    Carregando,
+  },
   data() {
     return {
       transProps: {
@@ -520,6 +690,16 @@ export default {
         {key: 'status', label: 'Status', sortable: true, class: 'text-center'},
         {key: 'editar', label: '', class: 'text-center'},
         {key: 'deletar', label: '', class: 'text-center'},
+      ],
+      fieldsFiador: [
+        {key: 'nome', label: 'Nome', sortable: true, thClass: 'text-center'},
+        {key: 'email', label: 'Email', sortable: true, thClass: 'text-center'},
+        {key: 'cpf_cnpj', label: 'CPF/CNPJ', sortable: true, thClass: 'text-center'},
+        // {key: 'nome_imovel', label: 'Imóvel', sortable: true, thClass: 'text-center'},
+        // {key: 'status', label: 'Status', class: 'text-center'},
+        // {key: 'contrato', label: ''},
+        {key: 'editar', label: ''},
+        {key: 'deletar', label: ''},
       ],
       totalRows: 1,
       currentPage: 1,
@@ -546,8 +726,24 @@ export default {
         locador: "",
         nome_pdf: "",
         observacao: "",
-        status:null
+        status: null
       },
+      fiador: {
+        nome: "",
+        email: "",
+        estado_civil: null,
+        data_nascimento: "",
+        cpf_cnpj: "",
+        identidade: "",
+        cep: "",
+        rua: "",
+        numero: "",
+        bairro: "",
+        estado: "",
+        cidade: "",
+        complemento: ""
+      },
+      estadosCivis: [],
       boletos: [],
       boleto: {
         valor: "",
@@ -557,7 +753,7 @@ export default {
         id: "",
         id_status_boleto: null,
       },
-      status_contrato:[],
+      status_contrato: [],
       editar: false,
       responsaveis: [],
       clientes: [],
@@ -572,7 +768,10 @@ export default {
       recarregarContratos: false,
       tabBoleto: 0,
       idFiador: [],
-      carregandoImportarPDF:false
+      carregandoImportarPDF: false,
+      cep_atual: '',
+      carregandoCep: false,
+      fiadores: []
     }
   },
 
@@ -615,10 +814,21 @@ export default {
         this.status_boleto = response.data
       })
     },
-    async buscarStatusContrato(){
+    async buscarStatusContrato() {
       await api.get('/contrato/status').then(consulta => {
         this.status_contrato = consulta.data
       })
+    },
+    async buscarEstadosCivis() {
+      await api.get('/estados_civis').then(response => {
+        this.estadosCivis = response.data
+      })
+    },
+    async buscarFiadores() {
+      await api.get('/contrato/fiadores', {params: {idContrato: this.contrato.id}}).then(resposta => {
+            this.fiadores = resposta.data
+          }
+      )
     },
 
     onFiltered(filteredItems) {
@@ -647,8 +857,8 @@ export default {
     },
     async editarContratoModal(id) {
       await api.get('/contrato', {params: {idContrato: id}}).then(response => {
-        this.contrato = response.data[0]
-        this.contrato.valor_boleto = `R$ ${response.data[0].valor_boleto.replace('.', ',')}`
+        this.contrato = response.data.contrato[0]
+        this.contrato.valor_boleto = `R$ ${response.data.contrato[0].valor_boleto.replace('.', ',')}`
         this.buscarBoletos(id)
         this.mostrarModal()
         this.editar = true
@@ -660,7 +870,8 @@ export default {
         let idUsuario = this.$store.state.usuario.id
         await api.post(`/contrato/editar`, {
           contrato: this.contrato,
-          idUsuario: idUsuario
+          idUsuario: idUsuario,
+          fiador: this.fiador
         }).then(response => {
           let codigo = response.data[0].id
           this.$vs.notify({
@@ -710,6 +921,8 @@ export default {
       this.buscarImoveis()
       this.buscarIdFiador()
       this.buscarStatusContrato()
+      this.buscarEstadosCivis()
+      this.buscarFiadores()
       this.$modal.show('modal-contrato')
     },
 
@@ -785,14 +998,12 @@ export default {
       await api.post('/contrato/boleto/cadastrar', {
         boleto: this.boleto,
         idContrato: this.contrato.id
-      }).then(response => {
-        console.log(response)
+      }).then(() => {
         this.esconderModalAdicionarBoleto()
         this.buscarBoletos(this.contrato.id)
       })
     },
     async deletarBoletoAlerta(boleto) {
-      console.log(boleto.item)
       this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar o boleto: ${("000000" + boleto.item.id).slice(-6)} ?`, {
         title: 'Deletar boleto',
         buttonSize: 'sm',
@@ -803,14 +1014,12 @@ export default {
         centered: true
       }).then(value => {
         if (value) {
-          // this.deletarContrato(contrato)
           this.deletarBoleto(boleto.item.id)
         }
       })
     },
     async deletarBoleto(idBoleto) {
-      await api.delete('/contrato/boleto/deletar', {params: {idBoleto: idBoleto}}).then(response => {
-        console.log(response)
+      await api.delete('/contrato/boleto/deletar', {params: {idBoleto: idBoleto}}).then(() => {
         this.buscarBoletos(this.contrato.id)
       })
     },
@@ -819,7 +1028,11 @@ export default {
       if (this.validarCamposObrigatorio()) {
         if (this.validarDataInicioFim()) {
           let idUsuario = this.$store.state.usuario.id
-          await api.post('/contrato/cadastrar', {contrato: this.contrato, idUsuario: idUsuario}).then(response => {
+          await api.post('/contrato/cadastrar', {
+            contrato: this.contrato,
+            idUsuario: idUsuario,
+            fiador: this.fiador
+          }).then(response => {
             this.contrato.id = response.data[0].id
             this.$vs.notify({
               text: `Contrato cadastrado com sucesso!`,
@@ -865,6 +1078,73 @@ export default {
         return true
       }
     },
+    limparModalFiador() {
+      Object.keys(this.fiador).forEach(key => {
+        this.fiador[key] = ""
+      })
+      this.fiador.estado_civil = null
+      this.fiadores = []
+    },
+    mostrarModalFiador() {
+      this.$modal.show('modal-fiador')
+    },
+    esconderModalFiador() {
+      this.$modal.hide('modal-fiador')
+      this.limparModalFiador()
+    },
+    async cadastrarFiador() {
+      let idContrato = this.contrato.id
+      await api.post(`/contrato/fiador/cadastrar`, {fiador: this.fiador, idContrato: idContrato}).then(() => {
+        this.$vs.notify({
+          text: `Fiador cadastrado com sucesso!`,
+          position: 'top-center',
+          color: 'success',
+          time: 6000,
+          icon: 'check_circle_outline'
+        })
+        this.esconderModalFiador()
+        this.buscarFiadores()
+      })
+    },
+    editarFiadorModal(fiador) {
+      let alterandoFiador = JSON.parse(JSON.stringify(fiador))
+      this.fiador = alterandoFiador
+      this.fiador.estado_civil = alterandoFiador.id_estado_civil
+      this.mostrarModalFiador()
+    },
+    async editarFiador() {
+      await api.post(`/contrato/fiador/editar`, {fiador: this.fiador}).then(() => {
+        this.$vs.notify({
+          text: `Fiador editado com sucesso!`,
+          position: 'top-center',
+          color: 'warning',
+          time: 6000,
+          icon: 'check_circle_outline'
+        })
+        this.esconderModalFiador()
+        this.buscarFiadores()
+      })
+    },
+    deletarFiadorAlerta(fiador){
+      this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar o fiador: ${fiador.item.nome} ?`, {
+        title: 'Deletar fiador',
+        buttonSize: 'sm',
+        okTitle: 'Deletar',
+        cancelTitle: 'Cancelar',
+        okVariant: 'danger',
+        footerClass: 'p-2',
+        centered: true
+      }).then(value => {
+        if (value) {
+          this.deletarFiador(fiador)
+        }
+      })
+    },
+    async deletarFiador(fiador){
+      await api.delete('/contrato/fiador/deletar',{params:{idFiador:fiador.item.id}}).then(() => {
+        this.fiadores.splice(fiador.index,1)
+      })
+    },
     validarDataInicioFim() {
       let inicio = this.contrato.data_inicio
       let fim = this.contrato.data_fim
@@ -879,6 +1159,39 @@ export default {
         return false
       } else {
         return true
+      }
+    },
+    atribuirCep(dados) {
+      if (dados.bairro != "") {
+        this.fiador['bairro'] = dados.bairro
+      }
+      if (dados.localidade != "") {
+        this.fiador.cidade = dados.localidade
+      }
+      if (dados.uf != "") {
+        this.fiador.estado = dados.uf
+      }
+      if (dados.complemento != "") {
+        this.fiador.complemento = dados.complemento
+      }
+      if (dados.logradouro != "") {
+        this.fiador.rua = dados.logradouro
+      }
+    },
+    cepAtual() {
+      this.cep_atual = this.fiador.cep
+    },
+    buscarEndereco() {
+      if (this.cep_atual != this.fiador.cep) {
+        if (atribuirCep(this.fiador.cep)) {
+          if (this.fiador.cep.length == 9) {
+            this.carregandoCep = true
+          }
+          atribuirCep(this.fiador.cep).then(response => {
+            this.carregandoCep = false
+            this.atribuirCep(response)
+          })
+        }
       }
     },
   },
@@ -1045,7 +1358,11 @@ table#tabela-boleto .flip-list-move {
   transition: transform 0.4s;
 }
 
-.modal-contrato{
-  margin-left:25px;
+.modal-contrato {
+  margin-left: 25px;
+}
+
+#select-cliente {
+  margin-bottom: 10px;
 }
 </style>
