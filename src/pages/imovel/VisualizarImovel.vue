@@ -560,6 +560,22 @@
                 </b-form-select>
               </b-form-group>
             </b-col>
+            <b-col cols="3">
+              <b-form-group id="select-comodo" label="Responsável*" v-model="despesa.tipo_despesa">
+                <b-form-select
+                    :options="tiposResponsaveisPagamento"
+                    value-field="id"
+                    v-model="despesa.id_responsavel_pagamento"
+                    text-field="descricao"
+                >
+                  <template #first>
+                    <b-form-select-option :value="null"
+                    >Selecione</b-form-select-option
+                    >
+                  </template>
+                </b-form-select>
+              </b-form-group>
+            </b-col>
             <b-col>
               <vs-input label-placeholder="Descrição" class="mt-2" v-model="despesa.descricao"/>
             </b-col>
@@ -659,6 +675,11 @@
                     <b-row>
                       <b-col>
                         <label><b>Fixa ou Variável: </b>{{ row.item.fixa_variavel }}</label>
+                      </b-col>
+                    </b-row>
+                    <b-row>
+                      <b-col>
+                        <label><b>Responsável: </b>{{ row.item.responsavel_pagamento }}</label>
                       </b-col>
                     </b-row>
                   </b-card>
@@ -969,7 +990,8 @@ export default {
         data_vencimento:"",
         tipo_despesa:null,
         fixa_variavel:null,
-        descricao:""
+        descricao:"",
+        id_responsavel_pagamento: null
       },
       comodo:{
         id: "",
@@ -981,6 +1003,7 @@ export default {
       tiposImoveis: [],
       tiposComodos: [],
       tiposDespesas:[],
+      tiposResponsaveisPagamento:[],
       editar: false,
       carregandoCep:false,
       contratos:[],
@@ -1036,7 +1059,12 @@ export default {
     async buscarDespesas(){
       await api.get('/imoveis/despesas', {params:{idImovel:this.imovel.id}}).then(consulta => {
         this.despesas = consulta.data
-        this.rows = consulta.data.length
+        // this.rows = consulta.data.length
+      })
+    },
+    async buscarTiposResponsaveisPagamento(){
+      await api.get('/imoveis/despesas/responsavel_pagamento').then(consulta => {
+        this.tiposResponsaveisPagamento = consulta.data
       })
     },
     async buscarProprietarios() {
@@ -1127,6 +1155,7 @@ export default {
       this.buscarTiposComodos();
       this.buscarTiposDespesas()
       this.buscarProprietarios()
+      this.buscarTiposResponsaveisPagamento()
     },
     esconderModal() {
       this.$modal.hide("modal-imovel");
@@ -1158,6 +1187,7 @@ export default {
         data_vencimento:"",
         tipo_despesa:null,
         fixa_variavel:null,
+        id_responsavel_pagamento:null,
         descricao:""
       }
       this.despesas = []
@@ -1252,17 +1282,39 @@ export default {
         this.boletos = response.data
       })
     },
+    validarCamposObrigatorioDespesa(){
+      if (
+          this.despesa.valor == "" ||
+          this.despesa.tipo_despesa == null ||
+          this.despesa.fixa_variavel == null ||
+          this.despesa.id_responsavel_pagamento == null
+      ){
+        this.$vs.notify({
+          text: `Campos obrigatório em despesa vazio.`,
+          position: 'top-center',
+          color: 'danger',
+          time: 4000,
+          icon: 'check_circle_outline'
+        })
+        return false;
+      } else {
+        return true;
+      }
+    },
     async cadastrarDespesa(){
-      this.despesa.valor = converterDinherioFloat(this.despesa.valor)
-      await api.post('/imoveis/despesas/cadastrar', {despesa: this.despesa, idImovel: this.imovel.id}).then(() => {
-        this.buscarDespesas()
-        Object.keys(this.despesa).forEach((key) => {
-          this.despesa[key] = "";
-        });
-        this.despesa.fixa_variavel = null
-        this.despesa.tipo_despesa = null
-        this.despesa.valor = ""
-      })
+      if(this.validarCamposObrigatorioDespesa()) {
+        this.despesa.valor = converterDinherioFloat(this.despesa.valor)
+        await api.post('/imoveis/despesas/cadastrar', {despesa: this.despesa, idImovel: this.imovel.id}).then(() => {
+          this.buscarDespesas()
+          Object.keys(this.despesa).forEach((key) => {
+            this.despesa[key] = "";
+          });
+          this.despesa.fixa_variavel = null
+          this.despesa.tipo_despesa = null
+          this.despesa.id_responsavel_pagamento = null
+          this.despesa.valor = ""
+        })
+      }
     },
     tabInfAdicionais(){
       if(this.primeiraTabInfAdicionais === false){
@@ -1278,6 +1330,7 @@ export default {
       this.despesa.data_vencimento = despesa.item.data_vencimento
       this.despesa.descricao = despesa.item.descricao
       this.despesa.fixa_variavel = despesa.item.fixa_variavel
+      this.despesa.id_responsavel_pagamento = despesa.item.id_responsavel_pagamento
       this.despesa.tipo_despesa = despesa.item.id_tipo_despesa
       this.despesa.id = despesa.item.id
       this.editandoDespesa = true
@@ -1291,6 +1344,7 @@ export default {
           data_vencimento:"",
           tipo_despesa:null,
           fixa_variavel:null,
+          id_responsavel_pagamento:null,
           descricao:""
         }
         this.buscarDespesas()
@@ -1304,6 +1358,7 @@ export default {
         data_vencimento:"",
         tipo_despesa:null,
         fixa_variavel:null,
+        id_responsavel_pagamento:null,
         descricao:""
       }
       this.$bvModal.msgBoxConfirm(`Tem certeza que deseja remover essa despesa ?`, {
