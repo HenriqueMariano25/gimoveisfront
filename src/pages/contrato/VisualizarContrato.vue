@@ -484,7 +484,7 @@
         </b-col>
       </b-row>
       <b-row>
-        <b-col cols="5">
+        <b-col cols="4">
           <vs-input label-placeholder="Email" v-model="fiador.email" class="input-personalizado"
           />
         </b-col>
@@ -497,6 +497,11 @@
         <b-col>
           <vs-input type="text"
                     label-placeholder="Identidade" v-model="fiador.identidade" class="input-personalizado"/>
+        </b-col>
+        <b-col>
+          <vs-input label-placeholder="Celular/Telefone" v-model="fiador.telefone" class="input-personalizado"
+                    v-mask="['(##)####-####', '(##)#####-####']"
+          />
         </b-col>
       </b-row>
       <Carregando :visivel="carregandoCep"/>
@@ -527,7 +532,7 @@
           <vs-input label-placeholder="Bairro" v-model="fiador.bairro" class="input-personalizado"/>
         </b-col>
         <b-col>
-          <vs-input label-placeholder="Cidade" v-model="fiador.cidade" class="input-personalizado"/>
+          <vs-input label-placeholder="Cidade" v-model="fiador.cidade" class="input-personalizado" />
         </b-col>
         <b-col cols="2">
           <vs-input label-placeholder="UF" v-model="fiador.estado" class="input-personalizado" maxlength="2"/>
@@ -944,6 +949,7 @@ export default {
       this.contrato.id_responsavel = null
       this.contrato.status = null
       this.boletos = []
+      this.fiadores = []
     },
     mostrarModalEditarBoleto() {
       this.$modal.show('modal-editar-boleto')
@@ -1083,7 +1089,6 @@ export default {
         this.fiador[key] = ""
       })
       this.fiador.estado_civil = null
-      this.fiadores = []
     },
     mostrarModalFiador() {
       this.$modal.show('modal-fiador')
