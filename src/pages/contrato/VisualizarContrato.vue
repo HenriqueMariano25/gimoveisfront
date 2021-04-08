@@ -156,8 +156,8 @@
         <b-tab title="Dados gerais" active>
           <b-row>
             <b-col>
-              <b-form-group id="select-contrato" label="Responsável*">
-                <b-form-select v-model="contrato.id_responsavel" :options="responsaveis" value-field="id"
+              <b-form-group id="select-contrato" label="Cliente 1*">
+                <b-form-select v-model="contrato.id_cliente" :options="clientes" value-field="id"
                                text-field="nome">
                   <template #first>
                     <b-form-select-option :value="null">Selecione</b-form-select-option>
@@ -166,8 +166,18 @@
               </b-form-group>
             </b-col>
             <b-col>
-              <b-form-group id="select-contrato" label="Cliente*">
-                <b-form-select v-model="contrato.id_cliente" :options="clientes" value-field="id"
+              <b-form-group id="select-contrato" label="Cliente 2">
+                <b-form-select v-model="contrato.id_cliente2" :options="clientes" value-field="id"
+                               text-field="nome">
+                  <template #first>
+                    <b-form-select-option :value="null">Selecione</b-form-select-option>
+                  </template>
+                </b-form-select>
+              </b-form-group>
+            </b-col>
+            <b-col>
+              <b-form-group id="select-contrato" label="Responsável*">
+                <b-form-select v-model="contrato.id_responsavel" :options="responsaveis" value-field="id"
                                text-field="nome">
                   <template #first>
                     <b-form-select-option :value="null">Selecione</b-form-select-option>
@@ -719,6 +729,7 @@ export default {
         id: '',
         id_responsavel: null,
         id_cliente: null,
+        id_cliente2:null,
         id_imovel: null,
         data_inicio: "",
         data_fim: "",
@@ -945,6 +956,7 @@ export default {
         this.contrato[key] = ""
       })
       this.contrato.id_cliente = null
+      this.contrato.id_cliente2 = null
       this.contrato.id_imovel = null
       this.contrato.id_responsavel = null
       this.contrato.status = null
