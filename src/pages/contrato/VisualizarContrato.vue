@@ -304,12 +304,6 @@
                   :items="boletos"
                   :fields="fieldsBoletos"
                   :current-page="currentPage"
-                  :per-page="perPage"
-                  :filter="filter"
-                  :filter-included-fields="filterOn"
-                  :sort-by.sync="sortBy"
-                  :sort-desc.sync="sortDesc"
-                  :sort-direction="sortDirection"
                   show-empty
                   small
                   striped
