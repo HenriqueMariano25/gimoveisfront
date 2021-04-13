@@ -1,20 +1,25 @@
 <template>
-  <b-container>
-    <b-card-group deck>
+  <b-container fluid>
+    <b-card-group columns>
       <b-card header="Contratos para vencer"
               header-tag="header"
               footer-tag="footer"
               class="text-center"
-              header-text-variant="danger">
+              header-text-variant="danger"
+              style="max-width: 100%;"
+      >
         <template>
           <b-table
               striped
               hover
-              :items="contratoVencendo"
-              thead-class="d-none"
+              :items="contratosVencendo"
               :small="true"
               show-empty
               class="tabela-contratos-vencendo"
+              bordered
+              responsive
+              head-variant="dark"
+              :fields="camposContratosVencendo"
           >
             <template #cell(id)="row">
               <div>
@@ -30,81 +35,44 @@
               <span>Não há contratos vencendo!</span>
             </template>
           </b-table>
-<!--          <b-table-simple hover small striped class="tabela-contratos-vencendo">-->
-<!--            <b-tbody>-->
-<!--              <b-tr v-for="contrato in contratoVencendo" :key="contrato.id">-->
-<!--                <b-td>{{ ("0000" + contrato.id).slice(-4) }}</b-td>-->
-<!--                <b-td>{{ dayjs(contrato.data_fim).format('DD/MM/YYYY') }}</b-td>-->
-<!--              </b-tr>-->
-<!--            </b-tbody>-->
-<!--            <template #empty="scope">-->
-<!--              <h4>{{ scope.emptyText }}</h4>-->
-<!--            </template>-->
-<!--          </b-table-simple>-->
         </template>
       </b-card>
-<!--            <b-card header="Clientes em atraso"-->
-      <!--                    header-tag="header"-->
-      <!--                    footer-tag="footer"-->
-      <!--                    class="text-center"-->
-      <!--                    header-text-variant="danger">-->
-      <!--              <template>-->
-      <!--                <b-table-simple hover small striped>-->
-      <!--                  <b-tbody>-->
-      <!--                    <b-tr>-->
-      <!--                      <b-td>Henrique</b-td>-->
-      <!--                      <b-td>R$ 123</b-td>-->
-      <!--                    </b-tr>-->
-      <!--                    <b-tr>-->
-      <!--                      <b-td>Henrique</b-td>-->
-      <!--                      <b-td>R$ 123</b-td>-->
-      <!--                    </b-tr>-->
-      <!--                  </b-tbody>-->
-      <!--                </b-table-simple>-->
-      <!--              </template>-->
-      <!--            </b-card>-->
-
-<!--            <b-card header="Despesas do dia"-->
-<!--                    header-tag="header"-->
-<!--                    footer-tag="footer"-->
-<!--                    class="text-center"-->
-<!--                    header-text-variant="danger">-->
-<!--              <template>-->
-<!--                <b-table-simple hover small striped>-->
-<!--                  <b-tbody>-->
-<!--                    <b-tr>-->
-<!--                      <b-td>Conta luz</b-td>-->
-<!--                      <b-td>R$ 123</b-td>-->
-<!--                    </b-tr>-->
-<!--                    <b-tr>-->
-<!--                      <b-td>Henrique</b-td>-->
-<!--                      <b-td>R$ 123</b-td>-->
-<!--                    </b-tr>-->
-<!--                  </b-tbody>-->
-<!--                </b-table-simple>-->
-<!--              </template>-->
-<!--            </b-card>-->
-
-      <!--      <b-card header="Contratos vencidos"-->
-      <!--              header-tag="header"-->
-      <!--              footer-tag="footer"-->
-      <!--              class="text-center"-->
-      <!--              header-text-variant="danger">-->
-      <!--        <template>-->
-      <!--          <b-table-simple hover small striped>-->
-      <!--            <b-tbody>-->
-      <!--              <b-tr>-->
-      <!--                <b-td>Salão de festa</b-td>-->
-      <!--                <b-td>R$ 123</b-td>-->
-      <!--              </b-tr>-->
-      <!--              <b-tr>-->
-      <!--                <b-td>Henrique</b-td>-->
-      <!--                <b-td>R$ 123</b-td>-->
-      <!--              </b-tr>-->
-      <!--            </b-tbody>-->
-      <!--          </b-table-simple>-->
-      <!--        </template>-->
-      <!--      </b-card>-->
+      <b-card header="Boletos vencidos"
+              class="text-center"
+              header-text-variant="danger">
+        <template>
+          <b-table
+              striped
+              hover
+              :items="boletosVencendo"
+              :small="true"
+              show-empty
+              class="tabela-contratos-vencendo"
+              :fields="camposBoletosVencendo"
+              bordered
+              head-variant="dark"
+          >
+            <template #cell(id)="row">
+              <div>
+                <span>{{ ("000000" + row.item.id).slice(-6) }}</span>
+              </div>
+            </template>
+            <template #cell(data_vencimento)="row">
+              <div>
+                <span>{{ dayjs(row.item.data_vencimento).format('DD/MM/YYYY') }}</span>
+              </div>
+            </template>
+            <template #cell(id_contrato)="row">
+              <div>
+                <span>{{ ("0000" + row.item.id_contrato).slice(-4) }}</span>
+              </div>
+            </template>
+            <template #empty>
+              <span>Não há boletos vencidos!</span>
+            </template>
+          </b-table>
+        </template>
+      </b-card>
     </b-card-group>
   </b-container>
 </template>
@@ -128,29 +96,41 @@ export default {
       // filter: null,
       // filterOn: [],
       // items: [{nome:'Henrique',valor:'R$100.00'}],
-      camposContratoVencendo: [
-        {key: 'id', label: '', class: 'text-center'},
-        {key: 'data_fim', label: '', thClass: 'text-center'},
+      camposContratosVencendo: [
+        {key: 'id', label: 'Código', class: 'text-center'},
+        {key: 'data_fim', label: 'Data de término', class: 'text-center'},
       ],
-      contratoVencendo: [],
+      camposBoletosVencendo: [
+        {key: 'id', label: 'Código', class: 'text-center'},
+        {key: 'data_vencimento', label: 'Data de vencimento', class: 'text-center'},
+        {key: 'id_contrato', label: 'Contrato', class: 'text-center'},
+      ],
+      contratosVencendo: [],
+      boletosVencendo: [],
       dayjs: dayjs,
     }
   },
   methods: {
     async buscarContratosVencendo() {
       api.get('/home/contratos_vencendo').then(resposta => {
-        this.contratoVencendo = resposta.data
+        this.contratosVencendo = resposta.data
+      })
+    },
+    async buscarBoletosVencendo() {
+      api.get('/home/boletos_vencendo').then(resposta => {
+        this.boletosVencendo = resposta.data
       })
     }
   },
   created() {
     this.buscarContratosVencendo()
+    this.buscarBoletosVencendo()
   }
 }
 </script>
 
 <style scoped>
-.tabela-contratos-vencendo{
-  margin:0;
+.tabela-contratos-vencendo {
+  margin: 0;
 }
 </style>

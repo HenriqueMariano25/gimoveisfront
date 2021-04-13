@@ -30,7 +30,7 @@
             <b-form-select v-model="boleto.id_status_boleto" :options="status_boleto" value-field="id"
                            text-field="descricao">
               <template #first>
-                <b-form-select-option :value="null">Selecione</b-form-select-option>
+                <b-form-select-option :value="null" disabled>Selecione</b-form-select-option>
               </template>
             </b-form-select>
           </b-form-group>
