@@ -240,16 +240,16 @@
             <b-col>
               <vs-input label-placeholder="Garantia" v-model="contrato.garantia" class="input-personalizado"/>
             </b-col>
-<!--            <b-col>-->
-<!--              <b-form-group id="select-contrato" label="Fiador">-->
-<!--                <b-form-select v-model="contrato.fiador" :options="idFiador" value-field="id"-->
-<!--                               text-field="descricao">-->
-<!--                  <template #first>-->
-<!--                    <b-form-select-option :value="null">Selecione</b-form-select-option>-->
-<!--                  </template>-->
-<!--                </b-form-select>-->
-<!--              </b-form-group>-->
-<!--            </b-col>-->
+            <!--            <b-col>-->
+            <!--              <b-form-group id="select-contrato" label="Fiador">-->
+            <!--                <b-form-select v-model="contrato.fiador" :options="idFiador" value-field="id"-->
+            <!--                               text-field="descricao">-->
+            <!--                  <template #first>-->
+            <!--                    <b-form-select-option :value="null">Selecione</b-form-select-option>-->
+            <!--                  </template>-->
+            <!--                </b-form-select>-->
+            <!--              </b-form-group>-->
+            <!--            </b-col>-->
           </b-row>
         </b-tab>
         <b-tab title="Inf. adicionais">
@@ -273,6 +273,33 @@
                   <p v-else style="color:red" class="p-contrato"><b>Contrato não importado</b></p>
                 </template>
               </div>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="auto">
+              <div class="div-check-juros-multa">
+                <b-form-checkbox
+                    v-model="contrato.juros_multa"
+                    value="true"
+                    unchecked-value="false"
+                >
+                  Juros e multa:
+                  <span v-if="contrato.juros_multa == 'true' || contrato.juros_multa == true">Sim</span>
+                  <span v-else>Não</span>
+                </b-form-checkbox>
+              </div>
+            </b-col>
+            <b-col>
+              <vs-input label-placeholder="Juros ao mês"
+                        v-model="contrato.juros_mes"
+                        class="input-personalizado"
+                        v-mask="['#%', '##%', '###%']"/>
+            </b-col>
+            <b-col>
+              <vs-input label-placeholder="Multa"
+                        v-model="contrato.multa"
+                        class="input-personalizado"
+                        v-mask="['#%', '##%', '###%']"/>
             </b-col>
           </b-row>
           <b-row>
@@ -318,6 +345,9 @@
                 <template #cell(valor)="row">
                   <label class="tr-contrato">R$ {{ row.item.valor.replace('.', ',') }}</label>
                 </template>
+                <template #cell(valor_juros)="row">
+                  <label class="tr-contrato" v-if="row.item.valor_juros">R$ {{ row.item.valor_juros.replace('.', ',') }}</label>
+                </template>
                 <template #cell(status)="row">
                   <label class="tr-contrato">{{ row.item.status }}</label>
                 </template>
@@ -347,6 +377,7 @@
                   </div>
                 </template>
                 <template #table-colgroup>
+                  <col>
                   <col>
                   <col>
                   <col>
@@ -393,7 +424,7 @@
                   outlined
                   sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
                   no-border-collapse
-                  >
+              >
                 <template #cell(nome)="row">
                   <p class="tr-contrato">{{ row.item.nome }}</p>
                 </template>
@@ -406,7 +437,8 @@
                 <template #cell(editar)="row">
                   <div class="item-coluna-centralizada">
                     <vs-tooltip text="Editar">
-                      <vs-button type="flat" color="dark" @click.native="editarFiadorModal(row.item)" icon="edit"></vs-button>
+                      <vs-button type="flat" color="dark" @click.native="editarFiadorModal(row.item)"
+                                 icon="edit"></vs-button>
                     </vs-tooltip>
                   </div>
                 </template>
@@ -465,7 +497,7 @@
     <modal name="modal-fiador" id="modal-fiador" width="90%" height="auto" :scrollable="true" class="modal-contrato">
       <b-row>
         <b-col>
-          <h1>Adicionando fiador{{fiador.id}}</h1>
+          <h1>Adicionando fiador{{ fiador.id }}</h1>
         </b-col>
       </b-row>
       <b-row>
@@ -536,7 +568,7 @@
           <vs-input label-placeholder="Bairro" v-model="fiador.bairro" class="input-personalizado"/>
         </b-col>
         <b-col>
-          <vs-input label-placeholder="Cidade" v-model="fiador.cidade" class="input-personalizado" />
+          <vs-input label-placeholder="Cidade" v-model="fiador.cidade" class="input-personalizado"/>
         </b-col>
         <b-col cols="2">
           <vs-input label-placeholder="UF" v-model="fiador.estado" class="input-personalizado" maxlength="2"/>
@@ -695,6 +727,7 @@ export default {
         {key: 'id', label: 'Código', sortable: true, class: 'text-center'},
         {key: 'data_vencimento', label: 'Vencimento', sortable: true, class: 'text-center'},
         {key: 'valor', label: 'Valor', sortable: true, class: 'text-center'},
+        {key: 'valor_juros', label: 'Valor c/ juros', sortable: true, class: 'text-center'},
         {key: 'data_quitacao', label: 'Data Quitação', sortable: true, class: 'text-center'},
         {key: 'status', label: 'Status', sortable: true, class: 'text-center'},
         {key: 'editar', label: '', class: 'text-center'},
@@ -723,7 +756,7 @@ export default {
         id: '',
         id_responsavel: null,
         id_cliente: null,
-        id_cliente2:null,
+        id_cliente2: null,
         id_imovel: null,
         data_inicio: "",
         data_fim: "",
@@ -736,7 +769,10 @@ export default {
         locador: "",
         nome_pdf: "",
         observacao: "",
-        status: null
+        status: null,
+        juros_multa: false,
+        juros_mes: '',
+        multa: ''
       },
       fiador: {
         nome: "",
@@ -876,6 +912,8 @@ export default {
     },
     async editarContrato() {
       this.contrato.valor_boleto_convertido = converterDinherioFloat(this.contrato.valor_boleto)
+      this.contrato.juros_mes = this.contrato.juros_mes.replace('%','')
+      this.contrato.multa = this.contrato.multa.replace('%','')
       if (this.validarCamposObrigatorio()) {
         let idUsuario = this.$store.state.usuario.id
         await api.post(`/contrato/editar`, {
@@ -954,6 +992,7 @@ export default {
       this.contrato.id_imovel = null
       this.contrato.id_responsavel = null
       this.contrato.status = null
+      this.contrato.juros_multa = false
       this.boletos = []
       this.fiadores = []
     },
@@ -1037,6 +1076,8 @@ export default {
     },
     async cadastrarContrato(sair) {
       this.contrato.valor_boleto_convertido = converterDinherioFloat(this.contrato.valor_boleto)
+      this.contrato.juros_mes = this.contrato.juros_mes.replace('%','')
+      this.contrato.multa = this.contrato.multa.replace('%','')
       if (this.validarCamposObrigatorio()) {
         if (this.validarDataInicioFim()) {
           let idUsuario = this.$store.state.usuario.id
@@ -1136,7 +1177,7 @@ export default {
         this.buscarFiadores()
       })
     },
-    deletarFiadorAlerta(fiador){
+    deletarFiadorAlerta(fiador) {
       this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar o fiador: ${fiador.item.nome} ?`, {
         title: 'Deletar fiador',
         buttonSize: 'sm',
@@ -1151,9 +1192,9 @@ export default {
         }
       })
     },
-    async deletarFiador(fiador){
-      await api.delete('/contrato/fiador/deletar',{params:{idFiador:fiador.item.id}}).then(() => {
-        this.fiadores.splice(fiador.index,1)
+    async deletarFiador(fiador) {
+      await api.delete('/contrato/fiador/deletar', {params: {idFiador: fiador.item.id}}).then(() => {
+        this.fiadores.splice(fiador.index, 1)
       })
     },
     validarDataInicioFim() {
@@ -1375,5 +1416,10 @@ table#tabela-boleto .flip-list-move {
 
 #select-cliente {
   margin-bottom: 10px;
+}
+
+.div-check-juros-multa{
+  width: 160px;
+  margin-top: 25px;
 }
 </style>
