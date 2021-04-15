@@ -367,7 +367,7 @@
                   selectable
                   select-mode="single"
                   @row-selected="selecionandoContrato"
-                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 200px)"
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 400px)"
                   outlined
                   no-border-collapse>
                 <template #table-colgroup>
@@ -438,7 +438,7 @@
                   bordered
                   hover
                   outlined
-                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 200px)"
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 300px)"
                   no-border-collapse>
                 <template #cell(data_vencimento)="row">
                   <label>

@@ -241,8 +241,8 @@ export default {
     },
     async buscarContrato() {
       await api.get('/contrato', {params: {idContrato: this.idContrato}}).then(consulta => {
-        this.contrato = consulta.data[0]
-        setValue(this.$refs.valor_boleto, consulta.data[0].valor_boleto)
+        this.contrato = consulta.data.contrato[0]
+        setValue(this.$refs.valor_boleto, consulta.data.contrato[0].valor_boleto)
       })
     },
     async buscarBoletos() {
