@@ -276,6 +276,14 @@ export default {
         this.buscarUsuarios()
         this.limparModal()
         this.esconderModal()
+      }).catch(erro => {
+        this.$vs.notify({
+          text: `${erro.response.data.erro}`,
+          position: 'top-center',
+          color: 'danger',
+          time: 6000,
+          icon: 'check_circle_outline'
+        })
       })
     },
 
@@ -309,6 +317,14 @@ export default {
           })
           this.buscarUsuarios()
           this.limparModal()
+        }).catch(erro => {
+          this.$vs.notify({
+            text: `${erro.response.data.erro}`,
+            position: 'top-center',
+            color: 'danger',
+            time: 6000,
+            icon: 'check_circle_outline'
+          })
         })
       }
     },
