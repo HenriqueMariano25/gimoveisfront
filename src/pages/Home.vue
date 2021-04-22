@@ -108,6 +108,7 @@ export default {
       ],
       contratosVencendo: [],
       boletosVencendo: [],
+      contratosParaReajustar:[],
       dayjs: dayjs,
       idBoleto:'',
       modalBoletoVisivel:false,
@@ -124,6 +125,11 @@ export default {
         this.boletosVencendo = resposta.data
       })
     },
+    async buscarContratosParaReajustar(){
+      await api.get('/contrato/reajuste').then(response => {
+        console.log(response)
+      })
+    },
     mostrarEditarModalBoleto(linha){
       this.idBoleto = linha.id
       this.$modal.show('modal-editar-boleto')
@@ -133,6 +139,7 @@ export default {
   created() {
     this.buscarContratosVencendo()
     this.buscarBoletosVencendo()
+    this.buscarContratosParaReajustar()
   }
 }
 </script>

@@ -293,13 +293,46 @@
               <vs-input label-placeholder="Juros ao mês"
                         v-model="contrato.juros_mes"
                         class="input-personalizado"
-                        v-mask="['#%', '##%', '###%']"/>
+                        v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                        allowNegative: false, currency:{suffix:'%'} }"/>
             </b-col>
             <b-col>
               <vs-input label-placeholder="Multa"
                         v-model="contrato.multa"
                         class="input-personalizado"
-                        v-mask="['#%', '##%', '###%']"/>
+                        v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                        allowNegative: false, currency:{suffix:'%'} }"/>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="auto">
+              <vs-input label-placeholder="Reajuste do aluguel"
+                        v-model="contrato.reajuste"
+                        class="input-personalizado"
+                        v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                        allowNegative: false, currency:{suffix:'%'} }"/>
+            </b-col>
+            <b-col>
+              <vs-button color="#24a35a" type="filled" icon="add" class="btn-aplicar-reajuste"
+                         @click="aplicarReajuste()">
+                Aplicar reajuste
+              </vs-button>
+            </b-col>
+            <b-col>
+              <vs-input label-placeholder="Valor reajustado"
+                        v-model="contrato.valor_reajustado"
+                        class="input-personalizado"
+                        v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                        allowNegative: false, currency:'BRL'}"
+                        readonly
+              />
+            </b-col>
+            <b-col>
+              <vs-input type="date" label-placeholder="Ultimo reajuste"
+                        v-model="contrato.ultimo_reajuste"
+                        class="input-personalizado"
+                        readonly
+                        />
             </b-col>
           </b-row>
           <b-row>
@@ -772,7 +805,10 @@ export default {
         status: null,
         juros_multa: false,
         juros_mes: '',
-        multa: ''
+        multa: '',
+        reajuste: '',
+        valor_reajustado:'',
+        ultimo_reajuste:''
       },
       fiador: {
         nome: "",
@@ -905,6 +941,10 @@ export default {
       await api.get('/contrato', {params: {idContrato: id}}).then(response => {
         this.contrato = response.data.contrato[0]
         this.contrato.valor_boleto = `R$ ${response.data.contrato[0].valor_boleto.replace('.', ',')}`
+        if(this.contrato.valor_reajustado)
+          this.contrato.valor_reajustado = `R$ ${response.data.contrato[0].valor_reajustado.replace('.', ',')}`
+        else
+          this.contrato.valor_reajustado = ''
         this.buscarBoletos(id)
         this.mostrarModal()
         this.editar = true
@@ -1246,6 +1286,18 @@ export default {
         }
       }
     },
+    async aplicarReajuste(){
+      let reajusteFormatado = this.contrato.reajuste.replace('%','').replace(',','.')
+      let valorFormatado = this.contrato.valor_boleto.replace('R$','').replace(',','.').trim()
+      let valorReajustadoFormatado = this.contrato.valor_reajustado.replace('R$','').replace(',','.').trim()
+      await api.patch('/contrato/reajuste', {reajuste:reajusteFormatado, valor:valorFormatado, valor_reajustado:valorReajustadoFormatado ,contrato: this.contrato}).then(resposta => {
+        console.log(resposta)
+        let valor_reajustado = resposta.data.valor_reajustado
+        this.contrato.valor_reajustado = `R$ ${valor_reajustado.replace('.', ',')}`
+        this.contrato.ultimo_reajuste = resposta.data.ultimo_reajuste
+        this.contrato.reajuste = ''
+      })
+    }
   },
   watch: {
     'contrato.data_inicio': function (inicio) {
@@ -1421,5 +1473,9 @@ table#tabela-boleto .flip-list-move {
 .div-check-juros-multa{
   width: 160px;
   margin-top: 25px;
+}
+.btn-aplicar-reajuste{
+  margin-top:13px;
+  width: 100%;
 }
 </style>
