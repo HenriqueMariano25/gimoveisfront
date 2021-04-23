@@ -17,10 +17,10 @@
                 :small="true"
                 show-empty
                 class="tabela-contratos-vencendo"
-                bordered
                 responsive
                 head-variant="dark"
                 :fields="camposContratosVencendo"
+                sticky-header="294px"
             >
               <template #cell(id)="row">
                 <div>
@@ -43,7 +43,7 @@
           </template>
         </b-card>
       </b-col>
-      <b-col>
+      <b-col class="mb-2">
         <b-card header="Boletos vencidos"
                 class="text-center"
                 header-text-variant="danger">
@@ -56,9 +56,9 @@
                 show-empty
                 class="tabela-contratos-vencendo"
                 :fields="camposBoletosVencendo"
-                bordered
                 head-variant="dark"
                 @row-dblclicked="mostrarEditarModalBoleto"
+                sticky-header="294px"
             >
               <template #cell(id)="row">
                 <div>
@@ -72,6 +72,34 @@
               </template>
               <template #empty>
                 <span>Não há boletos vencidos!</span>
+              </template>
+            </b-table>
+          </template>
+        </b-card>
+      </b-col>
+      <b-col cols="4">
+        <b-card header="Contratos para reajustar"
+                class="text-center"
+                header-text-variant="danger">
+          <template>
+            <b-table
+                striped
+                hover
+                :items="contratosParaReajustar"
+                :small="true"
+                show-empty
+                class="tabela-contratos-vencendo"
+                :fields="camposContratoReajustar"
+                head-variant="dark"
+                sticky-header="294px"
+            >
+              <template #cell(id)="row">
+                <div>
+                  <span>{{ ("000000" + row.item.id).slice(-6) }}</span>
+                </div>
+              </template>
+              <template #empty>
+                <span>Não há contratos para reajustar!</span>
               </template>
             </b-table>
           </template>
@@ -106,6 +134,9 @@ export default {
         {key: 'cliente_nome', label: 'Cliente', class: 'text-center'},
         {key: 'data_vencimento', label: 'Data de vencimento', class: 'text-center'},
       ],
+      camposContratoReajustar: [
+        {key: 'id', label: 'Código', class: 'text-center'},
+      ],
       contratosVencendo: [],
       boletosVencendo: [],
       contratosParaReajustar:[],
@@ -126,8 +157,8 @@ export default {
       })
     },
     async buscarContratosParaReajustar(){
-      await api.get('/contrato/reajuste').then(response => {
-        console.log(response)
+      await api.get('/contrato/reajuste').then(resposta => {
+        this.contratosParaReajustar = resposta.data
       })
     },
     mostrarEditarModalBoleto(linha){
