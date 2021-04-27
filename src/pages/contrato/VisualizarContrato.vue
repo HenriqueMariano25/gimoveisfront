@@ -282,6 +282,7 @@
                     v-model="contrato.juros_multa"
                     value="true"
                     unchecked-value="false"
+                    :disabled="!editar"
                 >
                   Juros e multa:
                   <span v-if="contrato.juros_multa == 'true' || contrato.juros_multa == true">Sim</span>
@@ -292,6 +293,7 @@
             <b-col>
               <vs-input label-placeholder="Juros ao mês"
                         v-model="contrato.juros_mes"
+                        :disabled="!editar"
                         class="input-personalizado"
                         v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
                         allowNegative: false, currency:{suffix:'%'} }"/>
@@ -299,6 +301,7 @@
             <b-col>
               <vs-input label-placeholder="Multa"
                         v-model="contrato.multa"
+                        :disabled="!editar"
                         class="input-personalizado"
                         v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
                         allowNegative: false, currency:{suffix:'%'} }"/>
@@ -309,12 +312,13 @@
               <vs-input label-placeholder="Reajuste do aluguel"
                         v-model="contrato.reajuste"
                         class="input-personalizado"
+                        :disabled="!editar"
                         v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
                         allowNegative: false, currency:{suffix:'%'} }"/>
             </b-col>
             <b-col>
               <vs-button color="#24a35a" type="filled" icon="add" class="btn-aplicar-reajuste"
-                         @click="aplicarReajuste()">
+                         @click="aplicarReajuste()" :disabled="!editar">
                 Aplicar reajuste
               </vs-button>
             </b-col>
@@ -325,12 +329,14 @@
                         v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
                         allowNegative: false, currency:'BRL'}"
                         readonly
+                        :disabled="!editar"
               />
             </b-col>
             <b-col>
               <vs-input type="date" label-placeholder="Ultimo reajuste"
                         v-model="contrato.ultimo_reajuste"
                         class="input-personalizado"
+                        :disabled="!editar"
                         readonly
                         />
             </b-col>
@@ -808,7 +814,7 @@ export default {
         multa: '',
         reajuste: '',
         valor_reajustado:'',
-        ultimo_reajuste:''
+        ultimo_reajuste:null
       },
       fiador: {
         nome: "",
@@ -952,8 +958,14 @@ export default {
     },
     async editarContrato() {
       this.contrato.valor_boleto_convertido = converterDinherioFloat(this.contrato.valor_boleto)
-      this.contrato.juros_mes = this.contrato.juros_mes.replace('%','')
-      this.contrato.multa = this.contrato.multa.replace('%','')
+      if(this.contrato.juros_mes)
+        this.contrato.juros_mes = this.contrato.juros_mes.replace('%','')
+      else
+        this.contrato.juros_mes = null
+      if(this.contrato.multa)
+        this.contrato.multa = this.contrato.multa.replace('%','')
+      else
+        this.contrato.multa = null
       if (this.validarCamposObrigatorio()) {
         let idUsuario = this.$store.state.usuario.id
         await api.post(`/contrato/editar`, {
