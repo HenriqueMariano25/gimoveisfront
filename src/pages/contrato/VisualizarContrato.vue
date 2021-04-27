@@ -961,11 +961,11 @@ export default {
       if(this.contrato.juros_mes)
         this.contrato.juros_mes = this.contrato.juros_mes.replace('%','')
       else
-        this.contrato.juros_mes = null
+        this.contrato.juros_mes = ''
       if(this.contrato.multa)
         this.contrato.multa = this.contrato.multa.replace('%','')
       else
-        this.contrato.multa = null
+        this.contrato.multa = ''
       if (this.validarCamposObrigatorio()) {
         let idUsuario = this.$store.state.usuario.id
         await api.post(`/contrato/editar`, {
