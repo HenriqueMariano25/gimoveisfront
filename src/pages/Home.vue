@@ -43,7 +43,7 @@
           </template>
         </b-card>
       </b-col>
-      <b-col class="mb-2">
+      <b-col class="mb-3">
         <b-card header="Boletos vencidos"
                 class="text-center"
                 header-text-variant="danger">
@@ -77,7 +77,7 @@
           </template>
         </b-card>
       </b-col>
-      <b-col cols="4">
+      <b-col cols="6">
         <b-card header="Contratos para reajustar"
                 class="text-center"
                 header-text-variant="danger">
@@ -96,6 +96,11 @@
               <template #cell(id)="row">
                 <div>
                   <span>{{ ("000000" + row.item.id).slice(-6) }}</span>
+                </div>
+              </template>
+              <template #cell(ultimo_reajuste)="row">
+                <div>
+                  <span>{{ dayjs(row.item.ultimo_reajuste).format('DD/MM/YYYY') }}</span>
                 </div>
               </template>
               <template #empty>
@@ -136,6 +141,9 @@ export default {
       ],
       camposContratoReajustar: [
         {key: 'id', label: 'Código', class: 'text-center'},
+        {key: 'cliente_nome', label: 'Cliente', class: 'text-center'},
+        {key: 'imovel_nome', label: 'Imóvel', class: 'text-center'},
+        {key: 'ultimo_reajuste', label: 'Último Reajuste', class: 'text-center'},
       ],
       contratosVencendo: [],
       boletosVencendo: [],
@@ -152,7 +160,7 @@ export default {
       })
     },
     async buscarBoletosVencendo() {
-      api.get('/home/boletos_vencendo').then(resposta => {
+      api.get('/boletos/vencendo').then(resposta => {
         this.boletosVencendo = resposta.data
       })
     },
