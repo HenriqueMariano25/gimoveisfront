@@ -87,6 +87,50 @@
               </vs-tooltip>
             </div>
           </template>
+          <template #row-details="row">
+            <b-card>
+              <b-row>
+                <b-col cols="auto">
+                  <span><b>Rua:</b> {{ row.item.rua }}, {{ row.item.numero }}</span>
+                </b-col>
+                <b-col cols="auto">
+                  <span><b>Bairro: </b>{{ row.item.bairro }}</span>
+                </b-col>
+                <b-col cols="auto">
+                  <span><b>Cidade: </b>{{ row.item.cidade }}</span>
+                </b-col>
+                <b-col cols="auto">
+                  <span><b>Estado: </b>{{ row.item.estado }}</span>
+                </b-col>
+                <b-col cols="auto">
+                  <span><b>CEP: </b>{{ row.item.cep }}</span>
+                </b-col>
+                <b-col>
+                  <span><b>Complemento: </b>{{ row.item.complemento }}</span>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col>
+                  <span><b>Proprietário: </b>{{ row.item.proprietario}}</span>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col>
+                  <span><b>Tipo de imóvel: </b>{{ row.item.tipo_imovel}}</span>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col>
+                  <span><b>Inscrição Municipal: </b>{{ row.item.inscricao_municipal}}</span>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col>
+                  <span><b>Funesbom: </b>{{ row.item.funesbom}}</span>
+                </b-col>
+              </b-row>
+            </b-card>
+          </template>
           <template #table-busy>
             <div class="text-center text-danger my-2">
               <b-spinner class="align-middle mr-3"></b-spinner>

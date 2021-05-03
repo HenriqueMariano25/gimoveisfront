@@ -84,26 +84,29 @@
             <b-card>
               <b-row>
                 <b-col cols="auto">
-                  <p><b>Rua:</b> {{ row.item.rua }},{{ row.item.numero }}</p>
+                  <span><b>Rua:</b> {{ row.item.rua }},{{ row.item.numero }}</span>
                 </b-col>
                 <b-col cols="auto">
-                  <p><b>Bairro: </b>{{ row.item.bairro }}</p>
+                  <span><b>Bairro: </b>{{ row.item.bairro }}</span>
                 </b-col>
                 <b-col cols="auto">
-                  <p><b>Cidade: </b>{{ row.item.cidade }}</p>
+                  <span><b>Cidade: </b>{{ row.item.cidade }}</span>
                 </b-col>
                 <b-col cols="auto">
-                  <p><b>Estado: </b>{{ row.item.estado }}</p>
+                  <span><b>Estado: </b>{{ row.item.estado }}</span>
+                </b-col>
+                <b-col cols="auto">
+                  <span><b>CEP: </b>{{ row.item.cep }}</span>
                 </b-col>
                 <b-col>
-                  <p><b>Complemento: </b>{{ row.item.complemento }}</p>
+                  <span><b>Complemento: </b>{{ row.item.complemento }}</span>
                 </b-col>
               </b-row>
-              <p><b>Telefones: </b></p>
+              <span><b>Telefones: </b></span>
               <div v-for="(telefone, index) in row.item.numero_telefone" :key="index">
                 <b-row>
-                  <b-col cols="auto"><p>{{ telefone }}</p></b-col>
-                  <b-col><p>{{ row.item.tipo_telefone[index] }}</p></b-col>
+                  <b-col cols="auto"><span>{{ telefone }}</span></b-col>
+                  <b-col><span>{{ row.item.tipo_telefone[index] }}</span></b-col>
                 </b-row>
               </div>
             </b-card>

@@ -48,7 +48,8 @@
             hover
             outlined
             sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
-            no-border-collapse>
+            no-border-collapse
+            @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
           <template #table-busy>
             <div class="text-center text-danger my-2">
               <b-spinner class="align-middle"></b-spinner>
@@ -102,6 +103,58 @@
             <col style="width: 15px">
             <col style="width: 15px">
             <col style="width: 15px">
+          </template>
+          <template #row-details="row">
+            <b-card>
+              <b-row>
+                <b-col cols="auto">
+                  <span v-if="row.item.data_inicio">
+                    <span><b>Data de início: </b>{{ $dayjs(row.item.data_inicio).format('DD/MM/YYYY') }}</span>
+                  </span>
+                  <span v-else><b>Data de início:</b></span>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="auto">
+                  <span v-if="row.item.data_fim">
+                    <span><b>Data de término: </b>{{ $dayjs(row.item.data_fim).format('DD/MM/YYYY') }}</span>
+                  </span>
+                  <span v-else><b>Data de término:</b></span>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="auto">
+                  <span v-if="row.item.data_vencimento">
+                    <span><b>Data de vencimento: </b>{{ $dayjs(row.item.data_vencimento).format('DD/MM/YYYY') }}</span>
+                  </span>
+                  <span v-else><b>Data de vencimento:</b></span>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="auto">
+                  <span v-if="row.item.valor_boleto">
+                    <span><b>Valor: </b>R$ {{ row.item.valor_boleto.replace('.', ',') }}</span>
+                  </span>
+                  <span v-else><b>Valor: </b></span>
+                </b-col>
+              </b-row>
+              <span><b>Fiadores: </b></span>
+              <div v-for="(fiador, index) in row.item.fiadores" :key="index">
+                <b-row>
+                  <b-col cols="auto"><span>{{ fiador }}</span></b-col>
+                </b-row>
+              </div>
+              <b-row>
+                <b-col cols="auto">
+                    <span><b>Carencia: </b>{{ row.item.carencia }}</span>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col>
+                  <span><b>Vigência: </b>{{ $dayjs(row.item.data_fim).diff(row.item.data_inicio, 'month') }} meses</span>
+                </b-col>
+              </b-row>
+            </b-card>
           </template>
           <template #table-busy>
             <div class="text-center text-danger my-2">
