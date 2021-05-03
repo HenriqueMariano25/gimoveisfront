@@ -46,6 +46,7 @@
             striped
             hover
             outlined
+            :busy="carregandoTableResponsavel"
             sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 00px)"
             no-border-collapse
             @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
@@ -94,6 +95,12 @@
                 </b-col>
               </b-row>
             </b-card>
+          </template>
+          <template #table-busy>
+            <div class="text-center text-danger my-2">
+              <b-spinner class="align-middle mr-3"></b-spinner>
+              <strong>Carregando...</strong>
+            </div>
           </template>
         </b-table>
       </b-col>
@@ -277,7 +284,8 @@ export default {
       editar: false,
       estadosCivis: [],
       carregandoCep: false,
-      cep_atual:''
+      cep_atual:'',
+      carregandoTableResponsavel: false
     }
   },
 
@@ -288,9 +296,11 @@ export default {
       })
     },
     async buscarResponsaveis() {
+      this.carregandoTableResponsavel = true
       await api.get('/responsaveis').then(response => {
         this.items = response.data
         this.totalRows = this.items.length
+        this.carregandoTableResponsavel = false
       }).catch(erro => {
         console.log(erro)
       })

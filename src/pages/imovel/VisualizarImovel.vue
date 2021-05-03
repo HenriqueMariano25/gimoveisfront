@@ -47,6 +47,7 @@
           hover
           outlined
           responsive
+          :busy="carregandoTableImovel"
           no-border-collapse
           sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
           @row-clicked="
@@ -84,6 +85,12 @@
               <vs-tooltip text="Deletar">
                 <vs-button type="flat" color="dark" @click="deletarImovelModal(row.item)" icon="delete"></vs-button>
               </vs-tooltip>
+            </div>
+          </template>
+          <template #table-busy>
+            <div class="text-center text-danger my-2">
+              <b-spinner class="align-middle mr-3"></b-spinner>
+              <strong>Carregando...</strong>
             </div>
           </template>
         </b-table>
@@ -1023,7 +1030,8 @@ export default {
       recarregarImovel:false,
       cep_atual:"",
       proprietarios:[],
-      primeiraTabInfAdicionais:false
+      primeiraTabInfAdicionais:false,
+      carregandoTableImovel: false
     };
   },
 
@@ -1039,9 +1047,11 @@ export default {
       });
     },
     async buscarImoveis() {
+      this.carregandoTableImovel = true
       await api.get("/imoveis").then((response) => {
-        this.items = response.data;
-        this.totalRows = this.items.length;
+        this.items = response.data
+        this.totalRows = this.items.length
+        this.carregandoTableImovel = false
       }).catch((erro) => {
         console.log(erro);
       });
@@ -1302,9 +1312,10 @@ export default {
       }
     },
     async cadastrarDespesa(){
+      let idUsuario = this.$store.state.usuario.id
       if(this.validarCamposObrigatorioDespesa()) {
         this.despesa.valor = converterDinherioFloat(this.despesa.valor)
-        await api.post('/imoveis/despesas/cadastrar', {despesa: this.despesa, idImovel: this.imovel.id}).then(() => {
+        await api.post('/imoveis/despesas/cadastrar', {despesa: this.despesa, idImovel: this.imovel.id, idUsuario: idUsuario}).then(() => {
           this.buscarDespesas()
           Object.keys(this.despesa).forEach((key) => {
             this.despesa[key] = "";
@@ -1336,8 +1347,9 @@ export default {
       this.editandoDespesa = true
     },
     async salvarDespesaEditada(){
+      let idUsuario = this.$store.state.usuario.id
       this.despesa.valor = converterDinherioFloat(this.despesa.valor)
-      await api.post('/imoveis/despesas/editar', {despesa: this.despesa}).then(() => {
+      await api.post('/imoveis/despesas/editar', {despesa: this.despesa, idUsuario:idUsuario}).then(() => {
         this.despesa = {
           valor:"",
           data:"",
@@ -1394,7 +1406,8 @@ export default {
     },
     async adicionarComodo() {
       let idImovel = this.imovel.id
-      await api.post('/imoveis/comodo/cadastrar', {comodo: this.comodo, idImovel: idImovel}).then(() => {
+      let idUsuario = this.$store.state.usuario.id
+      await api.post('/imoveis/comodo/cadastrar', {comodo: this.comodo, idImovel: idImovel, idUsuario: idUsuario}).then(() => {
         this.buscarComodos()
         this.comodo = {}
         this.comodo.id_tipo_comodo = null
@@ -1408,7 +1421,8 @@ export default {
       this.editandoComodo = true
     },
     async salvarEdicaoComodo(){
-      await api.post('/imoveis/comodo/editar', {comodo: this.comodo}).then(() => {
+      let idUsuario = this.$store.state.usuario.id
+      await api.post('/imoveis/comodo/editar', {comodo: this.comodo, idUsuario: idUsuario}).then(() => {
         this.comodo = {
           id:"",
           descricao:"",

@@ -103,6 +103,12 @@
             <col style="width: 15px">
             <col style="width: 15px">
           </template>
+          <template #table-busy>
+            <div class="text-center text-danger my-2">
+              <b-spinner class="align-middle mr-3"></b-spinner>
+              <strong>Carregando...</strong>
+            </div>
+          </template>
         </b-table>
       </b-col>
     </b-row>
@@ -536,7 +542,7 @@
     <modal name="modal-fiador" id="modal-fiador" width="90%" height="auto" :scrollable="true" class="modal-contrato">
       <b-row>
         <b-col>
-          <h1>Adicionando fiador{{ fiador.id }}</h1>
+          <h1>Adicionando fiador</h1>
         </b-col>
       </b-row>
       <b-row>
@@ -1005,11 +1011,12 @@ export default {
       })
     },
     editarBoleto() {
+      let idUsuario = this.$store.state.usuario.id
       if (this.boleto.data_quitacao == null) {
         this.boleto.data_quitacao = ''
       }
       this.boleto.valor = converterDinherioFloat(this.boleto.valor)
-      api.post('/contrato/boleto/editar', {boleto: this.boleto}).then(response => {
+      api.post('/contrato/boleto/editar', {boleto: this.boleto, idUsuario:idUsuario}).then(response => {
         this.buscarBoletos(response.data[0].id_contrato)
         this.esconderModalEditarBoleto()
       })
@@ -1094,13 +1101,15 @@ export default {
       this.boleto.id_status_boleto = null
     },
     async adicionarBoleto() {
+      let idUsuario = this.$store.state.usuario.id
       this.boleto.valor = converterDinherioFloat(this.boleto.valor)
       if (this.boleto.data_quitacao == "" || this.boleto.data_quitacao == null) {
         this.boleto.data_quitacao = ""
       }
       await api.post('/contrato/boleto/cadastrar', {
         boleto: this.boleto,
-        idContrato: this.contrato.id
+        idContrato: this.contrato.id,
+        idUsuario: idUsuario
       }).then(() => {
         this.esconderModalAdicionarBoleto()
         this.buscarBoletos(this.contrato.id)
@@ -1197,8 +1206,9 @@ export default {
       this.limparModalFiador()
     },
     async cadastrarFiador() {
+      let idUsuario = this.$store.state.usuario.id
       let idContrato = this.contrato.id
-      await api.post(`/contrato/fiador/cadastrar`, {fiador: this.fiador, idContrato: idContrato}).then(() => {
+      await api.post(`/contrato/fiador/cadastrar`, {fiador: this.fiador, idContrato: idContrato, idUsuario: idUsuario}).then(() => {
         this.$vs.notify({
           text: `Fiador cadastrado com sucesso!`,
           position: 'top-center',
@@ -1217,7 +1227,8 @@ export default {
       this.mostrarModalFiador()
     },
     async editarFiador() {
-      await api.post(`/contrato/fiador/editar`, {fiador: this.fiador}).then(() => {
+      let idUsuario = this.$store.state.usuario.id
+      await api.post(`/contrato/fiador/editar`, {fiador: this.fiador, idUsuario: idUsuario}).then(() => {
         this.$vs.notify({
           text: `Fiador editado com sucesso!`,
           position: 'top-center',

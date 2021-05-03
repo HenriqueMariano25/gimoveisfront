@@ -104,12 +104,13 @@ export default {
       this.buscarBoleto()
     },
     editarBoleto() {
+      let idUsuario = this.$store.state.usuario.id
       if (this.boleto.data_quitacao == null) {
         this.boleto.data_quitacao = ''
       }
       this.boleto.valor = converterDinherioFloat(this.boleto.valor)
       if(this.boleto.valor_juros) this.boleto.valor_juros = converterDinherioFloat(this.boleto.valor_juros)
-      api.post('/contrato/boleto/editar', {boleto: this.boleto}).then(() => {
+      api.post('/contrato/boleto/editar', {boleto: this.boleto, idUsuario: idUsuario}).then(() => {
         this.esconderModal()
       })
     },

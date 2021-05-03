@@ -40,6 +40,7 @@
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
             :sort-direction="sortDirection"
+            :busy="carregandoTableCliente"
             show-empty
             small
             @filtered="onFiltered"
@@ -106,6 +107,12 @@
                 </b-row>
               </div>
             </b-card>
+          </template>
+          <template #table-busy>
+            <div class="text-center text-danger my-2">
+              <b-spinner class="align-middle mr-3"></b-spinner>
+              <strong>Carregando...</strong>
+            </div>
           </template>
         </b-table>
       </b-col>
@@ -588,7 +595,8 @@ export default {
       telefoneEditar: false,
       indexTelefoneTabela: 0,
       modal_visivel: false,
-      cep_atual: ''
+      cep_atual: '',
+      carregandoTableCliente:false
     }
   },
 
@@ -599,9 +607,11 @@ export default {
       })
     },
     async buscarClientes() {
+      this.carregandoTableCliente = true
       await api.get('/clientes').then(response => {
         this.items = response.data
         this.totalRows = this.items.length
+        this.carregandoTableCliente = false
       }).catch(erro => {
         console.log(erro)
       })
@@ -699,7 +709,8 @@ export default {
     },
     async adicionarTelefone() {
       let idCliente = this.cliente.id
-      await api.post('/cliente/telefone/cadastrar', {telefone: this.telefone, idCliente: idCliente}).then(() => {
+      let idUsuario = this.$store.state.usuario.id
+      await api.post('/cliente/telefone/cadastrar', {telefone: this.telefone, idCliente: idCliente, idUsuario: idUsuario}).then(() => {
         this.buscarTelefones()
         this.telefone = {
           id: "",
@@ -717,7 +728,8 @@ export default {
       this.telefone.observacao = telefone.item.observacao
     },
     async salvarEdicaoTelefone() {
-      await api.post('/cliente/telefone/editar', {telefone: this.telefone}).then(() => {
+      let idUsuario = this.$store.state.usuario.id
+      await api.post('/cliente/telefone/editar', {telefone: this.telefone, idUsuario: idUsuario}).then(() => {
         this.buscarTelefones()
         this.telefone = {
           id: "",

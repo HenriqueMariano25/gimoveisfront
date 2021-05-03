@@ -48,7 +48,9 @@
             outlined
             sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
             no-border-collapse
-            @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
+            @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)"
+            :busy="carregandoTableUsuario"
+        >
           <template #cell(nome)="row">
             <p class="tr-usuario">{{ row.item.nome }}</p>
           </template>
@@ -74,6 +76,12 @@
             <col>
             <col style="width: 15px">
             <col style="width: 15px">
+          </template>
+          <template #table-busy>
+            <div class="text-center text-danger my-2">
+              <b-spinner class="align-middle mr-3"></b-spinner>
+              <strong>Carregando...</strong>
+            </div>
           </template>
         </b-table>
       </b-col>
@@ -207,7 +215,8 @@ export default {
         senha: "",
       },
       tiposPermissoes: [],
-      editar: false
+      editar: false,
+      carregandoTableUsuario:false
     }
   },
   async mounted() {
@@ -215,9 +224,11 @@ export default {
   },
   methods: {
     async buscarUsuarios() {
+      this.carregandoTableUsuario = true
       await api.get('/usuarios').then(response => {
         this.items = response.data
         this.totalRows = this.items.length
+        this.carregandoTableUsuario = false
       }).catch(erro => {
         console.log(erro)
       })
