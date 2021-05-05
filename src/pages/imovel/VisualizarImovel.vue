@@ -13,44 +13,55 @@
               </b-input-group-text>
             </template>
             <b-form-input
-              id="filter-input"
-              v-model="filter"
-              type="search"
-              placeholder="Ex: João da Silva"
+                id="filter-input"
+                v-model="filter"
+                type="search"
+                placeholder="Ex: João da Silva"
             ></b-form-input>
           </b-input-group>
         </b-form-group>
+      </b-col>
+      <b-col cols="auto">
+        <b-button
+            v-b-tooltip.hover
+            title="Imprimir relatório"
+            variant="dark"
+            @click="gerarRelatorio"
+        >
+          <b-icon icon="printer-fill"></b-icon>
+        </b-button>
       </b-col>
     </b-row>
     <b-row class="tabela-imoveis">
       <b-col class="col-tabela-imoveis">
         <b-table
-          bordered
-          head-variant="dark"
-          sort-icon-left
-          primary-key="nome"
-          id="tabela-imovel"
-          :tbody-transition-props="transProps"
-          :items="items"
-          :fields="fields"
-          :current-page="currentPage"
-          :per-page="perPage"
-          :filter="filter"
-          :filter-included-fields="filterOn"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :sort-direction="sortDirection"
-          show-empty
-          small
-          @filtered="onFiltered"
-          striped
-          hover
-          outlined
-          responsive
-          :busy="carregandoTableImovel"
-          no-border-collapse
-          sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
-          @row-clicked="
+            bordered
+            head-variant="dark"
+            sort-icon-left
+            primary-key="nome"
+            class="bilu"
+            id="tabela-imovel"
+            :tbody-transition-props="transProps"
+            :items="items"
+            :fields="fields"
+            :current-page="currentPage"
+            :per-page="perPage"
+            :filter="filter"
+            :filter-included-fields="filterOn"
+            :sort-by.sync="sortBy"
+            :sort-desc.sync="sortDesc"
+            :sort-direction="sortDirection"
+            show-empty
+            small
+            @filtered="onFiltered"
+            striped
+            hover
+            outlined
+            responsive
+            :busy="carregandoTableImovel"
+            no-border-collapse
+            sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
+            @row-clicked="
             (item) => $set(item, '_showDetails', !item._showDetails)
           "
         >
@@ -66,7 +77,7 @@
           <template #cell(status)="row">
             <p class="tr-imovel">{{ row.item.status }}</p>
           </template>
-          <template #cell(editar)="row" >
+          <template #cell(editar)="row">
             <div class="item-coluna-centralizada">
               <vs-tooltip text="Editar">
                 <vs-button type="flat" color="dark" @click="editarImovelModal(row.item)" icon="edit"></vs-button>
@@ -80,7 +91,7 @@
             <col style="width: 15px">
             <col style="width: 15px">
           </template>
-          <template #cell(deletar)="row" >
+          <template #cell(deletar)="row">
             <div class="item-coluna-centralizada">
               <vs-tooltip text="Deletar">
                 <vs-button type="flat" color="dark" @click="deletarImovelModal(row.item)" icon="delete"></vs-button>
@@ -111,22 +122,22 @@
               </b-row>
               <b-row>
                 <b-col>
-                  <span><b>Proprietário: </b>{{ row.item.proprietario}}</span>
+                  <span><b>Proprietário: </b>{{ row.item.proprietario }}</span>
                 </b-col>
               </b-row>
               <b-row>
                 <b-col>
-                  <span><b>Tipo de imóvel: </b>{{ row.item.tipo_imovel}}</span>
+                  <span><b>Tipo de imóvel: </b>{{ row.item.tipo_imovel }}</span>
                 </b-col>
               </b-row>
               <b-row>
                 <b-col>
-                  <span><b>Inscrição Municipal: </b>{{ row.item.inscricao_municipal}}</span>
+                  <span><b>Inscrição Municipal: </b>{{ row.item.inscricao_municipal }}</span>
                 </b-col>
               </b-row>
               <b-row>
                 <b-col>
-                  <span><b>Funesbom: </b>{{ row.item.funesbom}}</span>
+                  <span><b>Funesbom: </b>{{ row.item.funesbom }}</span>
                 </b-col>
               </b-row>
             </b-card>
@@ -141,35 +152,35 @@
       </b-col>
     </b-row>
     <b-container fluid class="divider-personalizado" style="margin-left: -75px">
-      <b-row align-v="end" >
+      <b-row align-v="end">
         <b-col class="" cols="auto">
           <b-pagination
-            v-model="currentPage"
-            :total-rows="totalRows"
-            :per-page="perPage"
-            align="left"
-            class="my-0"
-            first-text="Primeira"
-            last-text="Última"
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="perPage"
+              align="left"
+              class="my-0"
+              first-text="Primeira"
+              last-text="Última"
           ></b-pagination>
         </b-col>
         <b-col sm="5" md="auto">
           <b-form-group
-            label="Por pagina"
-            label-for="per-page-select"
-            label-cols-sm="auto"
-            label-cols-md="auto"
-            label-cols-lg="auto"
-            label-align-sm="right"
-            label-size="sm"
-            align="left"
-            class="mb-1"
+              label="Por pagina"
+              label-for="per-page-select"
+              label-cols-sm="auto"
+              label-cols-md="auto"
+              label-cols-lg="auto"
+              label-align-sm="right"
+              label-size="sm"
+              align="left"
+              class="mb-1"
           >
             <b-form-select
-              id="per-page-select"
-              v-model="perPage"
-              :options="pageOptions"
-              size="sm"
+                id="per-page-select"
+                v-model="perPage"
+                :options="pageOptions"
+                size="sm"
             ></b-form-select>
           </b-form-group>
         </b-col>
@@ -178,23 +189,23 @@
         </b-col>
         <b-col class="ml-auto" cols="auto" style="margin-bottom: -5px">
           <vs-button
-            color="#24a35a"
-            type="filled"
-            icon="add_business"
-            @click="mostrarModal"
-            >Adicionar
+              color="#24a35a"
+              type="filled"
+              icon="add_business"
+              @click="mostrarModal"
+          >Adicionar
           </vs-button>
         </b-col>
       </b-row>
     </b-container>
     <!--  Fim da tabela-->
     <modal
-      name="modal-imovel"
-      width='90%'
-      height="auto"
-      :scrollable="true"
-      :click-to-close="false"
-      class="modal-adicionando-imovel"
+        name="modal-imovel"
+        width='90%'
+        height="auto"
+        :scrollable="true"
+        :click-to-close="false"
+        class="modal-adicionando-imovel"
     >
       <h3>Adicionando imóvel</h3>
       <b-tabs content-class="mt-3">
@@ -202,18 +213,18 @@
           <b-row align-v="center">
             <b-col cols="5">
               <vs-input
-                label-placeholder="Nome*"
-                v-model="imovel.nome"
-                class="input-personalizado"
+                  label-placeholder="Nome*"
+                  v-model="imovel.nome"
+                  class="input-personalizado"
               />
             </b-col>
-<!--            <b-col cols="5">-->
-<!--              <vs-input-->
-<!--                label-placeholder="Proprietário*"-->
-<!--                v-model="imovel.proprietario"-->
-<!--                class="input-personalizado"-->
-<!--              />-->
-<!--            </b-col>-->
+            <!--            <b-col cols="5">-->
+            <!--              <vs-input-->
+            <!--                label-placeholder="Proprietário*"-->
+            <!--                v-model="imovel.proprietario"-->
+            <!--                class="input-personalizado"-->
+            <!--              />-->
+            <!--            </b-col>-->
             <b-col>
               <b-form-group id="select-imovel" label="Proprietário*">
                 <b-form-select v-model="imovel.id_responsavel" :options="proprietarios" value-field="id"
@@ -226,19 +237,20 @@
             </b-col>
             <b-col>
               <b-form-group
-                id="select-imovel"
-                label="Status"
-                class="select-personalizado"
+                  id="select-imovel"
+                  label="Status"
+                  class="select-personalizado"
               >
                 <b-form-select
-                  v-model="imovel.id_status"
-                  :options="tiposStatus"
-                  value-field="id"
-                  text-field="descricao"
+                    v-model="imovel.id_status"
+                    :options="tiposStatus"
+                    value-field="id"
+                    text-field="descricao"
                 >
                   <template #first>
                     <b-form-select-option :value="null"
-                      >Selecione</b-form-select-option
+                    >Selecione
+                    </b-form-select-option
                     >
                   </template>
                 </b-form-select>
@@ -248,100 +260,101 @@
           <b-row>
             <b-col>
               <vs-input
-                type="text"
-                label-placeholder="Inscrição Municipal"
-                v-model="imovel.inscricao_municipal"
-                class="input-personalizado"
+                  type="text"
+                  label-placeholder="Inscrição Municipal"
+                  v-model="imovel.inscricao_municipal"
+                  class="input-personalizado"
               />
             </b-col>
             <b-col>
               <vs-input
-                type="text"
-                label-placeholder="Funesbom"
-                v-model="imovel.funesbom"
-                class="input-personalizado"
-                v-mask="'#######-#'"
+                  type="text"
+                  label-placeholder="Funesbom"
+                  v-model="imovel.funesbom"
+                  class="input-personalizado"
+                  v-mask="'#######-#'"
               />
             </b-col>
             <b-col cols="3">
               <b-form-group
-                id="select-tipo-imovel"
-                label="Tipo do Imóvel*"
-                class="select-personalizado"
+                  id="select-tipo-imovel"
+                  label="Tipo do Imóvel*"
+                  class="select-personalizado"
               >
                 <b-form-select
-                  v-model="imovel.tipo_imovel"
-                  :options="tiposImoveis"
-                  value-field="id"
-                  text-field="descricao"
+                    v-model="imovel.tipo_imovel"
+                    :options="tiposImoveis"
+                    value-field="id"
+                    text-field="descricao"
                 >
                   <template #first>
                     <b-form-select-option :value="null"
-                      >Selecione</b-form-select-option
+                    >Selecione
+                    </b-form-select-option
                     >
                   </template>
                 </b-form-select>
               </b-form-group>
             </b-col>
           </b-row>
-<!--          onkeypress="return event.charCode >= 48 && event.charCode <= 57"-->
-<!--          onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;"-->
+          <!--          onkeypress="return event.charCode >= 48 && event.charCode <= 57"-->
+          <!--          onKeyDown="if(this.value.length==10 && event.keyCode!=8) return false;"-->
           <b-row>
             <b-col cols="2">
               <vs-input
-                type="text"
-                v-mask="'#####-###'"
-                label-placeholder="CEP*"
-                v-model="imovel.cep"
-                class="input-personalizado"
-                @focusout="buscarEndereco"
-                @focusin="cepAtual"
+                  type="text"
+                  v-mask="'#####-###'"
+                  label-placeholder="CEP*"
+                  v-model="imovel.cep"
+                  class="input-personalizado"
+                  @focusout="buscarEndereco"
+                  @focusin="cepAtual"
               />
             </b-col>
             <Carregando :visivel="carregandoCep"/>
             <b-col cols="5">
               <vs-input
-                label-placeholder="Rua*"
-                v-model="imovel.rua"
-                class="input-personalizado"
+                  label-placeholder="Rua*"
+                  v-model="imovel.rua"
+                  class="input-personalizado"
               />
             </b-col>
             <b-col cols="2">
               <vs-input
-                label-placeholder="Número*"
-                v-model="imovel.numero"
-                class="input-personalizado"
+                  label-placeholder="Número*"
+                  v-model="imovel.numero"
+                  class="input-personalizado"
               />
             </b-col>
             <b-col cols="3">
               <vs-input
-                label-placeholder="Complemento"
-                v-model="imovel.complemento"
-                class="input-personalizado"
+                  label-placeholder="Complemento"
+                  v-model="imovel.complemento"
+                  class="input-personalizado"
               />
             </b-col>
           </b-row>
           <b-row>
             <b-col>
               <vs-input
-                label-placeholder="Bairro*"
-                v-model="imovel.bairro"
-                class="input-personalizado"
+                  label-placeholder="Bairro*"
+                  v-model="imovel.bairro"
+                  class="input-personalizado"
               />
             </b-col>
             <b-col>
               <vs-input
-                label-placeholder="Cidade*"
-                v-model="imovel.cidade"
-                class="input-personalizado"
+                  label-placeholder="Cidade*"
+                  v-model="imovel.cidade"
+                  class="input-personalizado"
               />
             </b-col>
             <b-col cols="2">
               <vs-input
-                label-placeholder="UF*"
-                v-model="imovel.estado"
-                class="input-personalizado"
-                maxlength="2"
+                  label-placeholder="UF*"
+                  v-model="imovel.estado"
+                  class="input-personalizado"
+                  maxlength="2"
               />
             </b-col>
           </b-row>
@@ -350,65 +363,65 @@
           <b-row>
             <b-col>
               <vs-input
-                label="Data de Aquisição"
-                v-model="imovel.data_aquisicao"
-                type="date"
-                class="input-nascimento"
+                  label="Data de Aquisição"
+                  v-model="imovel.data_aquisicao"
+                  type="date"
+                  class="input-nascimento"
               />
             </b-col>
             <b-col>
               <vs-input
-                label="Data de Venda"
-                v-model="imovel.data_venda"
-                type="date"
-                class="input-nascimento"
+                  label="Data de Venda"
+                  v-model="imovel.data_venda"
+                  type="date"
+                  class="input-nascimento"
               />
             </b-col>
             <b-col>
               <vs-input
-                label-placeholder="Área total m²"
-                type="number"
-                v-model="imovel.area"
-                class="input-personalizado"
+                  label-placeholder="Área total m²"
+                  type="number"
+                  v-model="imovel.area"
+                  class="input-personalizado"
               />
             </b-col>
             <b-col>
               <vs-input
-                label-placeholder="Área construida m²"
-                type="number"
-                v-model="imovel.area_construida"
-                class="input-personalizado"
+                  label-placeholder="Área construida m²"
+                  type="number"
+                  v-model="imovel.area_construida"
+                  class="input-personalizado"
               />
             </b-col>
           </b-row>
           <b-row>
             <b-col>
               <vs-input
-                label-placeholder="Valor da aquisição"
-                v-model="imovel.valor_aquisicao_mascara"
-                class="input-personalizado"
-                ref="valor_aquisicao"
-                v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                  label-placeholder="Valor da aquisição"
+                  v-model="imovel.valor_aquisicao_mascara"
+                  class="input-personalizado"
+                  ref="valor_aquisicao"
+                  v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
                         allowNegative: false, currency:'BRL'}"
               />
             </b-col>
             <b-col>
               <vs-input
-                label-placeholder="Valor da aquisiçao em Dólar"
-                v-model="imovel.valor_aquisicao_dolar_mascara"
-                class="input-personalizado"
-                ref="valor_aquisicao_dolar"
-                v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                  label-placeholder="Valor da aquisiçao em Dólar"
+                  v-model="imovel.valor_aquisicao_dolar_mascara"
+                  class="input-personalizado"
+                  ref="valor_aquisicao_dolar"
+                  v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
                         allowNegative: false, currency:'USD'}"
               />
             </b-col>
             <b-col>
               <vs-input
-                label-placeholder="Valor atual"
-                v-model="imovel.valor_atual_mascara"
-                class="input-personalizado"
-                ref="valor_atual"
-                v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                  label-placeholder="Valor atual"
+                  v-model="imovel.valor_atual_mascara"
+                  class="input-personalizado"
+                  ref="valor_atual"
+                  v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
                         allowNegative: false, currency:'BRL'}"
               />
             </b-col>
@@ -459,7 +472,8 @@
                 >
                   <template #first>
                     <b-form-select-option :value="null"
-                    >Selecione</b-form-select-option
+                    >Selecione
+                    </b-form-select-option
                     >
                   </template>
                 </b-form-select>
@@ -536,7 +550,7 @@
                     <strong class="ml-2">Carregando...</strong>
                   </div>
                 </template>
-                <template #cell(editar)="row" >
+                <template #cell(editar)="row">
                   <div class="item-coluna-centralizada">
                     <vs-tooltip text="Editar">
                       <vs-button type="flat" color="dark" icon="edit" @click="editarComodo(row)"></vs-button>
@@ -556,7 +570,7 @@
         </b-tab>
         <b-tab title="Despesas" :disabled="imovel.id == ''">
           <b-row>
-            <b-col >
+            <b-col>
               <vs-input
                   label-placeholder="Valor*"
                   ref="despesa_valor"
@@ -587,7 +601,8 @@
                 >
                   <template #first>
                     <b-form-select-option :value="null"
-                    >Selecione</b-form-select-option
+                    >Selecione
+                    </b-form-select-option
                     >
                   </template>
                 </b-form-select>
@@ -596,7 +611,7 @@
           </b-row>
           <b-row align-v="center" style="padding-bottom: 10px;">
             <b-col cols="3">
-              <b-form-group id="select-comodo" label="Fixa ou Variável*" >
+              <b-form-group id="select-comodo" label="Fixa ou Variável*">
                 <b-form-select
                     :options="fixaVariavel"
                     value-field="valor"
@@ -605,7 +620,8 @@
                 >
                   <template #first>
                     <b-form-select-option :value="null"
-                    >Selecione</b-form-select-option
+                    >Selecione
+                    </b-form-select-option
                     >
                   </template>
                 </b-form-select>
@@ -621,7 +637,8 @@
                 >
                   <template #first>
                     <b-form-select-option :value="null"
-                    >Selecione</b-form-select-option
+                    >Selecione
+                    </b-form-select-option
                     >
                   </template>
                 </b-form-select>
@@ -632,12 +649,12 @@
             </b-col>
             <b-col cols="auto">
               <vs-button
-                color="#5498ff"
-                type="filled"
-                icon="add"
-                class="botao-salvar"
-                @click.native="cadastrarDespesa"
-                v-if="!editandoDespesa"
+                  color="#5498ff"
+                  type="filled"
+                  icon="add"
+                  class="botao-salvar"
+                  @click.native="cadastrarDespesa"
+                  v-if="!editandoDespesa"
 
               >
               </vs-button>
@@ -672,21 +689,21 @@
                   outlined
                   no-border-collapse
                   @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)">
-              >
+                >
                 <template #cell(data)="row">
                   <label v-if="row.item.data">
                     {{ $dayjs(row.item.data).format('DD/MM/YYYY') }}
                   </label>
                 </template>
                 <template #cell(valor)="row">
-                  <label>R$ {{ row.item.valor.replace('.',',') }}</label>
+                  <label>R$ {{ row.item.valor.replace('.', ',') }}</label>
                 </template>
-                <template #cell(data_vencimento)="row" >
+                <template #cell(data_vencimento)="row">
                   <label v-if="row.item.data_vencimento">
                     {{ $dayjs(row.item.data_vencimento).format('DD/MM/YYYY') }}
                   </label>
                 </template>
-                <template #cell(editar)="row" >
+                <template #cell(editar)="row">
                   <div class="item-coluna-centralizada">
                     <vs-tooltip text="Editar">
                       <vs-button type="flat" color="dark" icon="edit" @click="editarDespesa(row)"></vs-button>
@@ -748,33 +765,33 @@
           <b-row>
             <b-col class="tabelas-contrato">
               <b-table
-                primary-key="nome"
-                id="tabela-imovel"
-                :tbody-transition-props="transProps"
-                bordered
-                head-variant="dark"
-                sort-icon-left
-                :fields="cabecalhosContratosClientes"
-                :current-page="currentPage"
-                :per-page="perPage"
-                :filter="filter"
-                :filter-included-fields="filterOn"
-                :sort-by.sync="sortBy"
-                :sort-desc.sync="sortDesc"
-                :sort-direction="sortDirection"
-                show-empty
-                :items="contratos"
-                small
-                @filtered="onFiltered"
-                selectable
-                select-mode="single"
-                @row-selected="selecionandoContrato"
-                striped
-                hover
-                outlined
-                no-border-collapse
-                sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 00px)"
-                @row-clicked="
+                  primary-key="nome"
+                  id="tabela-imovel"
+                  :tbody-transition-props="transProps"
+                  bordered
+                  head-variant="dark"
+                  sort-icon-left
+                  :fields="cabecalhosContratosClientes"
+                  :current-page="currentPage"
+                  :per-page="perPage"
+                  :filter="filter"
+                  :filter-included-fields="filterOn"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+                  show-empty
+                  :items="contratos"
+                  small
+                  @filtered="onFiltered"
+                  selectable
+                  select-mode="single"
+                  @row-selected="selecionandoContrato"
+                  striped
+                  hover
+                  outlined
+                  no-border-collapse
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 00px)"
+                  @row-clicked="
                   (item) => $set(item, '_showDetails', !item._showDetails)
                 "
               >
@@ -796,7 +813,8 @@
                 <template #cell(editar)="row">
                   <div class="item-coluna-centralizada">
                     <vs-tooltip text="Editar">
-                      <vs-button type="flat" color="dark" icon="edit" @mousedown.stop="mostrarModalContrato(row)"></vs-button>
+                      <vs-button type="flat" color="dark" icon="edit"
+                                 @mousedown.stop="mostrarModalContrato(row)"></vs-button>
                     </vs-tooltip>
                   </div>
                 </template>
@@ -821,30 +839,30 @@
           <b-row>
             <b-col class="tabelas-contrato">
               <b-table
-                primary-key="nome"
-                id="tabela-imovel"
-                :tbody-transition-props="transProps"
-                bordered
-                head-variant="dark"
-                sort-icon-left
-                :items="boletos"
-                :fields="cabecalhosContratosBoletos"
-                :current-page="currentPage"
-                :per-page="perPage"
-                :filter="filter"
-                :filter-included-fields="filterOn"
-                :sort-by.sync="sortBy"
-                :sort-desc.sync="sortDesc"
-                :sort-direction="sortDirection"
-                show-empty
-                small
-                @filtered="onFiltered"
-                striped
-                hover
-                sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 300px)"
-                outlined
-                no-border-collapse
-                @row-clicked="
+                  primary-key="nome"
+                  id="tabela-imovel"
+                  :tbody-transition-props="transProps"
+                  bordered
+                  head-variant="dark"
+                  sort-icon-left
+                  :items="boletos"
+                  :fields="cabecalhosContratosBoletos"
+                  :current-page="currentPage"
+                  :per-page="perPage"
+                  :filter="filter"
+                  :filter-included-fields="filterOn"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :sort-direction="sortDirection"
+                  show-empty
+                  small
+                  @filtered="onFiltered"
+                  striped
+                  hover
+                  sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px - 300px)"
+                  outlined
+                  no-border-collapse
+                  @row-clicked="
                   (item) => $set(item, '_showDetails', !item._showDetails)
                 "
               >
@@ -854,7 +872,7 @@
                   </label>
                 </template>
                 <template #cell(valor)="row">
-                  <label >
+                  <label>
                     R$ {{ row.item.valor }}
                   </label>
                 </template>
@@ -887,12 +905,12 @@
               Salvar
             </vs-button>
             <vs-button
-              v-else
-              color="#24a35a"
-              type="filled"
-              icon="save"
-              class="botao-salvar"
-              @click.native="cadastrarImovelSair(false)"
+                v-else
+                color="#24a35a"
+                type="filled"
+                icon="save"
+                class="botao-salvar"
+                @click.native="cadastrarImovelSair(false)"
             >
               Salvar
             </vs-button>
@@ -909,11 +927,11 @@
           </b-col>
           <b-col cols="auto">
             <vs-button
-              color="#707070"
-              type="filled"
-              icon="clear"
-              class="botao-salvar"
-              @click.native="esconderModal"
+                color="#707070"
+                type="filled"
+                icon="clear"
+                class="botao-salvar"
+                @click.native="esconderModal"
             >
               Cancelar
             </vs-button>
@@ -926,17 +944,20 @@
 </template>
 
 <script>
-import api from "../../services/api";
-import Carregando from "../../components/shared/Carregando";
+import api from "../../services/api"
+import Carregando from "../../components/shared/Carregando"
 import {atribuirCep, converterDinherioFloat} from "../../methods/global"
-import { setValue } from "vue-currency-input"
-import ModalContrato from "../../components/shared/ModalContrato";
+import {setValue} from "vue-currency-input"
+import ModalContrato from "../../components/shared/ModalContrato"
+import {jsPDF} from "jspdf"
+import 'jspdf-autotable'
+import dayjs from 'dayjs'
 
 export default {
   name: "VisualizarImovel",
-  components:{
+  components: {
     Carregando,
-    ModalContrato
+    ModalContrato,
   },
   data() {
     return {
@@ -959,41 +980,47 @@ export default {
         name: "flip-list",
       },
       fields: [
-        { key: "nome", label: "Nome", sortable: true, thClass: 'text-center' },
-        { key: "rua", label: "Rua", sortable: true, thClass: 'text-center' },
-        { key: "status", label: "Status", sortable: true, class: 'text-center' },
-        { key: "editar", label: "" },
-        { key: "deletar", label: "" },
+        {key: "nome", label: "Nome", sortable: true, thClass: 'text-center'},
+        {key: "rua", label: "Rua", sortable: true, thClass: 'text-center'},
+        {key: "status", label: "Status", sortable: true, class: 'text-center'},
+        {key: "editar", label: ""},
+        {key: "deletar", label: ""},
       ],
       cabecalhosComodos: [
-        { key: "tipo_comodo", label: "Tipo", sortable: true, class: 'text-center' ,tdClass:"td-centralizado" },
-        { key: "quantidade", label: "Quantidade", sortable: true , class: 'text-center',tdClass:"td-centralizado"},
-        { key: "descricao", label: "Descrição", sortable: true , class: 'text-center',tdClass:"td-centralizado"},
-        { key: "editar", label: "" },
-        { key: "deletar", label: "" },
+        {key: "tipo_comodo", label: "Tipo", sortable: true, class: 'text-center', tdClass: "td-centralizado"},
+        {key: "quantidade", label: "Quantidade", sortable: true, class: 'text-center', tdClass: "td-centralizado"},
+        {key: "descricao", label: "Descrição", sortable: true, class: 'text-center', tdClass: "td-centralizado"},
+        {key: "editar", label: ""},
+        {key: "deletar", label: ""},
       ],
       cabecalhosDespesas: [
-        { key: "valor", label: "Valor", sortable: true, class: 'text-center' ,tdClass:"td-centralizado" },
-        { key: "descricao", label: "Descrição", sortable: true ,tdClass:"td-centralizado"},
-        { key: "data_vencimento", label: "Vencimento", sortable: true , class: 'text-center',tdClass:"td-centralizado"},
-        { key: "descricao_tipo_despesa", label: "Tipo", sortable: true , thClass: 'text-center' ,tdClass:"td-centralizado"},
-        { key: "editar", label: "" },
-        { key: "deletar", label: "" },
+        {key: "valor", label: "Valor", sortable: true, class: 'text-center', tdClass: "td-centralizado"},
+        {key: "descricao", label: "Descrição", sortable: true, tdClass: "td-centralizado"},
+        {key: "data_vencimento", label: "Vencimento", sortable: true, class: 'text-center', tdClass: "td-centralizado"},
+        {
+          key: "descricao_tipo_despesa",
+          label: "Tipo",
+          sortable: true,
+          thClass: 'text-center',
+          tdClass: "td-centralizado"
+        },
+        {key: "editar", label: ""},
+        {key: "deletar", label: ""},
       ],
       cabecalhosContratosClientes: [
-        { key: "contrato", label: "Contrato", sortable: true, class: 'text-center', tdClass:"td-centralizado"},
-        { key: "cliente", label: "Cliente", sortable: true, thClass: 'text-center' , tdClass:"td-centralizado"},
-        { key: "data_inicio", label: "Data de início", sortable: true, class: 'text-center', tdClass:"td-centralizado" },
-        { key: "data_fim", label: "Data de Término", class: 'text-center', sortable: true, tdClass:"td-centralizado"  },
-        { key: "status", label: "Status", class: 'text-center', sortable: true, tdClass:"td-centralizado"  },
-        { key: "editar", label: ""},
+        {key: "contrato", label: "Contrato", sortable: true, class: 'text-center', tdClass: "td-centralizado"},
+        {key: "cliente", label: "Cliente", sortable: true, thClass: 'text-center', tdClass: "td-centralizado"},
+        {key: "data_inicio", label: "Data de início", sortable: true, class: 'text-center', tdClass: "td-centralizado"},
+        {key: "data_fim", label: "Data de Término", class: 'text-center', sortable: true, tdClass: "td-centralizado"},
+        {key: "status", label: "Status", class: 'text-center', sortable: true, tdClass: "td-centralizado"},
+        {key: "editar", label: ""},
       ],
       cabecalhosContratosBoletos: [
-        { key: "id", label: "Codigo", sortable: true, class: 'text-center' },
-        { key: "valor", label: "Valor", sortable: true, class: 'text-center' },
-        { key: "data_vencimento", label: "Vencimento", sortable: true, class: 'text-center' },
-        { key: "data_quitacao", label: "Quitação", sortable: true, class: 'text-center' },
-        { key: "status", label: "Status", sortable: true, class: 'text-center' },
+        {key: "id", label: "Codigo", sortable: true, class: 'text-center'},
+        {key: "valor", label: "Valor", sortable: true, class: 'text-center'},
+        {key: "data_vencimento", label: "Vencimento", sortable: true, class: 'text-center'},
+        {key: "data_quitacao", label: "Quitação", sortable: true, class: 'text-center'},
+        {key: "status", label: "Status", sortable: true, class: 'text-center'},
       ],
       totalRows: 1,
       currentPage: 1,
@@ -1033,49 +1060,51 @@ export default {
         valor_aquisicao_dolar_mascara: "",
         numero_cliente_luz: "",
         numero_cliente_agua: "",
-        observacao:""
+        observacao: ""
       },
-      despesa:{
-        valor:"",
-        data:"",
-        data_vencimento:"",
-        tipo_despesa:null,
-        fixa_variavel:null,
-        descricao:"",
+      despesa: {
+        valor: "",
+        data: "",
+        data_vencimento: "",
+        tipo_despesa: null,
+        fixa_variavel: null,
+        descricao: "",
         id_responsavel_pagamento: null
       },
-      comodo:{
+      comodo: {
         id: "",
         descricao: "",
         id_tipo_comodo: null,
-        quantidade:""
+        quantidade: ""
       },
       tiposStatus: [],
       tiposImoveis: [],
       tiposComodos: [],
-      tiposDespesas:[],
-      tiposResponsaveisPagamento:[],
+      tiposDespesas: [],
+      tiposResponsaveisPagamento: [],
       editar: false,
-      carregandoCep:false,
-      contratos:[],
-      idContrato:"",
-      boletos:"",
-      fixaVariavel:[
-        {valor:'fixa', descricao:'Fixa'},
-        {valor:'variavel', descricao:"Variável"}
+      carregandoCep: false,
+      contratos: [],
+      idContrato: "",
+      boletos: "",
+      fixaVariavel: [
+        {valor: 'fixa', descricao: 'Fixa'},
+        {valor: 'variavel', descricao: "Variável"}
       ],
-      despesas:[],
-      editandoDespesa:false,
-      comodos:[],
-      carregandoComodos:false,
-      editandoComodo:false,
-      idContratoModal:"",
-      modal_visivel:false,
-      recarregarImovel:false,
-      cep_atual:"",
-      proprietarios:[],
-      primeiraTabInfAdicionais:false,
-      carregandoTableImovel: false
+      despesas: [],
+      editandoDespesa: false,
+      comodos: [],
+      carregandoComodos: false,
+      editandoComodo: false,
+      idContratoModal: "",
+      modal_visivel: false,
+      recarregarImovel: false,
+      cep_atual: "",
+      proprietarios: [],
+      primeiraTabInfAdicionais: false,
+      carregandoTableImovel: false,
+      filtrados: [],
+      dayjs: dayjs,
     };
   },
 
@@ -1094,29 +1123,30 @@ export default {
       this.carregandoTableImovel = true
       await api.get("/imoveis").then((response) => {
         this.items = response.data
+        this.filtrados = response.data
         this.totalRows = this.items.length
         this.carregandoTableImovel = false
       }).catch((erro) => {
         console.log(erro);
       });
     },
-    async buscarContratos(){
-      await api.get('/imoveis/contratos', {params:{idContrato:this.imovel.id}}).then(response => {
+    async buscarContratos() {
+      await api.get('/imoveis/contratos', {params: {idContrato: this.imovel.id}}).then(response => {
         this.contratos = response.data
       })
     },
-    async buscarTiposDespesas(){
-      await api.get('/imoveis/despesas/tipo_despesas').then(consulta =>{
+    async buscarTiposDespesas() {
+      await api.get('/imoveis/despesas/tipo_despesas').then(consulta => {
         this.tiposDespesas = consulta.data
       })
     },
-    async buscarDespesas(){
-      await api.get('/imoveis/despesas', {params:{idImovel:this.imovel.id}}).then(consulta => {
+    async buscarDespesas() {
+      await api.get('/imoveis/despesas', {params: {idImovel: this.imovel.id}}).then(consulta => {
         this.despesas = consulta.data
         // this.rows = consulta.data.length
       })
     },
-    async buscarTiposResponsaveisPagamento(){
+    async buscarTiposResponsaveisPagamento() {
       await api.get('/imoveis/despesas/responsavel_pagamento').then(consulta => {
         this.tiposResponsaveisPagamento = consulta.data
       })
@@ -1129,6 +1159,7 @@ export default {
 
 
     onFiltered(filteredItems) {
+      this.filtrados = filteredItems
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     },
@@ -1157,7 +1188,7 @@ export default {
     },
 
     async editarImovelModal(imovel) {
-      await api.get(`/imovel/`, { params: { id: imovel.id } }).then((response) => {
+      await api.get(`/imovel/`, {params: {id: imovel.id}}).then((response) => {
         this.editar = true
         this.imovel = response.data[0]
         this.buscarDespesas()
@@ -1168,9 +1199,9 @@ export default {
     },
     async editarImovel() {
       console.log(this.imovel.valor_aquisicao.includes(','))
-      if(this.imovel.valor_aquisicao.includes(',')) this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao_mascara)
-      if(this.imovel.valor_atual.includes(',')) this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual_mascara)
-      if(this.imovel.valor_aquisicao_dolar.includes(',')) this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar_mascara)
+      if (this.imovel.valor_aquisicao.includes(',')) this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao_mascara)
+      if (this.imovel.valor_atual.includes(',')) this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual_mascara)
+      if (this.imovel.valor_aquisicao_dolar.includes(',')) this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar_mascara)
 
       if (this.validarCamposObrigatorio()) {
         let idUsuario = this.$store.state.usuario.id
@@ -1218,12 +1249,12 @@ export default {
       this.boletos = []
       this.contratos = []
       this.idContrato = ""
-      if(this.recarregarImovel){
+      if (this.recarregarImovel) {
         this.buscarImoveis()
       }
       this.primeiraTabInfAdicionais = false
     },
-    mostrarModalContrato(contrato){
+    mostrarModalContrato(contrato) {
       this.$modal.show('modal-contrato')
       this.modal_visivel = true
       this.idContratoModal = contrato.item.contrato
@@ -1236,13 +1267,13 @@ export default {
       this.imovel.tipo_imovel = null
       this.imovel.id_responsavel = null
       this.despesa = {
-        valor:"",
-        data:"",
-        data_vencimento:"",
-        tipo_despesa:null,
-        fixa_variavel:null,
-        id_responsavel_pagamento:null,
-        descricao:""
+        valor: "",
+        data: "",
+        data_vencimento: "",
+        tipo_despesa: null,
+        fixa_variavel: null,
+        id_responsavel_pagamento: null,
+        descricao: ""
       }
       this.despesas = []
       this.comodos = []
@@ -1267,11 +1298,11 @@ export default {
             time: 6000,
             icon: "check_circle_outline",
           });
-          if(sair){
+          if (sair) {
             this.esconderModal();
             this.buscarImoveis();
             this.limparModal();
-          }else{
+          } else {
             this.recarregarImovel = true
             this.buscarTiposDespesas()
             this.editar = true
@@ -1300,7 +1331,7 @@ export default {
           this.imovel["numero"] == "" ||
           this.imovel["cep"] == "" ||
           this.imovel["tipo_imovel"] == null
-      ){
+      ) {
         this.$vs.notify({
           text: `Campos obrigatorios vazio.`,
           position: 'top-center',
@@ -1330,19 +1361,19 @@ export default {
         this.imovel.rua = dados.logradouro;
       }
     },
-    async selecionandoContrato(contrato){
+    async selecionandoContrato(contrato) {
       this.idContrato = ("0000" + contrato[0].contrato).slice(-4)
-      await api.get('/contrato/boletos', {params:{idContrato: contrato[0].contrato}}).then(response => {
+      await api.get('/contrato/boletos', {params: {idContrato: contrato[0].contrato}}).then(response => {
         this.boletos = response.data
       })
     },
-    validarCamposObrigatorioDespesa(){
+    validarCamposObrigatorioDespesa() {
       if (
           this.despesa.valor == "" ||
           this.despesa.tipo_despesa == null ||
           this.despesa.fixa_variavel == null ||
           this.despesa.id_responsavel_pagamento == null
-      ){
+      ) {
         this.$vs.notify({
           text: `Campos obrigatório em despesa vazio.`,
           position: 'top-center',
@@ -1355,11 +1386,15 @@ export default {
         return true;
       }
     },
-    async cadastrarDespesa(){
+    async cadastrarDespesa() {
       let idUsuario = this.$store.state.usuario.id
-      if(this.validarCamposObrigatorioDespesa()) {
+      if (this.validarCamposObrigatorioDespesa()) {
         this.despesa.valor = converterDinherioFloat(this.despesa.valor)
-        await api.post('/imoveis/despesas/cadastrar', {despesa: this.despesa, idImovel: this.imovel.id, idUsuario: idUsuario}).then(() => {
+        await api.post('/imoveis/despesas/cadastrar', {
+          despesa: this.despesa,
+          idImovel: this.imovel.id,
+          idUsuario: idUsuario
+        }).then(() => {
           this.buscarDespesas()
           Object.keys(this.despesa).forEach((key) => {
             this.despesa[key] = "";
@@ -1371,15 +1406,15 @@ export default {
         })
       }
     },
-    tabInfAdicionais(){
-      if(this.primeiraTabInfAdicionais === false){
+    tabInfAdicionais() {
+      if (this.primeiraTabInfAdicionais === false) {
         setValue(this.$refs.valor_aquisicao, this.imovel.valor_aquisicao)
         setValue(this.$refs.valor_aquisicao_dolar, this.imovel.valor_aquisicao_dolar)
         setValue(this.$refs.valor_atual, this.imovel.valor_atual)
       }
       this.primeiraTabInfAdicionais = true
     },
-    editarDespesa(despesa){
+    editarDespesa(despesa) {
       setValue(this.$refs.despesa_valor, despesa.item.valor)
       this.despesa.data = despesa.item.data
       this.despesa.data_vencimento = despesa.item.data_vencimento
@@ -1390,32 +1425,32 @@ export default {
       this.despesa.id = despesa.item.id
       this.editandoDespesa = true
     },
-    async salvarDespesaEditada(){
+    async salvarDespesaEditada() {
       let idUsuario = this.$store.state.usuario.id
       this.despesa.valor = converterDinherioFloat(this.despesa.valor)
-      await api.post('/imoveis/despesas/editar', {despesa: this.despesa, idUsuario:idUsuario}).then(() => {
+      await api.post('/imoveis/despesas/editar', {despesa: this.despesa, idUsuario: idUsuario}).then(() => {
         this.despesa = {
-          valor:"",
-          data:"",
-          data_vencimento:"",
-          tipo_despesa:null,
-          fixa_variavel:null,
-          id_responsavel_pagamento:null,
-          descricao:""
+          valor: "",
+          data: "",
+          data_vencimento: "",
+          tipo_despesa: null,
+          fixa_variavel: null,
+          id_responsavel_pagamento: null,
+          descricao: ""
         }
         this.buscarDespesas()
         this.editandoDespesa = false
       })
     },
-    async deletarDespesa(despesa){
+    async deletarDespesa(despesa) {
       this.despesa = {
-        valor:"",
-        data:"",
-        data_vencimento:"",
-        tipo_despesa:null,
-        fixa_variavel:null,
-        id_responsavel_pagamento:null,
-        descricao:""
+        valor: "",
+        data: "",
+        data_vencimento: "",
+        tipo_despesa: null,
+        fixa_variavel: null,
+        id_responsavel_pagamento: null,
+        descricao: ""
       }
       this.$bvModal.msgBoxConfirm(`Tem certeza que deseja remover essa despesa ?`, {
         title: 'Remover despesa',
@@ -1440,10 +1475,10 @@ export default {
         this.tiposComodos = response.data;
       });
     },
-    async buscarComodos(){
+    async buscarComodos() {
       this.carregandoComodos = true
       let idImovel = this.imovel.id
-      await api.get('/imoveis/comodos', {params:{idImovel: idImovel}}).then(consulta => {
+      await api.get('/imoveis/comodos', {params: {idImovel: idImovel}}).then(consulta => {
         this.comodos = consulta.data
         this.carregandoComodos = false
       })
@@ -1451,25 +1486,29 @@ export default {
     async adicionarComodo() {
       let idImovel = this.imovel.id
       let idUsuario = this.$store.state.usuario.id
-      await api.post('/imoveis/comodo/cadastrar', {comodo: this.comodo, idImovel: idImovel, idUsuario: idUsuario}).then(() => {
+      await api.post('/imoveis/comodo/cadastrar', {
+        comodo: this.comodo,
+        idImovel: idImovel,
+        idUsuario: idUsuario
+      }).then(() => {
         this.buscarComodos()
         this.comodo = {}
         this.comodo.id_tipo_comodo = null
       })
     },
-    async editarComodo(comodo){
+    async editarComodo(comodo) {
       this.comodo.id_tipo_comodo = comodo.item.id_tipo_comodo
       this.comodo.quantidade = comodo.item.quantidade
       this.comodo.descricao = comodo.item.descricao
       this.comodo.id = comodo.item.id
       this.editandoComodo = true
     },
-    async salvarEdicaoComodo(){
+    async salvarEdicaoComodo() {
       let idUsuario = this.$store.state.usuario.id
       await api.post('/imoveis/comodo/editar', {comodo: this.comodo, idUsuario: idUsuario}).then(() => {
         this.comodo = {
-          id:"",
-          descricao:"",
+          id: "",
+          descricao: "",
           id_tipo_comodo: null,
           quantidade: ""
         }
@@ -1477,7 +1516,7 @@ export default {
       })
     },
 
-    async deletarComodo(comodo){
+    async deletarComodo(comodo) {
       let idComodo = comodo.item.id
       this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar esse cômodo ?`, {
         title: 'Deletar cômodo',
@@ -1489,7 +1528,7 @@ export default {
         centered: true
       }).then(value => {
         if (value) {
-          api.delete('/imoveis/comodo/deletar', {params:{idComodo: idComodo}}).then(() => {
+          api.delete('/imoveis/comodo/deletar', {params: {idComodo: idComodo}}).then(() => {
             this.buscarComodos()
           })
         }
@@ -1497,11 +1536,11 @@ export default {
     },
 
 
-    cepAtual(){
+    cepAtual() {
       this.cep_atual = this.imovel.cep
     },
-    buscarEndereco(){
-      if(this.cep_atual != this.imovel.cep){
+    buscarEndereco() {
+      if (this.cep_atual != this.imovel.cep) {
         if (atribuirCep(this.imovel.cep)) {
           if (this.imovel.cep.length == 9) {
             this.carregandoCep = true
@@ -1513,6 +1552,49 @@ export default {
         }
       }
     },
+    gerarRelatorio() {
+      let hojeAgr = dayjs().format('DD/MM/YYYY hh:mm:ss')
+      var doc = new jsPDF()
+      doc.page=1
+      doc.setProperties({
+        title: "Tabela de Imóveis"
+      });
+      doc.setFontSize(10)
+      doc.text(hojeAgr, 200, 10, null, null, "right")
+      doc.line(10, 12, 200, 12);
+      doc.setFontSize(24)
+      doc.text(`Tabela de Imovéis.`, 10, 22)
+      doc.setFontSize(14)
+      doc.text(`Total: ${this.filtrados.length}`, 200, 21, null, null, "right")
+      doc.autoTable({
+        head: [['Nome', 'Rua', 'Status']],
+        columns: [
+          {header: 'Nome', dataKey: 'nome'},
+          {header: 'Rua', dataKey: 'rua'},
+          {header: 'Status', dataKey: 'status'}
+        ],
+        body: this.filtrados,
+        theme: 'striped',
+        headStyles: {
+          fillColor: [50,50,50]
+        },
+        startY: 25,
+        pageBreak: 'auto',
+        margin: {left:10, right:10},
+      })
+      const totalPaginas = doc.internal.getNumberOfPages()
+
+
+      doc.setFontSize(8)
+      for (var i = 1; i <= totalPaginas; i++) {
+        doc.setPage(i)
+        doc.text(`Página ${String(i)} de ${String(totalPaginas)}`, 205, 293, null, null, "right")
+
+      }
+      // doc.output('pdfobjectnewwindow', {filename: 'Tabela de Imovéis'});
+      window.open(doc.output('bloburl', {filename: 'tabela_imovel.pdf'}));
+    },
+
   },
   watch: {
     // "imovel.cep": function(cep) {
@@ -1606,7 +1688,7 @@ body {
   margin-bottom: 10px;
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
+  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
 }
 
 .botao-deletar-comodo {
@@ -1619,7 +1701,7 @@ body {
   padding: 0;
   margin-bottom: 10px;
   border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200,200,200,0.5);
+  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
 }
 
 .col-tabela-imoveis {
@@ -1630,7 +1712,7 @@ body {
   border-top: 1px solid rgb(200, 200, 200);
   position: absolute;
   bottom: 0;
-  margin-left:-100px;
+  margin-left: -100px;
   width: 100%;
   padding: 10px 100px 15px 100px;
   background-color: white;
@@ -1663,11 +1745,11 @@ table#tabela-imovel .flip-list-move {
   transition: transform 0.3s;
 }
 
-.td-centralizado{
+.td-centralizado {
   padding-top: 10px !important;
 }
 
-.modal-adicionando-imovel{
-  margin-left:25px;
+.modal-adicionando-imovel {
+  margin-left: 25px;
 }
 </style>
