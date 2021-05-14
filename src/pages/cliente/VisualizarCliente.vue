@@ -1,10 +1,37 @@
 <template>
   <b-container fluid class="centralizar-container">
+    <div class="barra-busca-mobile">
+      <b-row class="no-gutters">
+        <b-col>
+          <b-form-group class="barra-busca-mobile__form-group">
+            <b-input-group>
+              <transition name="slide-down__input-busca">
+                <b-form-input
+                    v-if="barraBuscaMobile"
+                    id="filter-input"
+                    v-model="filter"
+                    type="search"
+                    placeholder="Ex: João da Silva"
+                    class="barra-busca-mobile__input">
+                </b-form-input>
+              </transition>
+            </b-input-group>
+          </b-form-group>
+        </b-col>
+        <b-col cols="auto">
+          <template>
+            <b-input-group-text @click="barraBuscaMobile = !barraBuscaMobile" class="barra-busca-mobile__botao">
+              <b-icon icon="search"></b-icon>
+            </b-input-group-text>
+          </template>
+        </b-col>
+      </b-row>
+    </div>
     <b-row class="barra-top-cliente " align-v="center">
       <b-col>
-        <h1 class="mb-1">Cadastro de Clientes</h1>
+        <h1 class="mb-1 titulo">Cadastro de Clientes</h1>
       </b-col>
-      <b-col class="my-1" cols="3">
+      <b-col class="my-1 barra-busca" cols="3">
         <b-form-group class="mb-0">
           <b-input-group>
             <template #prepend>
@@ -599,7 +626,8 @@ export default {
       indexTelefoneTabela: 0,
       modal_visivel: false,
       cep_atual: '',
-      carregandoTableCliente:false
+      carregandoTableCliente: false,
+      barraBuscaMobile: false
     }
   },
 
@@ -713,7 +741,11 @@ export default {
     async adicionarTelefone() {
       let idCliente = this.cliente.id
       let idUsuario = this.$store.state.usuario.id
-      await api.post('/cliente/telefone/cadastrar', {telefone: this.telefone, idCliente: idCliente, idUsuario: idUsuario}).then(() => {
+      await api.post('/cliente/telefone/cadastrar', {
+        telefone: this.telefone,
+        idCliente: idCliente,
+        idUsuario: idUsuario
+      }).then(() => {
         this.buscarTelefones()
         this.telefone = {
           id: "",
@@ -935,6 +967,11 @@ export default {
 }
 </script>
 <style>
+
+.titulo {
+  font-size: 170%;
+}
+
 .input-personalizado {
   width: 100%;
   margin-bottom: 10px;
@@ -1053,8 +1090,58 @@ table#tabela-cliente .flip-list-move {
   padding-top: 10px !important;
 }
 
-.modal-adicionando-cliente{
-  margin-left:25px;
+.modal-adicionando-cliente {
+  margin-left: 25px;
+}
+
+
+.barra-busca-mobile {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  display: none;
+}
+
+.barra-busca-mobile__form-group {
+  margin-bottom: 0;
+}
+
+.barra-busca-mobile__input {
+  width: 100%;
+  height: 42px;
+  margin-bottom: 0 !important;
+}
+
+.barra-busca-mobile__botao {
+  font-size: 20px;
+  padding-bottom: 7px;
+  padding-top: 8px;
+}
+
+
+
+.slide-down__input-busca-enter-active {
+  transition: all .2s ease;
+}
+
+.slide-down__input-busca-leave-active {
+  transition: all .2s ease;
+}
+
+.slide-down__input-busca-enter, .slide-down__input-busca-leave-to {
+  transform: translateY(-30px);
+  opacity: 0;
+}
+
+@media screen and (max-width: 992px) {
+  .barra-busca {
+    display: none;
+  }
+  .barra-busca-mobile{
+    display: block;
+  }
 }
 
 </style>

@@ -1,6 +1,6 @@
 <template>
   <b-container fluid class="centralizar-container">
-    <b-row>
+    <b-row class="no-gutters">
       <b-col lg="4" md="12">
         <b-card header="Contratos para vencer"
                 header-tag="header"
@@ -191,9 +191,15 @@ export default {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
+.coluna__meio{
+  margin-left: 15px;
+}
+
 @media screen and (max-width: 992px){
   .coluna__meio{
     margin-top: 10px;
+    margin-left: 0;
   }
 }
 </style>

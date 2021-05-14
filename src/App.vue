@@ -27,11 +27,17 @@ export default {
 </script>
 
 <style scoped>
+
+html{
+  font-size: 16px;
+}
+
 #app{
   width:100%;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+
 }
 .pagina{
   padding: 10px 100px;
