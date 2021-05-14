@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid style="padding-right:15px;padding-left:75px">
+  <b-container fluid class="centralizar-container">
     <b-row class="barra-top-contrato" align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Contrato</h1>

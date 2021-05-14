@@ -37,4 +37,15 @@ export default {
   padding: 10px 100px;
   z-index:20;
 }
+
+.centralizar-container{
+  padding-right:15px;
+  padding-left:75px;
+}
+
+@media screen and (max-width: 992px){
+  .centralizar-container{
+    padding: 60px 10px 0px 10px;
+  }
+}
 </style>

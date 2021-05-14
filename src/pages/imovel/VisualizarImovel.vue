@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid style="padding-right:15px;padding-left:75px">
+  <b-container fluid class="centralizar-container">
     <b-row class="barra-top-imovel " align-v="center">
       <b-col>
         <h1 class="mb-1">Cadastro de Imóveis</h1>
@@ -1580,7 +1580,7 @@ export default {
         },
         startY: 25,
         pageBreak: 'auto',
-        margin: {left:10, right:10},
+        margin: {left:10, right:10, top: 10},
       })
       const totalPaginas = doc.internal.getNumberOfPages()
 

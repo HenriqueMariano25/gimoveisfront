@@ -1,7 +1,7 @@
 <template>
-  <b-container fluid style="padding-right:15px;padding-left:75px">
+  <b-container fluid class="centralizar-container">
     <b-row>
-      <b-col cols="4">
+      <b-col lg="4" md="12">
         <b-card header="Contratos para vencer"
                 header-tag="header"
                 footer-tag="footer"
@@ -43,7 +43,7 @@
           </template>
         </b-card>
       </b-col>
-      <b-col class="mb-3">
+      <b-col class="coluna__meio">
         <b-card header="Boletos vencidos"
                 class="text-center"
                 header-text-variant="danger">
@@ -77,7 +77,7 @@
           </template>
         </b-card>
       </b-col>
-      <b-col cols="6">
+      <b-col lg="6" md="12" class="coluna__fim">
         <b-card header="Contratos para reajustar"
                 class="text-center"
                 header-text-variant="danger">
@@ -186,5 +186,14 @@ export default {
 <style>
 .tabela-contratos-vencendo {
   margin: 0;
+}
+.coluna__fim{
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+@media screen and (max-width: 992px){
+  .coluna__meio{
+    margin-top: 10px;
+  }
 }
 </style>

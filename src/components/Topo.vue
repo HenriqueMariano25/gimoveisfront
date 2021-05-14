@@ -73,4 +73,11 @@ export default {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
+@media screen and (max-width: 992px){
+  .topo{
+    margin-top: 56px;
+    display: none;
+  }
+}
 </style>

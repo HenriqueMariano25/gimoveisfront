@@ -124,11 +124,27 @@ export default {
   position:fixed;
   top:0;
   left:0;
-  width: 100%;
   height: 100%;
   opacity: .7;
 }
 .alerta-erro{
   margin-bottom: 15px;
 }
+
+@media screen and (max-width: 992px){
+  .login-base {
+    width: calc(100vw - 20px);
+    margin-left: 10px;
+    margin-right: 20px;
+    left: 0;
+  }
+}
+
+@media screen and (min-width: 992px){
+  .imagem-background{
+    width: 100%;
+  }
+}
+
 </style>
+
