@@ -65,6 +65,7 @@
       </b-col>
       <b-col class="col-tabela-clientes">
         <b-table
+            class="tabela-cliente"
             id="tabela-cliente"
             primary-key="nome"
             :tbody-transition-props="transProps"
@@ -593,7 +594,50 @@ export default {
       transProps: {
         name: "flip-list",
       },
-      items: [],
+      items: [
+        {
+          "nome": "Wolfe Barton"
+        },
+        {
+          "nome": "Elizabeth Rodriquez"
+        },
+        {
+          "nome": "Colleen Cummings"
+        },
+        {
+          "nome": "Candice Goodman"
+        },
+        {
+          "nome": "Madden Mcknight"
+        },
+        {
+          "nome": "Genevieve Blevins"
+        },
+        {
+          "nome": "Elena Cotton"
+        },
+        {
+          "nome": "Garrett Lyons"
+        },
+        {
+          "nome": "Tanya Coffey"
+        },
+        {
+          "nome": "Jill Klein"
+        },
+        {
+          "nome": "Joann Patterson"
+        },
+        {
+          "nome": "Clements Crawford"
+        },
+        {
+          "nome": "Aimee Rose"
+        },
+        {
+          "nome": "Thomas Wright"
+        }
+      ],
       fields: [
         {key: 'nome', label: 'Nome', sortable: true, thClass: 'text-center'},
         {key: 'email', label: 'Email', sortable: true, thClass: 'text-center'},
@@ -688,7 +732,8 @@ export default {
     async buscarClientes() {
       this.carregandoTableCliente = true
       await api.get('/clientes').then(response => {
-        this.items = response.data
+        // this.items = response.data
+        console.log(response)
         this.totalRows = this.items.length
         this.carregandoTableCliente = false
       }).catch(erro => {
@@ -1223,10 +1268,12 @@ table#tabela-cliente .flip-list-move {
 }
 
 @media screen and (max-width: 992px) {
+  .tabela-cliente{
+    max-height: calc(((((100vh - 82px) - 30px) - 48px) - 52px) - 55px - 20px) !important;
+  }
   .barra-busca-mobile {
     display: block;
   }
-
   .botao-add-total-mobile {
     display: block;
   }
