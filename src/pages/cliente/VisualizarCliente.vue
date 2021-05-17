@@ -594,50 +594,7 @@ export default {
       transProps: {
         name: "flip-list",
       },
-      items: [
-        {
-          "nome": "Wolfe Barton"
-        },
-        {
-          "nome": "Elizabeth Rodriquez"
-        },
-        {
-          "nome": "Colleen Cummings"
-        },
-        {
-          "nome": "Candice Goodman"
-        },
-        {
-          "nome": "Madden Mcknight"
-        },
-        {
-          "nome": "Genevieve Blevins"
-        },
-        {
-          "nome": "Elena Cotton"
-        },
-        {
-          "nome": "Garrett Lyons"
-        },
-        {
-          "nome": "Tanya Coffey"
-        },
-        {
-          "nome": "Jill Klein"
-        },
-        {
-          "nome": "Joann Patterson"
-        },
-        {
-          "nome": "Clements Crawford"
-        },
-        {
-          "nome": "Aimee Rose"
-        },
-        {
-          "nome": "Thomas Wright"
-        }
-      ],
+      items: [],
       fields: [
         {key: 'nome', label: 'Nome', sortable: true, thClass: 'text-center'},
         {key: 'email', label: 'Email', sortable: true, thClass: 'text-center'},
@@ -732,8 +689,7 @@ export default {
     async buscarClientes() {
       this.carregandoTableCliente = true
       await api.get('/clientes').then(response => {
-        // this.items = response.data
-        console.log(response)
+        this.items = response.data
         this.totalRows = this.items.length
         this.carregandoTableCliente = false
       }).catch(erro => {
