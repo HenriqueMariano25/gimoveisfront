@@ -1099,7 +1099,7 @@ export default {
 }
 
 .container-paginacao-total-mobile {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   margin-left: -10px;
   margin-right: 0;

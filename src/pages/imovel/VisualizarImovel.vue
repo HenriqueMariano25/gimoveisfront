@@ -27,11 +27,9 @@
         </b-col>
         <b-col cols="auto">
           <b-button
-              v-b-tooltip.hover
-              title="Imprimir relatório"
               variant="dark"
               @click="gerarRelatorio"
-          >
+              class="barra-busca-mobile__imprimir">
             <b-icon icon="printer-fill"></b-icon>
           </b-button>
         </b-col>
@@ -1905,6 +1903,12 @@ table#tabela-imovel .flip-list-move {
   font-size: 20px;
   padding-bottom: 7px;
   padding-top: 8px;
+}
+
+.barra-busca-mobile__imprimir{
+  font-size: 20px;
+  padding-bottom: 3.5px;
+
 }
 
 
