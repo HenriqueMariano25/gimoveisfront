@@ -39,7 +39,7 @@
       <b-col>
         <h1 class="mb-1 titulo">Cadastro de Imóveis</h1>
       </b-col>
-      <b-col class="my-1 barra-busca esconder-quando-mobile" cols="3">
+      <b-col class="barra-busca esconder-quando-mobile" cols="3">
         <b-form-group class="mb-0">
           <b-input-group>
             <template #prepend>

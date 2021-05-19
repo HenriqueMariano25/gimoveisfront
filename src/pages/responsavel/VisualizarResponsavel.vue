@@ -50,8 +50,22 @@
       </b-col>
     </b-row>
     <b-row class="tabela-responsaveis">
+      <b-col class="botao-add-total-mobile" cols="12">
+        <b-row>
+          <b-col>
+            <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal" style="width: 100%"
+                       class="botao-add-mobile">
+              Adicionar
+            </vs-button>
+          </b-col>
+          <b-col class="ml-auto total-mobile" cols="auto">
+            <h6>Total: {{ this.totalRows }}</h6>
+          </b-col>
+        </b-row>
+      </b-col>
       <b-col class="col-tabela-responsaveis">
         <b-table
+            class="tabela-responsavel"
             id="tabela-responsavel"
             primary-key="nome"
             :tbody-transition-props="transProps"
