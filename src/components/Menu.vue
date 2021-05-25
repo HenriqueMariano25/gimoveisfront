@@ -28,6 +28,20 @@
             </li>
 
             <li @click="fecharAbrirMenu">
+              <router-link to="/visualizar/caixa">
+                <b-row class="">
+                  <b-col cols="auto" class="menu-top__aberto-icone">
+                    <b-icon icon="cash-stack"
+                            class="icone-bootstrap-menu menu-top__aberto-icone-interno"></b-icon>
+                  </b-col>
+                  <b-col class="menu-top__aberto-texto">
+                    <span class="">Caixa</span>
+                  </b-col>
+                </b-row>
+              </router-link>
+            </li>
+
+            <li @click="fecharAbrirMenu">
               <router-link to="/visualizar/cliente">
                 <b-row class="">
                   <b-col cols="auto" class="menu-top__aberto-icone">
@@ -134,12 +148,22 @@
       </template>
     </b-modal>
 
+
+
     <nav class="main-menu">
       <ul>
         <li>
           <router-link to="/">
             <i class="fa fa-home fa-2x"></i>
             <span class="nav-text">Home</span>
+          </router-link>
+        </li>
+        <li class="has-subnav">
+          <router-link to="/visualizar/caixa">
+            <b-icon icon="cash-stack" class="icone-bootstrap-menu"></b-icon>
+            <span class="nav-text">
+                  Caixa
+                </span>
           </router-link>
         </li>
         <li class="has-subnav">
