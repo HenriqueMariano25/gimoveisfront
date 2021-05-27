@@ -9,6 +9,7 @@ import Imovel from  './routers/imovelRouter'
 import Responsavel from './routers/responsavelRouter'
 import Contrato from './routers/contratoRouter'
 import Caixa from './routers/caixaRouter'
+import Ajuste from './routers/ajusteRouter'
 
 Vue.use(Router)
 
@@ -25,7 +26,8 @@ const router = new Router({
         ...Imovel,
         ...Responsavel,
         ...Contrato,
-        ...Caixa
+        ...Caixa,
+        ...Ajuste
     ]
 })
 

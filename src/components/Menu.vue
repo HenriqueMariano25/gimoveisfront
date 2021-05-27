@@ -306,16 +306,16 @@
         <!--        </li>-->
       </ul>
 
-      <!--      <ul class="logout">-->
-      <!--        <li>-->
-      <!--          <a href="#">-->
-      <!--            <i class="fa fa-power-off fa-2x"></i>-->
-      <!--            <span class="nav-text">-->
-      <!--              Logout-->
-      <!--            </span>-->
-      <!--          </a>-->
-      <!--        </li>-->
-      <!--      </ul>-->
+            <ul class="logout">
+              <li class="has-subnav">
+                <router-link to="/ajuste">
+                  <b-icon icon="gear-fill" class="icone-bootstrap-menu"></b-icon>
+                  <span class="nav-text">
+                  Ajustes
+                </span>
+                </router-link>
+              </li>
+            </ul>
     </nav>
   </div>
 </template>
