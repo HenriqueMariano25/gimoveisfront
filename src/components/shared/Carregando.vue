@@ -31,4 +31,9 @@ name: "Carregando",
   display: inline-block;
   vertical-align: middle;
 }
+
+.carregando-caixa{
+  background-color: red;
+}
+
 </style>

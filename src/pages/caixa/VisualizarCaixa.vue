@@ -50,67 +50,84 @@
             sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
             no-border-collapse>
           <template #table-colgroup>
+            <col style="width: 50px">
             <col>
             <col>
             <col>
             <col style="width: 150px">
+            <col style="width: 15px">
+            <col style="width: 15px">
           </template>
           <template #cell(id)="row">
             <span class="tr-caixa">{{ ("000000" + row.item.id).slice(-6) }}</span>
           </template>
           <template #cell(debito_credito)="row">
-            <span v-if="row.item.debito_credito == 'débito'" class="debito">{{ row.item.debito_credito }}</span>
-            <span v-else class="credito">{{ row.item.debito_credito }}</span>
+            <span v-if="row.item.id_debito_credito == 1" class="debito">Débito</span>
+            <span v-else-if="row.item.id_debito_credito == 2" class="credito">Crédito</span>
+            <span v-else></span>
           </template>
           <template #cell(movimento)="row">
             <span class="tr-caixa">{{ dayjs(row.item.movimento).format('DD/MM/YYYY') }}</span>
+          </template>
+          <template #cell(valor)="row">
+            <span class="tr-caixa">R$ {{ row.item.valor.replace('.', ',') }}</span>
+          </template>
+          <template #cell(editar)="row">
+            <vs-tooltip text="Editar">
+              <vs-button type="flat" color="dark" icon="edit" @click.native="modalEditarModalCaixa(row)"></vs-button>
+            </vs-tooltip>
+          </template>
+          <template #cell(deletar)="row">
+            <vs-tooltip text="Deletar">
+              <vs-button type="flat" color="dark" icon="delete" @click.native="deletarCaixaModal(row)"></vs-button>
+            </vs-tooltip>
           </template>
         </b-table>
       </b-col>
     </b-row>
     <b-container fluid class="divider-personalizado esconder-quando-mobile" style="margin-left: -75px">
       <b-row align-v="end">
-<!--        <b-col class="" cols="auto">-->
-<!--          <b-pagination-->
-<!--              v-model="currentPage"-->
-<!--              :total-rows="totalRows"-->
-<!--              :per-page="perPage"-->
-<!--              align="left"-->
-<!--              class="my-0"-->
-<!--              first-text="Primeira"-->
-<!--              last-text="Última"-->
-<!--          ></b-pagination>-->
-<!--        </b-col>-->
-<!--        <b-col sm="5" md="auto" class="">-->
-<!--          <b-form-group-->
-<!--              label="Por pagina"-->
-<!--              label-for="per-page-select"-->
-<!--              label-cols-sm="auto"-->
-<!--              label-cols-md="auto"-->
-<!--              label-cols-lg="auto"-->
-<!--              label-align-sm="right"-->
-<!--              label-size="sm"-->
-<!--              align="left"-->
-<!--              class="mb-1">-->
-<!--            <b-form-select-->
-<!--                id="per-page-select"-->
-<!--                v-model="perPage"-->
-<!--                :options="pageOptions"-->
-<!--                size="sm"-->
-<!--            ></b-form-select>-->
-<!--          </b-form-group>-->
-<!--        </b-col>-->
-<!--        <b-col class="esconder-quando-mobile">-->
-<!--          <h6>Total: {{ this.totalRows }}</h6>-->
-<!--        </b-col>-->
+        <b-col class="" cols="auto">
+          <b-pagination
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="perPage"
+              align="left"
+              class="my-0"
+              first-text="Primeira"
+              last-text="Última"
+          ></b-pagination>
+        </b-col>
+        <b-col sm="5" md="auto" class="">
+          <b-form-group
+              label="Por pagina"
+              label-for="per-page-select"
+              label-cols-sm="auto"
+              label-cols-md="auto"
+              label-cols-lg="auto"
+              label-align-sm="right"
+              label-size="sm"
+              align="left"
+              class="mb-1">
+            <b-form-select
+                id="per-page-select"
+                v-model="perPage"
+                :options="pageOptions"
+                size="sm"
+            ></b-form-select>
+          </b-form-group>
+        </b-col>
+        <b-col class="esconder-quando-mobile">
+          <h6>Total: {{ this.totalRows }}</h6>
+        </b-col>
         <b-col class="ml-auto esconder-quando-mobile" cols="auto" style="margin-bottom: -5px">
-          <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal">
+          <vs-button color="#24a35a" type="filled" icon="person_add" @click="modalCadastrarModalCaixa">
             Adicionar
           </vs-button>
         </b-col>
       </b-row>
     </b-container>
-    <ModalCaixa @recarregarDados="buscarCaixa"></ModalCaixa>
+    <ModalCaixa @recarregarDados="buscarCaixa" :dados="caixa"></ModalCaixa>
   </b-container>
 </template>
 <script>
@@ -121,14 +138,17 @@ import dayjs from 'dayjs'
 
 export default {
   name: "VisualizarCaixa.vue",
-  data(){
-    return{
+  data() {
+    return {
       items: [],
       camposCaixa: [
-        {key: 'id', label: 'Código', sortable: true, class: 'text-center' },
-        {key: 'movimento', label: 'Movimento', sortable: true, class: 'text-center'},
-        {key: 'imovel_nome', label: 'Imóvel', sortable: true, thClass: 'text-center'},
-        {key: 'debito_credito', label: 'Débito ou Crédito', sortable: true, class: 'text-center'},
+        {key: 'id', label: 'Código', sortable: true, class: 'text-center', tdClass: 'pt-2'},
+        {key: 'historico', label: 'Histórico', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
+        {key: 'valor', label: 'Valor', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
+        {key: 'movimento', label: 'Movimento', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
+        {key: 'debito_credito', label: 'Débito ou Crédito', sortable: true, class: 'text-center', tdClass: 'pt-2'},
+        {key: 'editar', label: '', tdClass: 'p-0'},
+        {key: 'deletar', label: '', tdClass: 'p-0'},
       ],
       totalRows: 1,
       currentPage: 1,
@@ -143,27 +163,72 @@ export default {
         name: "flip-list",
       },
       dayjs: dayjs,
+      caixa: {}
     }
   },
-  components:{
+  components: {
     ModalCaixa
   },
   created() {
     this.buscarCaixa()
   },
-  methods:{
+  methods: {
     mostrarModal() {
       this.$modal.show('modal-caixa')
     },
-    async buscarCaixa(){
+    async buscarCaixa() {
       await api.get('/caixa').then(consulta => {
-        console.log(consulta)
         this.items = consulta.data
+        this.totalRows = this.items.length
       })
     },
+    modalEditarModalCaixa(caixa) {
+      let auxiliar = Object.entries(caixa.item)
+      this.caixa = Object.fromEntries(auxiliar)
+      this.mostrarModal()
+    },
+    modalCadastrarModalCaixa() {
+      this.caixa = {
+        id: '',
+        movimento: '',
+        valor: '',
+        id_debito_credito: '',
+        id_imovel: null,
+        historico: '',
+        complemento_historico: '',
+        id_conta: null,
+        numero_documento: ''
+      }
+      this.mostrarModal()
+    },
+
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length
       this.currentPage = 1
+    },
+
+    deletarCaixaModal(caixa) {
+      this.$bvModal.msgBoxConfirm(
+          `Tem certeza que deseja deletar o cliente: ${("000000" + caixa.item.id).slice(-6)} - ${caixa.item.historico} ?`,
+          {
+            title: 'Deletar cliente',
+            buttonSize: 'sm',
+            okTitle: 'Deletar',
+            cancelTitle: 'Cancelar',
+            okVariant: 'danger',
+            footerClass: 'p-2',
+            centered: true
+          }).then(value => {
+        if (value) {
+          this.deletarCaixa(caixa)
+        }
+      })
+    },
+    async deletarCaixa(caixa) {
+      console.log(caixa)
+      await api.delete(`/caixa/${caixa.item.id}`).then(() => {
+        this.buscarCaixa()
+      })
     },
   }
 }
@@ -189,12 +254,22 @@ export default {
   box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
 }
 
-.debito{
+.debito {
   color: green;
 }
 
-.credito{
+.credito {
   color: red;
+}
+
+.divider-personalizado {
+  border-top: 1px solid rgb(200, 200, 200);
+  position: absolute;
+  bottom: 0;
+  margin-left: -100px;
+  width: 100%;
+  padding: 10px 100px 15px 100px;
+  background-color: white;
 }
 
 </style>

@@ -9,6 +9,7 @@
       @opened="inicializar"
   >
     <h3>Caixa</h3>
+    <Carregando :visivel="carregandoVisivel" :style="{ 'height':'198px', 'line-height': '200px' }"></Carregando>
     <b-row>
       <b-col>
         <vs-input label="Movimento*" type="date" class="input-nascimento" v-model="caixa.movimento"/>
@@ -23,15 +24,15 @@
                     currency:{prefix:'R$ '} }"/>
       </b-col>
       <b-col cols="auto" class="debito_credito">
-        <b-form-radio-group v-slot="{ ariaDescribedby }" v-model="caixa.debitoCredito">
+        <b-form-radio-group v-slot="{ ariaDescribedby }" v-model="caixa.id_debito_credito">
           <b-row>
             <b-col>
-              <b-form-radio :aria-describedby="ariaDescribedby" value="débito">Débito*</b-form-radio>
+              <b-form-radio :aria-describedby="ariaDescribedby" value="1">Débito*</b-form-radio>
             </b-col>
           </b-row>
           <b-row>
             <b-col>
-              <b-form-radio :aria-describedby="ariaDescribedby" value="crédito">Crédito*</b-form-radio>
+              <b-form-radio :aria-describedby="ariaDescribedby" value="2">Crédito*</b-form-radio>
             </b-col>
           </b-row>
 
@@ -40,8 +41,8 @@
     </b-row>
     <b-row>
       <b-col>
-        <b-form-group id="select-caixa" label="Conta">
-          <b-form-select value-field="id" text-field="descricao" v-model="caixa.conta">
+        <b-form-group id="select-caixa" label="Conta*">
+          <b-form-select value-field="id" text-field="nome" v-model="caixa.id_conta" :options="contas">
             <template #first>
               <b-form-select-option :value="null">Selecione</b-form-select-option>
             </template>
@@ -50,12 +51,15 @@
       </b-col>
       <b-col>
         <b-form-group id="select-caixa" label="Imóvel">
-          <b-form-select value-field="id" text-field="nome" v-model="caixa.idImovel" :options="imoveis">
+          <b-form-select value-field="id" text-field="nome" v-model="caixa.id_imovel" :options="imoveis">
             <template #first>
               <b-form-select-option :value="null">Selecione</b-form-select-option>
             </template>
           </b-form-select>
         </b-form-group>
+      </b-col>
+      <b-col>
+        <vs-input label-placeholder="Numero do Documento*" v-model="caixa.numero_documento"/>
       </b-col>
     </b-row>
     <b-row>
@@ -63,13 +67,16 @@
         <vs-input label-placeholder="Histórico*" v-model="caixa.historico"/>
       </b-col>
       <b-col>
-        <vs-input label-placeholder="Complemento Histórico" v-model="caixa.complementoHistorico"/>
+        <vs-input label-placeholder="Complemento Histórico" v-model="caixa.complemento_historico"/>
       </b-col>
     </b-row>
-    <b-row align-h="end">
+    <b-row align-h="end" class="mt-2">
       <b-col cols="auto">
-        <vs-button color="#24a35a" type="filled" icon="save" class="botao-salvar" @click.native="cadastrar">
+        <vs-button v-if="caixa.id == ''" color="#24a35a" type="filled" icon="save" class="botao-salvar" @click.native="cadastrar">
           Salvar
+        </vs-button>
+        <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar" @click.native="editar">
+          Editar
         </vs-button>
       </b-col>
       <b-col cols="auto">
@@ -85,32 +92,45 @@
 
 import api from "../../services/api"
 import {converterDinherioFloat} from "../../methods/global";
+import Carregando from "@/components/shared/Carregando";
 
 export default {
   name: "ModalCaixa",
+  props:['dados'],
+  components: {Carregando},
   data() {
     return {
       caixa: {
+        id:'',
         movimento: '',
         valor: '',
-        debitoCredito: '',
-        conta: null,
-        idImovel: null,
+        id_debito_credito: null,
+        id_imovel: null,
         historico: '',
-        complementoHistorico: ''
+        complemento_historico: '',
+        id_conta: null,
+        numero_documento: ''
       },
-      imoveis:[]
+      imoveis:[],
+      contas:[],
+      carregandoVisivel: true
     }
   },
   methods: {
     esconderModal() {
+      this.caixa =  {}
       this.$modal.hide('modal-caixa')
+      this.carregandoVisivel = true
     },
     async inicializar(){
+      this.carregandoVisivel = true
+      if(this.dados) this.caixa = this.dados
       this.buscarImoveis()
+      await this.buscarContas().then(() => this.carregandoVisivel = false)
     },
     async cadastrar() {
       let idUsuario = this.$store.state.usuario.id
+      console.log(this.caixa.valor)
       this.caixa.valor = converterDinherioFloat(this.caixa.valor)
       await api.post('/caixa', {caixa: this.caixa, idUsuario: idUsuario}).then(() => {
         this.$vs.notify({
@@ -123,12 +143,31 @@ export default {
         this.recarregarDados()
         this.esconderModal()
       })
-
     },
+    async editar(){
+      let idUsuario = this.$store.state.usuario.id
+      this.caixa.valor = converterDinherioFloat(this.caixa.valor)
+      await api.put('/caixa', {caixa: this.caixa, idUsuario: idUsuario}).then(() => {
+        this.$vs.notify({
+          text: `Registro editado com sucesso !`,
+          position: 'top-center',
+          color: 'warning',
+          time: 6000,
+          icon: 'check_circle_outline'
+        })
+        this.recarregarDados()
+        this.esconderModal()
+      })
+    },
+
     async buscarImoveis(){
       await api.get('/imoveis/simples').then(consulta => {
         this.imoveis = consulta.data
-        console.log(consulta)
+      })
+    },
+    async buscarContas(){
+      await api.get('/ajuste/conta').then(consulta => {
+        this.contas = consulta.data
       })
     },
     recarregarDados(){
@@ -138,7 +177,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .modal-caixa {
   margin-left: 25px;
 }
@@ -146,4 +185,15 @@ export default {
 .debito_credito {
   padding-top: 10px;
 }
+#select-caixa {
+  margin-bottom: 10px;
+}
+
+#select-caixa__BV_label_ {
+  margin: 0;
+  padding: 0;
+  color: rgb(110, 110, 110);
+  font-size: 12px;
+}
+
 </style>

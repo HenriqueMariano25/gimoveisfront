@@ -39,7 +39,6 @@
               <template #table-colgroup>
                 <col>
                 <col style="width: 15px">
-                <col style="width: 15px">
               </template>
               <template #cell(nome)="row">
                   <label class="linhas-tabela">{{ row.item.nome }}</label>
@@ -49,11 +48,11 @@
                   <vs-button type="flat" color="dark" icon="edit" @click.native="modalEditarModalConta(row)"></vs-button>
                 </vs-tooltip>
               </template>
-              <template #cell(deletar)>
-                <vs-tooltip text="Deletar">
-                  <vs-button type="flat" color="dark" icon="delete"></vs-button>
-                </vs-tooltip>
-              </template>
+<!--              <template #cell(deletar)>-->
+<!--                <vs-tooltip text="Deletar">-->
+<!--                  <vs-button type="flat" color="dark" icon="delete"></vs-button>-->
+<!--                </vs-tooltip>-->
+<!--              </template>-->
             </b-table>
           </b-col>
         </b-row>
@@ -80,7 +79,7 @@ export default {
       camposConta: [
         {key: 'nome', label: 'Nome', sortable: true, thClass: 'text-center'},
         {key: 'editar', label: ''},
-        {key: 'deletar', label: ''},
+        // {key: 'deletar', label: ''},
       ],
     }
   },
