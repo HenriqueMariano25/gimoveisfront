@@ -132,6 +132,18 @@
                 </li>
               </ul>
             </transition>
+            <li @click="fecharAbrirMenu">
+              <router-link to="/ajuste">
+                <b-row class="">
+                  <b-col cols="auto" class="menu-top__aberto-icone">
+                    <b-icon icon="gear-fill" class="icone-bootstrap-menu menu-top__aberto-icone-interno"></b-icon>
+                  </b-col>
+                  <b-col class="menu-top__aberto-texto">
+                    <span class="">Ajuste</span>
+                  </b-col>
+                </b-row>
+              </router-link>
+            </li>
           </ul>
         </nav>
       </transition>

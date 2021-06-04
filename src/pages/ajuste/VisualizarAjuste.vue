@@ -6,7 +6,7 @@
       </b-col>
     </b-row>
     <b-row class="tabelas">
-      <b-col cols="6" class="bloco">
+      <b-col cols="12" class="bloco" md="6">
         <b-row class="bloco__titulo_e_btn no-gutters">
           <b-col class="titulo">
             <h3>Conta</h3>
@@ -159,6 +159,10 @@ export default {
   padding-top: 7px;
   padding-left: 3px;
   margin:0;
+}
+
+@media screen and (max-width: 992px) {
+
 }
 
 </style>
