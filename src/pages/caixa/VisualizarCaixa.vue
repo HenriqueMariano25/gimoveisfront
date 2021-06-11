@@ -81,6 +81,7 @@
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
             :sort-direction="sortDirection"
+            :busy="carregandoTableCaixa"
             show-empty
             small
             @filtered="onFiltered"
@@ -121,6 +122,12 @@
             <vs-tooltip text="Deletar">
               <vs-button type="flat" color="dark" icon="delete" @click.native="deletarCaixaModal(row)"></vs-button>
             </vs-tooltip>
+          </template>
+          <template #table-busy>
+            <div class="text-center text-danger my-2">
+              <b-spinner class="align-middle mr-3"></b-spinner>
+              <strong>Carregando...</strong>
+            </div>
           </template>
         </b-table>
       </b-col>
@@ -239,7 +246,8 @@ export default {
       },
       dayjs: dayjs,
       caixa: {},
-      barraBuscaMobile: false
+      barraBuscaMobile: false,
+      carregandoTableCaixa: false,
     }
   },
   components: {
@@ -253,9 +261,11 @@ export default {
       this.$modal.show('modal-caixa')
     },
     async buscarCaixa() {
+      this.carregandoTableCaixa = true
       await api.get('/caixa').then(consulta => {
         this.items = consulta.data
         this.totalRows = this.items.length
+        this.carregandoTableCaixa = false
       })
     },
     modalEditarModalCaixa(caixa) {

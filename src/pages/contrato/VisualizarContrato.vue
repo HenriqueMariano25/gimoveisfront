@@ -77,7 +77,7 @@
             :current-page="currentPage"
             :per-page="perPage"
             :filter="filter"
-            :filter-included-fields="filterOn"
+            :filter-included-fields="colunasPrFiltro"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
             :sort-direction="sortDirection"
@@ -587,7 +587,6 @@
                   :current-page="currentPage"
                   :per-page="perPage"
                   :filter="filter"
-                  :filter-included-fields="filterOn"
                   :sort-by.sync="sortBy"
                   :sort-desc.sync="sortDesc"
                   :sort-direction="sortDirection"
@@ -925,7 +924,7 @@ export default {
       sortDesc: false,
       sortDirection: 'asc',
       filter: null,
-      filterOn: [],
+      colunasPrFiltro: ['id', 'nome_cliente', 'nome_responsavel', 'nome_imovel', 'status'],
       contrato: {
         id: '',
         id_responsavel: null,
