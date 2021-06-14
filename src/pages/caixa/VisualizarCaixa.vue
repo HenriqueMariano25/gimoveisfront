@@ -89,7 +89,9 @@
             hover
             outlined
             sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
-            no-border-collapse>
+            no-border-collapse
+            @row-clicked=" (item) => $set(item, '_showDetails', !item._showDetails)"
+            >
           <template #table-colgroup>
             <col style="width: 50px">
             <col style="max-width: 150px;">
@@ -117,7 +119,9 @@
             <span class="tr-caixa">{{ dayjs(row.item.movimento).format('DD/MM/YYYY') }}</span>
           </template>
           <template #cell(valor)="row">
-            <span class="tr-caixa">R$ {{ row.item.valor.replace('.', ',') }}</span>
+            <span class="tr-caixa" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+              R$ {{ row.item.valor.replace('.', ',') }}
+            </span>
           </template>
           <template #cell(editar)="row">
             <vs-tooltip text="Editar">
@@ -134,6 +138,30 @@
               <b-spinner class="align-middle mr-3"></b-spinner>
               <strong>Carregando...</strong>
             </div>
+          </template>
+          <template #row-details="row">
+            <b-card>
+              <b-row>
+                <b-col cols="auto">
+                  <span><b>Complemento Historico:</b> {{ row.item.complemento_historico}}</span>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="auto">
+                  <span><b>Imóvel:</b> {{ row.item.imovel_nome}}</span>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="auto">
+                  <span><b>Conta:</b> {{ row.item.conta_nome}}</span>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="auto">
+                  <span><b>Número do documento:</b> {{ row.item.numero_documento}}</span>
+                </b-col>
+              </b-row>
+            </b-card>
           </template>
         </b-table>
       </b-col>
