@@ -17,7 +17,7 @@
       <b-col>
         <vs-input
             label-placeholder="Valor*"
-            ref="despesa_valor"
+            ref="valor"
             class="input-personalizado"
             v-model="caixa.valor"
             v-currency="{ precision: 2, autoDecimalMode: true, distractionFree: false, allowNegative: false,
@@ -93,6 +93,7 @@
 import api from "../../services/api"
 import {converterDinherioFloat} from "../../methods/global";
 import Carregando from "@/components/shared/Carregando";
+import {setValue} from "vue-currency-input";
 
 export default {
   name: "ModalCaixa",
@@ -124,7 +125,10 @@ export default {
     },
     async inicializar(){
       this.carregandoVisivel = true
-      if(this.dados) this.caixa = this.dados
+      if(this.dados) {
+        this.caixa = this.dados
+        setValue(this.$refs.valor, this.caixa.valor)
+      }
       this.buscarImoveis()
       await this.buscarContas().then(() => this.carregandoVisivel = false)
     },

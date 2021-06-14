@@ -92,10 +92,12 @@
             no-border-collapse>
           <template #table-colgroup>
             <col style="width: 50px">
+            <col style="max-width: 150px;">
             <col>
             <col>
             <col>
-            <col style="width: 150px">
+            <col>
+            <col style="width: 15px">
             <col style="width: 15px">
             <col style="width: 15px">
           </template>
@@ -106,6 +108,10 @@
             <span v-if="row.item.id_debito_credito == 1" class="debito">Débito</span>
             <span v-else-if="row.item.id_debito_credito == 2" class="credito">Crédito</span>
             <span v-else></span>
+          </template>
+          <template #cell(historico)="row">
+            <span v-if="row.item.historico.length < 40">{{ row.item.historico }}</span>
+            <span v-else>{{ row.item.historico.substring(0,40) }}...</span>
           </template>
           <template #cell(movimento)="row">
             <span class="tr-caixa">{{ dayjs(row.item.movimento).format('DD/MM/YYYY') }}</span>
@@ -228,7 +234,9 @@ export default {
         {key: 'historico', label: 'Histórico', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
         {key: 'valor', label: 'Valor', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
         {key: 'movimento', label: 'Movimento', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
-        {key: 'debito_credito', label: 'Débito ou Crédito', sortable: true, class: 'text-center', tdClass: 'pt-2'},
+        {key: 'imovel_nome', label: 'Imóvel', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
+        {key: 'conta_nome', label: 'Conta', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
+        {key: 'debito_credito', label: 'D/C', sortable: true, class: 'text-center', tdClass: 'pt-2'},
         {key: 'editar', label: '', tdClass: 'p-0'},
         {key: 'deletar', label: '', tdClass: 'p-0'},
       ],
