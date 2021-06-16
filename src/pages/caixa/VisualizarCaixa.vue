@@ -399,7 +399,7 @@ export default {
       var doc = new jsPDF()
       doc.page=1
       doc.setProperties({
-        title: "Tabela do Caixa"
+        title: "Tabela de Caixa"
       });
       doc.setFontSize(10)
       doc.text(hojeAgr, 200, 10, null, null, "right")
