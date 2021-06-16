@@ -48,6 +48,16 @@
           </b-input-group>
         </b-form-group>
       </b-col>
+      <b-col cols="auto" class="esconder-quando-mobile">
+        <b-button
+            v-b-tooltip.hover
+            title="Imprimir relatório"
+            variant="dark"
+            @click="gerarRelatorio"
+        >
+          <b-icon icon="printer-fill"></b-icon>
+        </b-button>
+      </b-col>
     </b-row>
     <b-row class="tabela-caixas">
       <b-col class="botao-add-total-mobile" cols="12">
@@ -116,7 +126,8 @@
             <span v-else>{{ row.item.historico.substring(0,40) }}...</span>
           </template>
           <template #cell(movimento)="row">
-            <span class="tr-caixa">{{ dayjs(row.item.movimento).format('DD/MM/YYYY') }}</span>
+            <span class="tr-caixa" v-if="row.item.movimento">{{ dayjs(row.item.movimento).format('DD/MM/YYYY') }}</span>
+            <span class="tr-caixa" v-else></span>
           </template>
           <template #cell(valor)="row">
             <span class="tr-caixa" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
@@ -143,7 +154,12 @@
             <b-card>
               <b-row>
                 <b-col cols="auto">
-                  <span><b>Complemento Historico:</b> {{ row.item.complemento_historico}}</span>
+                  <span><b>Histórico:</b> {{ row.item.historico}}</span>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="auto">
+                  <span><b>Complemento Histórico:</b> {{ row.item.complemento_historico}}</span>
                 </b-col>
               </b-row>
               <b-row>
@@ -251,6 +267,8 @@
 import ModalCaixa from '../../components/Caixa/ModalCaixa'
 import api from '../../services/api'
 import dayjs from 'dayjs'
+import {jsPDF} from "jspdf";
+import 'jspdf-autotable'
 
 export default {
   name: "VisualizarCaixa.vue",
@@ -284,6 +302,7 @@ export default {
       caixa: {},
       barraBuscaMobile: false,
       carregandoTableCaixa: false,
+      filtrados: []
     }
   },
   components: {
@@ -300,6 +319,7 @@ export default {
       this.carregandoTableCaixa = true
       await api.get('/caixa').then(consulta => {
         this.items = consulta.data
+        this.filtrados = consulta.data
         this.totalRows = this.items.length
         this.carregandoTableCaixa = false
       })
@@ -326,6 +346,7 @@ export default {
 
     onFiltered(filteredItems) {
       this.totalRows = filteredItems.length
+      this.filtrados = filteredItems
       this.currentPage = 1
     },
 
@@ -351,6 +372,65 @@ export default {
       await api.delete(`/caixa/${caixa.item.id}`).then(() => {
         this.buscarCaixa()
       })
+    },
+
+    gerarRelatorio() {
+      let hojeAgr = dayjs().format('DD/MM/YYYY hh:mm:ss')
+      let novosDados = JSON.parse(JSON.stringify(this.filtrados))
+      for (let i in novosDados){
+        let valorFormatado = `${novosDados[i].valor.replace('.', ',')}`
+        let movimentoFormatada = dayjs(novosDados[i].movimento).format('DD/MM/YYYY')
+        let codigoFormatado = ("000000" + novosDados[i].id).slice(-6)
+        novosDados[i].valor = valorFormatado
+        novosDados[i].movimento = movimentoFormatada
+        novosDados[i].id = codigoFormatado
+      }
+
+      // console.log(novosDados)
+
+      var doc = new jsPDF()
+      doc.page=1
+      doc.setProperties({
+        title: "Tabela do Caixa"
+      });
+      doc.setFontSize(10)
+      doc.text(hojeAgr, 200, 10, null, null, "right")
+      doc.line(10, 12, 200, 12);
+      doc.setFontSize(24)
+      doc.text(`Tabela do Caixa`, 10, 22)
+      doc.setFontSize(14)
+      doc.text(`Total: ${this.filtrados.length}`, 200, 21, null, null, "right")
+      doc.autoTable({
+        head: [['Código', 'Histórico', 'Valor', 'Movimento', 'Imóvel', 'Conta', 'D/C']],
+        columns: [
+          {header: 'Código', dataKey: 'id'},
+          {header: 'Histórico', dataKey: 'historico'},
+          {header: 'Valor', dataKey: 'valor'},
+          {header: 'Movimento', dataKey: 'movimento'},
+          {header: 'Imóvel', dataKey: 'imovel_nome'},
+          {header: 'Conta', dataKey: 'conta_nome'},
+        ],
+        columnStyles: { id: { halign: 'center' } },
+        body: novosDados,
+        theme: 'striped',
+        headStyles: {
+          fillColor: [50, 50, 50]
+        },
+        startY: 25,
+        pageBreak: 'auto',
+        margin: {left:10, right:10, top: 10},
+      })
+      const totalPaginas = doc.internal.getNumberOfPages()
+
+
+      doc.setFontSize(8)
+      for (var i = 1; i <= totalPaginas; i++) {
+        doc.setPage(i)
+        doc.text(`Página ${String(i)} de ${String(totalPaginas)}`, 205, 293, null, null, "right")
+
+      }
+      // doc.output('pdfobjectnewwindow', {filename: 'Tabela de Imovéis'});
+      window.open(doc.output('bloburl', {filename: 'tabela_imovel.pdf'}));
     },
   }
 }
