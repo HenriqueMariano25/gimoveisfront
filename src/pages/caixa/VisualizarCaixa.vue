@@ -399,13 +399,13 @@ export default {
       var doc = new jsPDF()
       doc.page=1
       doc.setProperties({
-        title: "Tabela de Caixa"
+        title: "Relátorio de Caixa"
       });
       doc.setFontSize(10)
       doc.text(hojeAgr, 200, 10, null, null, "right")
       doc.line(10, 12, 200, 12);
       doc.setFontSize(24)
-      doc.text(`Tabela de Caixa`, 10, 22)
+      doc.text(`Relátorio de Caixa`, 10, 22)
       doc.setFontSize(14)
       doc.text(`Total: ${this.filtrados.length}`, 200, 21, null, null, "right")
       doc.autoTable({
