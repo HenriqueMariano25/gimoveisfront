@@ -25,6 +25,14 @@
             </b-input-group-text>
           </template>
         </b-col>
+        <b-col cols="auto">
+          <b-button
+              variant="dark"
+              @click="gerarRelatorio"
+              class="barra-busca-mobile__imprimir">
+            <b-icon icon="printer-fill"></b-icon>
+          </b-button>
+        </b-col>
       </b-row>
     </div>
     <b-row class="barra-top-caixa " align-v="center">
@@ -397,7 +405,7 @@ export default {
       doc.text(hojeAgr, 200, 10, null, null, "right")
       doc.line(10, 12, 200, 12);
       doc.setFontSize(24)
-      doc.text(`Tabela do Caixa`, 10, 22)
+      doc.text(`Tabela de Caixa`, 10, 22)
       doc.setFontSize(14)
       doc.text(`Total: ${this.filtrados.length}`, 200, 21, null, null, "right")
       doc.autoTable({
