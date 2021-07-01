@@ -393,9 +393,6 @@ export default {
         novosDados[i].movimento = movimentoFormatada
         novosDados[i].id = codigoFormatado
       }
-
-      // console.log(novosDados)
-
       var doc = new jsPDF()
       doc.page=1
       doc.setProperties({
@@ -437,7 +434,6 @@ export default {
         doc.text(`Página ${String(i)} de ${String(totalPaginas)}`, 205, 293, null, null, "right")
 
       }
-      // doc.output('pdfobjectnewwindow', {filename: 'Tabela de Imovéis'});
       window.open(doc.output('bloburl', {filename: 'tabela_imovel.pdf'}));
     },
   }

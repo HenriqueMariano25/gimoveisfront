@@ -117,7 +117,7 @@
             <p class="tr-imovel">{{ row.item.nome }}</p>
           </template>
           <template #cell(rua)="row">
-            <p class="tr-imovel">{{ row.item.rua }}</p>
+            <p class="tr-imovel">{{ row.item.rua }}, N°{{ row.item.numero}}, {{row.item.complemento}}</p>
           </template>
           <template #cell(cpf_cnpj)="row">
             <p class="tr-imovel">{{ row.item.cpf_cnpj }}</p>
@@ -1637,6 +1637,14 @@ export default {
       }
     },
     gerarRelatorio() {
+
+      let novosDados = JSON.parse(JSON.stringify(this.filtrados))
+      for (let i in novosDados){
+        let rua_formatada = `${novosDados[i].rua}, N° ${novosDados[i].numero}, ${novosDados[i].complemento}`
+        novosDados[i].rua = rua_formatada
+      }
+
+
       let hojeAgr = dayjs().format('DD/MM/YYYY hh:mm:ss')
       var doc = new jsPDF()
       doc.page=1
@@ -1657,7 +1665,7 @@ export default {
           {header: 'Rua', dataKey: 'rua'},
           {header: 'Status', dataKey: 'status'}
         ],
-        body: this.filtrados,
+        body: novosDados,
         theme: 'striped',
         headStyles: {
           fillColor: [50,50,50]
@@ -1667,31 +1675,13 @@ export default {
         margin: {left:10, right:10, top: 10},
       })
       const totalPaginas = doc.internal.getNumberOfPages()
-
-
       doc.setFontSize(8)
       for (var i = 1; i <= totalPaginas; i++) {
         doc.setPage(i)
         doc.text(`Página ${String(i)} de ${String(totalPaginas)}`, 205, 293, null, null, "right")
-
       }
-      // doc.output('pdfobjectnewwindow', {filename: 'Tabela de Imovéis'});
       window.open(doc.output('bloburl', {filename: 'tabela_imovel.pdf'}));
     },
-
-  },
-  watch: {
-    // "imovel.cep": function(cep) {
-    //   if (atribuirCep(cep)) {
-    //     if (cep.length == 9) {
-    //       this.carregandoCep = true
-    //     }
-    //     atribuirCep(cep).then(response => {
-    //       this.carregandoCep = false
-    //       this.atribuirCep(response)
-    //     })
-    //   }
-    // },
   },
   async mounted() {
     this.buscarImoveis();
