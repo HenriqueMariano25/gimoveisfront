@@ -1064,7 +1064,7 @@ export default {
       },
       fields: [
         {key: "nome", label: "Nome", sortable: true, thClass: 'text-center'},
-        {key: "rua", label: "Rua", sortable: true, thClass: 'text-center'},
+        {key: "rua", label: "Endereço", sortable: true, thClass: 'text-center'},
         {key: "status", label: "Status", sortable: true, class: 'text-center'},
         {key: "editar", label: ""},
         {key: "deletar", label: ""},
@@ -1659,10 +1659,10 @@ export default {
       doc.setFontSize(14)
       doc.text(`Total: ${this.filtrados.length}`, 200, 21, null, null, "right")
       doc.autoTable({
-        head: [['Nome', 'Rua', 'Status']],
+        head: [['Nome', 'Endereço', 'Status']],
         columns: [
           {header: 'Nome', dataKey: 'nome'},
-          {header: 'Rua', dataKey: 'rua'},
+          {header: 'Endereço', dataKey: 'rua'},
           {header: 'Status', dataKey: 'status'}
         ],
         body: novosDados,
