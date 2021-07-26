@@ -6,7 +6,7 @@
       </b-col>
     </b-row>
     <b-row class="tabelas">
-      <b-col cols="12" class="bloco" md="6">
+      <b-col cols="12" class="bloco" id="bloco-conta" md="6" >
         <b-row class="bloco__titulo_e_btn no-gutters">
           <b-col class="titulo">
             <h3>Conta</h3>
@@ -20,8 +20,8 @@
         <b-row class="no-gutters">
           <b-col class="bloco__tabela">
             <b-table
-                class="tabela-conta"
-                id="tabela-conta"
+                class="tabela"
+                id="tabela"
                 primary-key="id"
                 bordered
                 head-variant="dark"
@@ -57,20 +57,74 @@
           </b-col>
         </b-row>
       </b-col>
+      <b-col cols="12" class="bloco" md="6">
+        <b-row class="bloco__titulo_e_btn no-gutters">
+          <b-col class="titulo">
+            <h3>Histórico</h3>
+          </b-col>
+          <b-col cols="auto">
+            <vs-button color="#24a35a" type="filled" icon="add" @click="modalCadastrarHistorico">
+              Adicionar
+            </vs-button>
+          </b-col>
+        </b-row>
+        <b-row class="no-gutters">
+          <b-col class="bloco__tabela">
+            <b-table
+                class="tabela"
+                id="tabela"
+                primary-key="id"
+                bordered
+                head-variant="dark"
+                sort-icon-left
+                :items="historicos"
+                :fields="camposHistorico"
+                show-empty
+                small
+                striped
+                hover
+                outlined
+                sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
+                tbody-tr-class="linhas-tabela"
+                no-border-collapse>
+              <template #table-colgroup>
+                <col>
+                <col style="width: 15px">
+              </template>
+              <template #cell(descricao)="row">
+                <label class="linhas-tabela">{{ row.item.descricao }}</label>
+              </template>
+              <template #cell(editar)="row">
+                <vs-tooltip text="Editar">
+                  <vs-button type="flat" color="dark" icon="edit" @click.native="modalEditarModalHistorico(row)"></vs-button>
+                </vs-tooltip>
+              </template>
+              <!--              <template #cell(deletar)>-->
+              <!--                <vs-tooltip text="Deletar">-->
+              <!--                  <vs-button type="flat" color="dark" icon="delete"></vs-button>-->
+              <!--                </vs-tooltip>-->
+              <!--              </template>-->
+            </b-table>
+          </b-col>
+        </b-row>
+      </b-col>
     </b-row>
     <ModalConta @recarregarDados="buscarContas" :dados="conta"></ModalConta>
+    <ModalHistorico @recarregarDados="buscarHistoricos" :dados="historico"></ModalHistorico>
   </b-container>
 </template>
 
 <script>
 
 import ModalConta from "@/components/Ajuste/ModalConta"
+import ModalHistorico from "@/components/Ajuste/ModalHistorico"
 import api from '../../services/api'
 
 export default {
   name: "VisualizarAjuste",
   components: {
-    ModalConta
+    ModalConta,
+    ModalHistorico
   },
   data(){
     return{
@@ -81,10 +135,17 @@ export default {
         {key: 'editar', label: ''},
         // {key: 'deletar', label: ''},
       ],
+      historicos:[],
+      historico: '',
+      camposHistorico: [
+        {key: 'descricao', label: 'Descrição', sortable: true, thClass: 'text-center'},
+        {key: 'editar', label: ''},
+      ]
     }
   },
   created() {
     this.buscarContas()
+    this.buscarHistoricos()
   },
   methods:{
     async buscarContas(){
@@ -102,7 +163,26 @@ export default {
     modalEditarModalConta(conta){
       this.conta = {nome: conta.item.nome, id:conta.item.id}
       this.mostrarModalConta()
-    }
+    },
+
+
+    async buscarHistoricos(){
+      await api.get('ajuste/historico').then(consulta => {
+        this.historicos = consulta.data
+        console.log(this.historicos)
+      })
+    },
+    mostrarModalHistorico(){
+      this.$modal.show('modal-historico')
+    },
+    modalCadastrarHistorico(){
+      this.mostrarModalHistorico()
+      this.historico = {}
+    },
+    modalEditarModalHistorico(historico){
+      this.historico = {descricao: historico.item.descricao, id:historico.item.id}
+      this.mostrarModalHistorico()
+    },
   }
 }
 </script>
@@ -150,7 +230,7 @@ export default {
   padding: 0;
 }
 
-.tabela-conta{
+.tabela{
   margin: 0;
   padding: 0;
 }

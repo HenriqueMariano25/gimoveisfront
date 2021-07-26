@@ -130,8 +130,9 @@
             <span v-else></span>
           </template>
           <template #cell(historico)="row">
-            <span v-if="row.item.historico.length < 40">{{ row.item.historico }}</span>
-            <span v-else>{{ row.item.historico.substring(0,40) }}...</span>
+<!--            <span v-if="row.item.historico.length < 40 || row.item.historico != null">{{ row.item.historico }}</span>-->
+<!--            <span v-else>{{ row.item.historico.substring(0,40) }}...</span>-->
+            <span>{{ row.item.descricao_historico }}</span>
           </template>
           <template #cell(movimento)="row">
             <span class="tr-caixa" v-if="row.item.movimento">{{ dayjs(row.item.movimento).format('DD/MM/YYYY') }}</span>
@@ -162,7 +163,7 @@
             <b-card>
               <b-row>
                 <b-col cols="auto">
-                  <span><b>Histórico:</b> {{ row.item.historico}}</span>
+                  <span><b>Histórico:</b> {{ row.item.descricao_historico}}</span>
                 </b-col>
               </b-row>
               <b-row>
@@ -267,7 +268,7 @@
         </b-col>
       </b-row>
     </b-container>
-    <ModalCaixa @recarregarDados="buscarCaixa" :dados="caixa"></ModalCaixa>
+    <ModalCaixa @recarregarDados="buscarCaixa" :dados="caixa" :historicos="historicos"></ModalCaixa>
   </b-container>
 </template>
 <script>
@@ -285,7 +286,7 @@ export default {
       items: [],
       camposCaixa: [
         {key: 'id', label: 'Código', sortable: true, class: 'text-center', tdClass: 'pt-2'},
-        {key: 'historico', label: 'Histórico', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
+        {key: 'descricao_historico', label: 'Histórico', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
         {key: 'valor', label: 'Valor', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
         {key: 'movimento', label: 'Movimento', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
         {key: 'imovel_nome', label: 'Imóvel', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
@@ -310,7 +311,8 @@ export default {
       caixa: {},
       barraBuscaMobile: false,
       carregandoTableCaixa: false,
-      filtrados: []
+      filtrados: [],
+      historicos: []
     }
   },
   components: {
@@ -322,6 +324,7 @@ export default {
   methods: {
     mostrarModal() {
       this.$modal.show('modal-caixa')
+      this.buscarHistoricos()
     },
     async buscarCaixa() {
       this.carregandoTableCaixa = true
@@ -344,7 +347,7 @@ export default {
         valor: '',
         id_debito_credito: '',
         id_imovel: null,
-        historico: '',
+        historico: null,
         complemento_historico: '',
         id_conta: null,
         numero_documento: ''
@@ -383,6 +386,7 @@ export default {
     },
 
     gerarRelatorio() {
+      console.log(this.filtrados)
       let hojeAgr = dayjs().format('DD/MM/YYYY hh:mm:ss')
       let novosDados = JSON.parse(JSON.stringify(this.filtrados))
       for (let i in novosDados){
@@ -409,7 +413,7 @@ export default {
         head: [['Código', 'Histórico', 'Valor', 'Movimento', 'Imóvel', 'Conta', 'D/C']],
         columns: [
           {header: 'Código', dataKey: 'id'},
-          {header: 'Histórico', dataKey: 'historico'},
+          {header: 'Histórico', dataKey: 'descricao_historico'},
           {header: 'Valor', dataKey: 'valor'},
           {header: 'Movimento', dataKey: 'movimento'},
           {header: 'Imóvel', dataKey: 'imovel_nome'},
@@ -436,6 +440,13 @@ export default {
       }
       window.open(doc.output('bloburl', {filename: 'tabela_imovel.pdf'}));
     },
+
+    async buscarHistoricos() {
+      await api.get('/ajuste/historico').then(consulta => {
+        this.historicos = consulta.data
+        console.log(this.historicos)
+      })
+    }
   }
 }
 </script>

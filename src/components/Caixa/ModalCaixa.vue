@@ -64,7 +64,14 @@
     </b-row>
     <b-row>
       <b-col>
-        <vs-input label-placeholder="Histórico*" v-model="caixa.historico"/>
+        <!--        <vs-input label-placeholder="Histórico*" v-model="caixa.historico"/>-->
+        <b-form-group id="select-caixa" label="Históricos">
+          <b-form-select value-field="id" text-field="descricao" v-model="caixa.historico" :options="historicos">
+            <template #first>
+              <b-form-select-option :value="null">Selecione</b-form-select-option>
+            </template>
+          </b-form-select>
+        </b-form-group>
       </b-col>
       <b-col>
         <vs-input label-placeholder="Complemento Histórico" v-model="caixa.complemento_historico"/>
@@ -72,7 +79,8 @@
     </b-row>
     <b-row align-h="end" class="mt-2">
       <b-col cols="auto">
-        <vs-button v-if="caixa.id == ''" color="#24a35a" type="filled" icon="save" class="botao-salvar" @click.native="cadastrar">
+        <vs-button v-if="caixa.id == ''" color="#24a35a" type="filled" icon="save" class="botao-salvar"
+                   @click.native="cadastrar">
           Salvar
         </vs-button>
         <vs-button v-else color="#24a35a" type="filled" icon="save" class="botao-salvar" @click.native="editar">
@@ -91,41 +99,41 @@
 <script>
 
 import api from "../../services/api"
-import {converterDinherioFloat} from "../../methods/global";
+import {converterDinherioFloat, validarCamposObrigatorios} from "../../methods/global";
 import Carregando from "@/components/shared/Carregando";
 import {setValue} from "vue-currency-input";
 
 export default {
   name: "ModalCaixa",
-  props:['dados'],
+  props: ['dados', 'historicos'],
   components: {Carregando},
   data() {
     return {
       caixa: {
-        id:'',
+        id: '',
         movimento: '',
         valor: '',
         id_debito_credito: null,
         id_imovel: null,
-        historico: '',
+        historico: null,
         complemento_historico: '',
         id_conta: null,
         numero_documento: ''
       },
-      imoveis:[],
-      contas:[],
+      imoveis: [],
+      contas: [],
       carregandoVisivel: true
     }
   },
   methods: {
     esconderModal() {
-      this.caixa =  {}
+      this.caixa = {}
       this.$modal.hide('modal-caixa')
       this.carregandoVisivel = true
     },
-    async inicializar(){
+    async inicializar() {
       this.carregandoVisivel = true
-      if(this.dados) {
+      if (this.dados) {
         this.caixa = this.dados
         setValue(this.$refs.valor, this.caixa.valor)
       }
@@ -134,47 +142,83 @@ export default {
     },
     async cadastrar() {
       let idUsuario = this.$store.state.usuario.id
-      console.log(this.caixa.valor)
-      this.caixa.valor = converterDinherioFloat(this.caixa.valor)
-      await api.post('/caixa', {caixa: this.caixa, idUsuario: idUsuario}).then(() => {
+      var caixaClonado = Object.assign({}, this.caixa)
+      caixaClonado.valor = converterDinherioFloat(this.caixa.valor)
+      let camposValidar = {
+        'movimento': this.caixa.movimento,
+        'histórico': this.caixa.historico,
+        'débito ou crédito': this.caixa.id_debito_credito,
+        'valor': caixaClonado.valor,
+        'conta': this.caixa.id_conta
+      }
+      await validarCamposObrigatorios(camposValidar).then(() => {
+        api.post('/caixa', {caixa: caixaClonado, idUsuario: idUsuario}).then(() => {
+          this.$vs.notify({
+            text: `Registro cadastrado com sucesso !`,
+            position: 'top-center',
+            color: 'success',
+            time: 6000,
+            icon: 'check_circle_outline'
+          })
+          this.recarregarDados()
+          this.esconderModal()
+        })
+      }).catch(erros => {
         this.$vs.notify({
-          text: `Registro cadastrado com sucesso !`,
+          text: `Esses campos estão vazios ou errados: ${erros}`,
           position: 'top-center',
-          color: 'success',
+          color: 'danger',
           time: 6000,
           icon: 'check_circle_outline'
         })
-        this.recarregarDados()
-        this.esconderModal()
       })
+
     },
-    async editar(){
+    async editar() {
       let idUsuario = this.$store.state.usuario.id
-      this.caixa.valor = converterDinherioFloat(this.caixa.valor)
-      await api.put('/caixa', {caixa: this.caixa, idUsuario: idUsuario}).then(() => {
+      var caixaClonado = Object.assign({}, this.caixa)
+      caixaClonado.valor = converterDinherioFloat(this.caixa.valor)
+      let camposValidar = {
+        'movimento': this.caixa.movimento,
+        'histórico': this.caixa.historico,
+        'débito ou crédito': this.caixa.id_debito_credito,
+        'valor': caixaClonado.valor,
+        'conta': this.caixa.id_conta
+      }
+      await validarCamposObrigatorios(camposValidar).then(() => {
+        api.put('/caixa', {caixa: caixaClonado, idUsuario: idUsuario}).then(() => {
+          this.$vs.notify({
+            text: `Registro editado com sucessoooooo !`,
+            position: 'top-center',
+            color: 'warning',
+            time: 6000,
+            icon: 'check_circle_outline'
+          })
+          this.recarregarDados()
+          this.esconderModal()
+        })
+      }).catch(erros => {
         this.$vs.notify({
-          text: `Registro editado com sucesso !`,
+          text: `Esses campos estão vazios ou errados: ${erros}`,
           position: 'top-center',
-          color: 'warning',
+          color: 'danger',
           time: 6000,
           icon: 'check_circle_outline'
         })
-        this.recarregarDados()
-        this.esconderModal()
       })
     },
 
-    async buscarImoveis(){
+    async buscarImoveis() {
       await api.get('/imoveis/simples').then(consulta => {
         this.imoveis = consulta.data
       })
     },
-    async buscarContas(){
+    async buscarContas() {
       await api.get('/ajuste/conta').then(consulta => {
         this.contas = consulta.data
       })
     },
-    recarregarDados(){
+    recarregarDados() {
       this.$emit('recarregarDados')
     }
   }
@@ -189,6 +233,7 @@ export default {
 .debito_credito {
   padding-top: 10px;
 }
+
 #select-caixa {
   margin-bottom: 10px;
 }
