@@ -17,6 +17,11 @@
     </b-row>
     <b-row align-h="end" class="mt-2">
       <b-col cols="auto" >
+        <vs-button color="#dc3546" type="filled" icon="delete" class="botao-salvar" @click.native="deletar" v-if="historico.id > 0">
+          Deletar
+        </vs-button>
+      </b-col>
+      <b-col cols="auto" >
         <vs-button color="#24a35a" type="filled" icon="save" class="botao-salvar" @click.native="editar" v-if="historico.id > 0">
           Salvar
         </vs-button>
@@ -75,15 +80,40 @@ export default {
     },
     async editar(){
       await api.put('/ajuste/historico', {historico: this.historico}).then(() => {
-
         this.esconderModal()
         this.recarregarDados()
         this.$vs.notify({
-          text: `Historico editado com sucesso !`,
+          text: `Historico editado com sucesso!`,
+          position: 'top-center',
+          color: 'success',
+          time: 6000,
+          icon: 'check_circle_outline'
+        })
+      })
+    },
+
+    async deletar(){
+      let id = this.historico.id
+
+      await api.delete(`/ajuste/historico/${id}`).then(() => {
+        this.esconderModal()
+        this.recarregarDados()
+        this.$vs.notify({
+          text: `Historico deletado com sucesso!`,
+          position: 'top-center',
+          color: 'danger',
+          time: 6000,
+          icon: 'delete'
+        })
+      }).catch(erro => {
+        let mensagem = erro.response.data.message
+
+        this.$vs.notify({
+          text: `${mensagem}`,
           position: 'top-center',
           color: 'warning',
           time: 6000,
-          icon: 'check_circle_outline'
+          icon: 'report_problem'
         })
       })
     },

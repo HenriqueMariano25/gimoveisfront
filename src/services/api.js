@@ -7,8 +7,7 @@ const baseURLWeb = 'https://gimoveis-api.herokuapp.com/'
 const api = axios.create({
     baseURL: process.env.NODE_ENV === "production" ? baseURLWeb : baseURLLocal,
     headers: {
-        'Accept':'application/json',
-        'Content': 'application/json',
+
         'Authorization': 'Bearer ' + store
     }
 })

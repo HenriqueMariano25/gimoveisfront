@@ -165,11 +165,9 @@ export default {
       this.mostrarModalConta()
     },
 
-
     async buscarHistoricos(){
       await api.get('ajuste/historico').then(consulta => {
         this.historicos = consulta.data
-        console.log(this.historicos)
       })
     },
     mostrarModalHistorico(){
