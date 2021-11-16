@@ -121,6 +121,14 @@
               </vs-tooltip>
             </div>
           </template>
+          <template #cell(aditivo)="row">
+            <div class="item-coluna-centralizada">
+              <vs-tooltip text="Mostrar aditivo">
+                <vs-button type="flat" color="dark" :disabled="!row.item.url_aditivo" target :href="row.item.url_aditivo"
+                           icon="note_add"></vs-button>
+              </vs-tooltip>
+            </div>
+          </template>
           <template #cell(editar)="row">
             <div class="item-coluna-centralizada">
               <vs-tooltip text="Editar">
@@ -141,6 +149,7 @@
             <col>
             <col>
             <col>
+            <col style="width: 15px">
             <col style="width: 15px">
             <col style="width: 15px">
             <col style="width: 15px">
@@ -389,13 +398,13 @@
         </b-tab>
         <b-tab title="Inf. adicionais">
           <b-row>
-            <b-col>
+            <b-col xs="12" md="12" lg="">
               <b-form-file @change="importarPDF" type="file" ref="file" class="mt-3 arquivo-pdf" accept=".pdf"
                            placeholder="Escolha um arquivo para importar"
                            drop-placeholder="Solte o arquivo aqui!" :disabled="!editar">
               </b-form-file>
             </b-col>
-            <b-col>
+            <b-col lg="auto" xs="12" md="12">
               <div v-if="carregandoImportarPDF">
                 <label class="p-contrato" style="margin-bottom: 2px; margin-right: 5px;"><b>Importando... </b></label>
                 <b-spinner label="Loading..." small></b-spinner>
@@ -406,6 +415,28 @@
                 <template v-else>
                   <p v-if="contrato.nome_pdf" style="color:green" class="p-contrato"><b>Contrato importado</b></p>
                   <p v-else style="color:red" class="p-contrato"><b>Contrato não importado</b></p>
+                </template>
+              </div>
+            </b-col>
+            <b-col xs="12" md="12" lg="">
+              <div>
+                <b-form-file @change="importarAditivo" type="file" ref="file" class="mt-3 arquivo-pdf" accept=".pdf"
+                             placeholder="Escolha um ADITIVO para importar"
+                             drop-placeholder="Solte o arquivo aqui!" :disabled="!editar || !contrato.nome_pdf">
+                </b-form-file>
+              </div>
+            </b-col>
+            <b-col lg="auto" xs="12" md="12">
+              <div v-if="carregandoImportarAditivo">
+                <label class="p-contrato" style="margin-bottom: 2px; margin-right: 5px;"><b>Importando... </b></label>
+                <b-spinner label="Loading..." small></b-spinner>
+              </div>
+              <div v-else>
+                <p v-if="!editar" class="p-contrato"><b>Para realizar a importação do aditivo primeiro importe um contrato</b>
+                </p>
+                <template v-else>
+                  <p v-if="contrato.nome_aditivo" style="color:green" class="p-contrato"><b>Aditivo importado</b></p>
+                  <p v-else style="color:red" class="p-contrato"><b>Aditivo não importado</b></p>
                 </template>
               </div>
             </b-col>
@@ -893,6 +924,7 @@ export default {
         {key: 'nome_imovel', label: 'Imóvel', sortable: true, thClass: 'text-center'},
         {key: 'status', label: 'Status', class: 'text-center'},
         {key: 'contrato', label: ''},
+        {key: 'aditivo', label: ''},
         {key: 'editar', label: ''},
         {key: 'deletar', label: ''},
       ],
@@ -991,6 +1023,7 @@ export default {
       tabBoleto: 0,
       idFiador: [],
       carregandoImportarPDF: false,
+      carregandoImportarAditivo: false,
       cep_atual: '',
       carregandoCep: false,
       fiadores: [],
@@ -1220,6 +1253,29 @@ export default {
         })
       }
     },
+    importarAditivo(event){
+      if (this.editar) {
+        this.carregandoImportarAditivo = true
+        this.btn_importa_desabilitado = false
+        this.files = event.target.files
+        const formData = new FormData();
+        for (const i of Object.keys(this.files)) {
+          formData.append('files', this.files[i])
+        }
+        api.post(`/contrato/${this.contrato.id}/importar/aditivo`, formData, {}).then((res) => {
+          this.contrato.nome_aditivo = res.data[0].nome
+          this.buscarContratos()
+          this.$vs.notify({
+            text: `Aditivo importado com sucesso!`,
+            position: 'top-center',
+            color: 'success',
+            time: 4000,
+            icon: 'check_circle_outline'
+          })
+          this.carregandoImportarAditivo = false
+        })
+      }
+    },
     mostrarModalAdicionarBoleto() {
       this.$modal.show('modal-adicionar-boleto')
       this.buscarStatusBoleto()
@@ -1443,7 +1499,6 @@ export default {
       let valorFormatado = this.contrato.valor_boleto.replace('R$','').replace(',','.').trim()
       let valorReajustadoFormatado = this.contrato.valor_reajustado.replace('R$','').replace(',','.').trim()
       await api.patch('/contrato/reajuste', {reajuste:reajusteFormatado, valor:valorFormatado, valor_reajustado:valorReajustadoFormatado ,contrato: this.contrato}).then(resposta => {
-        console.log(resposta)
         let valor_reajustado = resposta.data.valor_reajustado
         this.contrato.valor_reajustado = `R$ ${valor_reajustado.replace('.', ',')}`
         this.contrato.ultimo_reajuste = resposta.data.ultimo_reajuste
