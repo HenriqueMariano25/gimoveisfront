@@ -204,9 +204,13 @@
                   <span><b>Vigência: </b>{{ $dayjs(row.item.data_fim).diff(row.item.data_inicio, 'month') }} meses</span>
                 </b-col>
               </b-row>
-              <b-row v-if="row.item.nome_pdf">
-                <b-col>
-                  <vs-button color="red" type="filled" icon="note_alt" class="mt-2" @click="deletarContratoPdfModal(row.item)">Remover arquivos
+              <b-row>
+                <b-col cols="auto" v-if="row.item.url">
+                  <vs-button color="red" type="filled" icon="description" class="mt-2" @click="deletarContratoPdfModal(row.item)">Remover contrato
+                  </vs-button>
+                </b-col>
+                <b-col v-if="row.item.url_aditivo">
+                  <vs-button color="red" type="filled" icon="note_add" class="mt-2" @click="deletarAditivoPdfModal(row.item)">Remover aditivo
                   </vs-button>
                 </b-col>
               </b-row>
@@ -1453,7 +1457,7 @@ export default {
     },
 
     deletarContratoPdfModal(contrato) {
-      this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar os arquivos do contrato ${("0000" + contrato.id).slice(-4)} ?`, {
+      this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar o arquivo do contrato ${("0000" + contrato.id).slice(-4)} ?`, {
         title: 'Deletar arquivos',
         buttonSize: 'sm',
         okTitle: 'Deletar',
@@ -1470,8 +1474,28 @@ export default {
     async deletarContratoPdf(contrato){
       await api.delete(`/contrato/${contrato.id}/remover/pdf`).then(() => {
       contrato.url = ""
-      contrato.url_aditivo = ""
       contrato.nome_pdf = ""
+      })
+    },
+
+    deletarAditivoPdfModal(contrato) {
+      this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar o aditivo do contrato ${("0000" + contrato.id).slice(-4)} ?`, {
+        title: 'Deletar arquivos',
+        buttonSize: 'sm',
+        okTitle: 'Deletar',
+        cancelTitle: 'Cancelar',
+        okVariant: 'danger',
+        footerClass: 'p-2',
+        centered: true
+      }).then(value => {
+        if (value) {
+          this.deletarAditivoPdf(contrato)
+        }
+      })
+    },
+    async deletarAditivoPdf(contrato){
+      await api.delete(`/contrato/${contrato.id}/remover/aditivo`).then(() => {
+        contrato.url_aditivo = ""
       })
     },
 
