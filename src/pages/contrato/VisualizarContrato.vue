@@ -204,6 +204,12 @@
                   <span><b>Vigência: </b>{{ $dayjs(row.item.data_fim).diff(row.item.data_inicio, 'month') }} meses</span>
                 </b-col>
               </b-row>
+              <b-row v-if="row.item.nome_pdf">
+                <b-col>
+                  <vs-button color="red" type="filled" icon="note_alt" class="mt-2" @click="deletarContratoPdfModal(row.item)">Remover arquivos
+                  </vs-button>
+                </b-col>
+              </b-row>
             </b-card>
           </template>
           <template #table-busy>
@@ -1445,6 +1451,32 @@ export default {
         this.fiadores.splice(fiador.index, 1)
       })
     },
+
+    deletarContratoPdfModal(contrato) {
+      this.$bvModal.msgBoxConfirm(`Tem certeza que deseja deletar os arquivos do contrato ${("0000" + contrato.id).slice(-4)} ?`, {
+        title: 'Deletar arquivos',
+        buttonSize: 'sm',
+        okTitle: 'Deletar',
+        cancelTitle: 'Cancelar',
+        okVariant: 'danger',
+        footerClass: 'p-2',
+        centered: true
+      }).then(value => {
+        if (value) {
+          this.deletarContratoPdf(contrato)
+        }
+      })
+    },
+    async deletarContratoPdf(contrato){
+      await api.delete(`/contrato/${contrato.id}/remover/pdf`).then(() => {
+      contrato.url = ""
+      contrato.url_aditivo = ""
+      contrato.nome_pdf = ""
+      })
+    },
+
+
+
     validarDataInicioFim() {
       let inicio = this.contrato.data_inicio
       let fim = this.contrato.data_fim
