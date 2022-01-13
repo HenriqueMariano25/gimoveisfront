@@ -1282,10 +1282,9 @@ export default {
       });
     },
     async editarImovel() {
-      console.log(this.imovel.valor_aquisicao.includes(','))
-      if (this.imovel.valor_aquisicao.includes(',')) this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao_mascara)
-      if (this.imovel.valor_atual.includes(',')) this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual_mascara)
-      if (this.imovel.valor_aquisicao_dolar.includes(',')) this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar_mascara)
+      if (this.imovel.valor_aquisicao_mascara.includes(',')) this.imovel.valor_aquisicao = converterDinherioFloat(this.imovel.valor_aquisicao_mascara)
+      if (this.imovel.valor_atual_mascara.includes(',')) this.imovel.valor_atual = converterDinherioFloat(this.imovel.valor_atual_mascara)
+      if (this.imovel.valor_aquisicao_dolar_mascara.includes(',')) this.imovel.valor_aquisicao_dolar = converterDinherioFloat(this.imovel.valor_aquisicao_dolar_mascara)
 
       if (this.validarCamposObrigatorio()) {
         let idUsuario = this.$store.state.usuario.id
@@ -1294,6 +1293,8 @@ export default {
           comodos: this.comodos,
           idUsuario: idUsuario
         }).then((response) => {
+          console.log(response)
+
           let nomeImovel = response.data[0].nome;
           this.$vs.notify({
             text: `Imóvel editado com sucesso: ${nomeImovel} !`,
