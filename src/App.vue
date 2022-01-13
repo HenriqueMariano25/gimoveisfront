@@ -2,7 +2,8 @@
   <div id="app">
     <Fundo/>
     <Topo v-if="logado"/>
-    <Menu v-if="logado"/>
+    <Menu v-if="logado && !$isMobile"/>
+    <menu-mobile v-if="logado && $isMobile"></menu-mobile>
     <router-view class="pagina"/>
   </div>
 </template>
@@ -12,13 +13,15 @@
 import Menu from "../src/components/Menu";
 import Topo from "@/components/Topo";
 import Fundo from "@/components/Fundo";
+import MenuMobile from "./components/shared/MenuMobile";
 
 export default {
   name: 'App',
   components: {
     Menu,
     Topo,
-    Fundo
+    Fundo,
+    MenuMobile
   },
   computed:{
     logado: function(){ return this.$store.state.token != null}

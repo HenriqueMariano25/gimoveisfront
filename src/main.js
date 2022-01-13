@@ -14,6 +14,9 @@ import 'vuesax/dist/vuesax.css'
 import 'material-icons/iconfont/material-icons.css';
 
 import store from "./services/store";
+import vuetify from './plugins/vuetify'
+
+import isMobile from "../../../GImoveis/gimoveis/src/mixin/isMobile";
 
 Vue.use(Vuesax)
 Vue.use(BootstrapVue)
@@ -23,11 +26,14 @@ Vue.use(VueTheMask)
 Vue.use(VueDayjs)
 Vue.use(VueCurrencyInput)
 
+Vue.mixin(isMobile)
+
 
 Vue.config.productionTip = false
 
 new Vue({
   router,
   store,
-  render: h => h(App),
+  vuetify,
+  render: h => h(App)
 }).$mount('#app')
