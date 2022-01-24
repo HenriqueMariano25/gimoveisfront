@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import vuetify from './plugins/vuetify'
 import Vuesax from 'vuesax'
 import { BootstrapVue,BootstrapVueIcons } from 'bootstrap-vue'
 import VModal from 'vue-js-modal'
@@ -8,15 +9,17 @@ import VueTheMask from 'vue-the-mask'
 import VueDayjs from 'vue-dayjs-plugin'
 import VueCurrencyInput from 'vue-currency-input'
 
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+// import 'bootstrap/dist/css/bootstrap.css'
+// import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'vuesax/dist/vuesax.css'
 import 'material-icons/iconfont/material-icons.css';
 
 import store from "./services/store";
-import vuetify from './plugins/vuetify'
 
-import isMobile from "../../../GImoveis/gimoveis/src/mixin/isMobile";
+import isMobile from "./mixin/isMobile";
+import converterDinheiroFloat from "./mixin/converterDinheiroFloat";
+
+import "./css/global.css"
 
 Vue.use(Vuesax)
 Vue.use(BootstrapVue)
@@ -27,7 +30,7 @@ Vue.use(VueDayjs)
 Vue.use(VueCurrencyInput)
 
 Vue.mixin(isMobile)
-
+Vue.mixin(converterDinheiroFloat)
 
 Vue.config.productionTip = false
 

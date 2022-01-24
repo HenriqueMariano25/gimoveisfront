@@ -1,299 +1,158 @@
 <template>
-  <b-container fluid class="centralizar-container">
-    <div class="barra-busca-mobile">
-      <b-row class="no-gutters">
-        <b-col>
-          <b-form-group class="barra-busca-mobile__form-group">
-            <b-input-group>
-              <transition name="slide-down__input-busca">
-                <b-form-input
-                    v-if="barraBuscaMobile"
-                    id="filter-input"
-                    v-model="filter"
-                    type="search"
-                    placeholder="Ex: João da Silva"
-                    class="barra-busca-mobile__input">
-                </b-form-input>
-              </transition>
-            </b-input-group>
-          </b-form-group>
-        </b-col>
-        <b-col cols="auto">
-          <template>
-            <b-input-group-text @click="barraBuscaMobile = !barraBuscaMobile" class="barra-busca-mobile__botao">
-              <b-icon icon="search"></b-icon>
-            </b-input-group-text>
-          </template>
-        </b-col>
-        <b-col cols="auto">
-          <b-button
-              variant="dark"
-              @click="gerarRelatorio"
-              class="barra-busca-mobile__imprimir">
-            <b-icon icon="printer-fill"></b-icon>
-          </b-button>
-        </b-col>
-      </b-row>
-    </div>
-    <b-row class="barra-top-caixa " align-v="center">
-      <b-col>
-        <h1 class="mb-1 titulo">Caixa</h1>
-      </b-col>
-      <b-col class="my-1 barra-busca esconder-quando-mobile" cols="3">
-        <b-form-group class="mb-0">
-          <b-input-group>
-            <template #prepend>
-              <b-input-group-text>
-                <b-icon icon="search"></b-icon>
-              </b-input-group-text>
-            </template>
-            <b-form-input
-                id="filter-input"
-                v-model="filter"
-                type="search"
-                placeholder="Ex: João da Silva"
-            ></b-form-input>
-          </b-input-group>
-        </b-form-group>
-      </b-col>
-      <b-col cols="auto" class="esconder-quando-mobile">
-        <b-button
-            v-b-tooltip.hover
-            title="Imprimir relatório"
-            variant="dark"
-            @click="gerarRelatorio"
-        >
-          <b-icon icon="printer-fill"></b-icon>
-        </b-button>
-      </b-col>
-    </b-row>
-    <b-row class="tabela-caixas">
-      <b-col class="botao-add-total-mobile" cols="12">
-        <b-row>
-          <b-col>
-            <vs-button color="#24a35a" type="filled" icon="person_add" @click="mostrarModal" style="width: 100%; z-index: 0;"
-                       class="botao-add-mobile">
-              Adicionar
-            </vs-button>
-          </b-col>
-          <b-col class="ml-auto total-mobile" cols="auto">
-            <h6>Total: {{ this.totalRows }}</h6>
-          </b-col>
-        </b-row>
-      </b-col>
-      <b-col class="col-tabela-caixas">
-        <b-table
-            class="tabela-caixa"
-            id="tabela-caixa"
-            primary-key="id"
-            :tbody-transition-props="transProps"
-            bordered
-            head-variant="dark"
-            sort-icon-left
-            :items="items"
-            :fields="camposCaixa"
-            :current-page="currentPage"
-            :per-page="perPage"
-            :filter="filter"
-            :filter-included-fields="filterOn"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="sortDesc"
-            :sort-direction="sortDirection"
-            :busy="carregandoTableCaixa"
-            show-empty
-            small
-            @filtered="onFiltered"
-            striped
-            hover
-            outlined
-            sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
-            no-border-collapse
-            @row-clicked=" (item) => $set(item, '_showDetails', !item._showDetails)"
+  <v-row no-gutters>
+    <v-col>
+      <v-row no-gutters>
+        <v-col>
+          <barra-topo-busca titulo="Caixa" :busca="busca" @buscar="busca = $event"></barra-topo-busca>
+        </v-col>
+      </v-row>
+      <v-row class="mt-0">
+        <v-col>
+          <v-card class="border-radius pa-3">
+            <v-data-table
+                :search="busca"
+                :headers="headers"
+                :items="items"
+                :footer-props="{
+                   itemsPerPageOptions:[10,25,50,-1]
+                }"
+                class="elevation-1 caixa-tabela pointer"
+                :height="$isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 310px)'"
+                single-expand
+                :expanded="expanded"
+                mobile-breakpoint="0"
+                item-key="id"
             >
-          <template #table-colgroup>
-            <col style="width: 50px">
-            <col style="max-width: 150px;">
-            <col>
-            <col>
-            <col>
-            <col>
-            <col style="width: 15px">
-            <col style="width: 15px">
-            <col style="width: 15px">
-          </template>
-          <template #cell(id)="row">
-            <span class="tr-caixa">{{ ("000000" + row.item.id).slice(-6) }}</span>
-          </template>
-          <template #cell(debito_credito)="row">
-            <span v-if="row.item.id_debito_credito == 1" class="debito">Débito</span>
-            <span v-else-if="row.item.id_debito_credito == 2" class="credito">Crédito</span>
-            <span v-else></span>
-          </template>
-          <template #cell(historico)="row">
-<!--            <span v-if="row.item.historico.length < 40 || row.item.historico != null">{{ row.item.historico }}</span>-->
-<!--            <span v-else>{{ row.item.historico.substring(0,40) }}...</span>-->
-            <span>{{ row.item.descricao_historico }}</span>
-          </template>
-          <template #cell(movimento)="row">
-            <span class="tr-caixa" v-if="row.item.movimento">{{ dayjs(row.item.movimento).format('DD/MM/YYYY') }}</span>
-            <span class="tr-caixa" v-else></span>
-          </template>
-          <template #cell(valor)="row">
-            <span class="tr-caixa" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
-              R$ {{ row.item.valor.replace('.', ',') }}
-            </span>
-          </template>
-          <template #cell(editar)="row">
-            <vs-tooltip text="Editar">
-              <vs-button type="flat" color="dark" icon="edit" @click.native="modalEditarModalCaixa(row)"></vs-button>
-            </vs-tooltip>
-          </template>
-          <template #cell(deletar)="row">
-            <vs-tooltip text="Deletar">
-              <vs-button type="flat" color="dark" icon="delete" @click.native="deletarCaixaModal(row)"></vs-button>
-            </vs-tooltip>
-          </template>
-          <template #table-busy>
-            <div class="text-center text-danger my-2">
-              <b-spinner class="align-middle mr-3"></b-spinner>
-              <strong>Carregando...</strong>
-            </div>
-          </template>
-          <template #row-details="row">
-            <b-card>
-              <b-row>
-                <b-col cols="auto">
-                  <span><b>Histórico:</b> {{ row.item.descricao_historico}}</span>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="auto">
-                  <span><b>Complemento Histórico:</b> {{ row.item.complemento_historico}}</span>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="auto">
-                  <span><b>Imóvel:</b> {{ row.item.imovel_nome}}</span>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="auto">
-                  <span><b>Conta:</b> {{ row.item.conta_nome}}</span>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="auto">
-                  <span><b>Número do documento:</b> {{ row.item.numero_documento}}</span>
-                </b-col>
-              </b-row>
-            </b-card>
-          </template>
-        </b-table>
-      </b-col>
-    </b-row>
-    <b-container fluid class="divider-personalizado esconder-quando-mobile" style="margin-left: -75px">
-      <b-row align-v="end">
-        <b-col class="" cols="auto">
-          <b-pagination
-              v-model="currentPage"
-              :total-rows="totalRows"
-              :per-page="perPage"
-              align="left"
-              class="my-0"
-              first-text="Primeira"
-              last-text="Última"
-          ></b-pagination>
-        </b-col>
-        <b-col sm="5" md="auto" class="">
-          <b-form-group
-              label="Por pagina"
-              label-for="per-page-select"
-              label-cols-sm="auto"
-              label-cols-md="auto"
-              label-cols-lg="auto"
-              label-align-sm="right"
-              label-size="sm"
-              align="left"
-              class="mb-1">
-            <b-form-select
-                id="per-page-select"
-                v-model="perPage"
-                :options="pageOptions"
-                size="sm"
-            ></b-form-select>
-          </b-form-group>
-        </b-col>
-        <b-col class="esconder-quando-mobile">
-          <h6>Total: {{ this.totalRows }}</h6>
-        </b-col>
-        <b-col class="ml-auto esconder-quando-mobile" cols="auto" style="margin-bottom: -5px">
-          <vs-button color="#24a35a" type="filled" icon="person_add" @click="modalCadastrarModalCaixa">
-            Adicionar
-          </vs-button>
-        </b-col>
-      </b-row>
-    </b-container>
-    <b-container fluid class="container-paginacao-total-mobile">
-      <b-row class="barra-paginacao-total-paginas-mobile no-gutters" style="width: 100%">
-        <b-col class="mr-2 col-paginacao-mobile">
-          <b-pagination
-              v-model="currentPage"
-              :total-rows="totalRows"
-              :per-page="perPage"
+              <template v-slot:expanded-item="{ headers, item }">
+                <td :colspan="headers.length" style="background-color: #d5e6fd">
+                  <ul class="pa-3" style="list-style-type: none;">
+                    <li v-if="item.complemento_historico">
+                      <span><strong>Complemento histórico: </strong>{{ item.complemento_historico }}</span>
+                    </li>
+                    <li><span><strong>Ímovel: </strong>{{ item.imovel_nome }}</span></li>
+                    <li><span><strong>Conta: </strong>{{ item.conta_nome }}</span></li>
+                    <li v-if="item.numero_documento">
+                      <span><strong>N° do documento: </strong>{{ item.numero_documento }}</span>
+                    </li>
+                  </ul>
+                </td>
+              </template>
 
-              class="my-0 w-100"
-              aria-controls="my-table"
-              align="fill">
-          </b-pagination>
-        </b-col>
-        <b-col class="ml-auto" cols="auto" style="max-width: 100px">
-          <b-form-group
-              label="Por pagina"
-              label-for="per-page-select"
-              label-cols-sm="auto"
-              label-cols-md="auto"
-              label-cols-lg="auto"
-              label-align-sm="right"
-              label-size="sm"
-              align="left"
-              class="mb-0 mr-0">
-            <b-form-select
-                id="per-page-select"
-                v-model="perPage"
-                :options="pageOptions"
-                size="sm"
+              <template v-slot:item="{ item }">
+                <tr>
+                  <td @click.prevent="abrirDetalhes(item, $event)">{{ ("000000" + item.id).slice(-6) }}</td>
+                  <td @click.prevent="abrirDetalhes(item, $event)">{{ item.descricao_historico }}</td>
+                  <td @click.prevent="abrirDetalhes(item, $event)">R$ {{ item.valor.replace('.', ',') }}</td>
+                  <td @click.prevent="abrirDetalhes(item, $event)">
+                    {{ item.movimento ? dayjs(item.movimento).format('DD/MM/YYYY') : '' }}
+                  </td>
+                  <td @click.prevent="abrirDetalhes(item, $event)">{{ item.imovel_nome }}</td>
+                  <td @click.prevent="abrirDetalhes(item, $event)">{{ item.conta_nome }}</td>
+                  <td @click.prevent="abrirDetalhes(item, $event)"
+                      :class="{'debito': item.id_debito_credito === 1, 'credito' : item.id_debito_credito === 2}">
+                    {{ item.id_debito_credito === 1 ? 'Débito' : item.id_debito_credito === 2 ? 'Crédito' : '' }}
+                  </td>
+                  <td class="acoes text-center">
+                    <v-tooltip top>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn icon v-bind="attrs" v-on="on" color="black" @click="dialogCaixa = true; caixa = item">
+                          <v-icon dark>
+                            mdi-pencil
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <span>Editar</span>
+                    </v-tooltip>
+                    <v-tooltip top>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            icon
+                            v-bind="attrs"
+                            v-on="on"
+                            color="black"
+                            @click.prevent="dialogDeletar = true; caixa = item"
+                        >
+                          <v-icon dark>
+                            mdi-delete
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <span>Deletar</span>
+                    </v-tooltip>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-col>
 
-            ></b-form-select>
-          </b-form-group>
-        </b-col>
-      </b-row>
-    </b-container>
-    <ModalCaixa @recarregarDados="buscarCaixa" :dados="caixa" :historicos="historicos"></ModalCaixa>
-  </b-container>
+    <dialog-caixa
+        :mostrar="dialogCaixa"
+        @cancelar="dialogCaixa = false; caixa = {}"
+        :dadosCaixa="caixa"
+        @cadastrado="cadastrado"
+        @editado="editado"
+    >
+
+    </dialog-caixa>
+
+    <barra-bottom-botoes @clickBtnAdicionar="dialogCaixa = true"
+                         @clickBtnImprimirRelatorio="gerarRelatorio"></barra-bottom-botoes>
+
+    <dialog-deletar
+        :texto="`Certeza que deseja deletar o caixa ${('000000' + caixa.id).slice(-6)} ?`"
+        sub-texto="Após deletar esse caixa não é possivel recuperar!"
+        :mostrar="dialogDeletar"
+        @cancelar="dialogDeletar = !dialogDeletar"
+        @deletar="deletar"
+    >
+    </dialog-deletar>
+
+    <alerta-acoes
+        :palavra-chave="'caixa'"
+        @sumir="mostrarAlerta = false"
+        v-bind:mostrar="mostrarAlerta"
+        :funcao="funcao"
+    >
+    </alerta-acoes>
+  </v-row>
 </template>
 <script>
 
-import ModalCaixa from '../../components/Caixa/ModalCaixa'
 import api from '../../services/api'
 import dayjs from 'dayjs'
 import {jsPDF} from "jspdf";
 import 'jspdf-autotable'
 
+import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
+import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
+import DialogCaixa from "./DialogCaixa"
+import AlertaAcoes from "../../components/shared/AlertaAcoes";
+import DialogDeletar from "../../components/shared/DialogDeletar";
+
 export default {
   name: "VisualizarCaixa.vue",
+  components: {
+    BarraTopoBusca,
+    BarraBottomBotoes,
+    DialogCaixa,
+    AlertaAcoes,
+    DialogDeletar
+  },
   data() {
     return {
       items: [],
-      camposCaixa: [
-        {key: 'id', label: 'Código', sortable: true, class: 'text-center', tdClass: 'pt-2'},
-        {key: 'descricao_historico', label: 'Histórico', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
-        {key: 'valor', label: 'Valor', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
-        {key: 'movimento', label: 'Movimento', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
-        {key: 'imovel_nome', label: 'Imóvel', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
-        {key: 'conta_nome', label: 'Conta', sortable: true, thClass: 'text-center', tdClass: 'pt-2'},
-        {key: 'debito_credito', label: 'D/C', sortable: true, class: 'text-center', tdClass: 'pt-2'},
-        {key: 'editar', label: '', tdClass: 'p-0'},
-        {key: 'deletar', label: '', tdClass: 'p-0'},
+      headers: [
+        {text: 'Lançamento', value: 'id', align: 'center', width: '120px'},
+        {text: 'Histórico', value: 'descricao_historico'},
+        {text: 'Valor', value: 'valor'},
+        {text: 'Movimento', value: 'movimento'},
+        {text: 'Imóvel', value: 'imovel_nome'},
+        {text: 'Conta', value: 'conta_nome'},
+        {text: 'D/C', value: 'id_debito_credito'},
+        {text: '', value: 'acoes', align: 'center', sortable: false, width: '90px'},
       ],
       totalRows: 1,
       currentPage: 1,
@@ -312,20 +171,20 @@ export default {
       barraBuscaMobile: false,
       carregandoTableCaixa: false,
       filtrados: [],
-      historicos: []
+      historicos: [],
+      dialogCaixa: false,
+
+      funcao: '',
+      mostrarAlerta: false,
+      dialogDeletar: false,
+      expanded: [],
+      busca: ''
     }
-  },
-  components: {
-    ModalCaixa
   },
   created() {
     this.buscarCaixa()
   },
   methods: {
-    mostrarModal() {
-      this.$modal.show('modal-caixa')
-      this.buscarHistoricos()
-    },
     async buscarCaixa() {
       this.carregandoTableCaixa = true
       await api.get('/caixa').then(consulta => {
@@ -335,53 +194,70 @@ export default {
         this.carregandoTableCaixa = false
       })
     },
-    modalEditarModalCaixa(caixa) {
-      let auxiliar = Object.entries(caixa.item)
-      this.caixa = Object.fromEntries(auxiliar)
-      this.mostrarModal()
-    },
-    modalCadastrarModalCaixa() {
-      this.caixa = {
-        id: '',
-        movimento: '',
-        valor: '',
-        id_debito_credito: '',
-        id_imovel: null,
-        historico: null,
-        complemento_historico: '',
-        id_conta: null,
-        numero_documento: ''
-      }
-      this.mostrarModal()
-    },
 
-    onFiltered(filteredItems) {
-      this.totalRows = filteredItems.length
-      this.filtrados = filteredItems
-      this.currentPage = 1
-    },
-
-    deletarCaixaModal(caixa) {
-      this.$bvModal.msgBoxConfirm(
-          `Tem certeza que deseja deletar o caixa: ${("000000" + caixa.item.id).slice(-6)} - ${caixa.item.historico} ?`,
-          {
-            title: 'Deletar caixa',
-            buttonSize: 'sm',
-            okTitle: 'Deletar',
-            cancelTitle: 'Cancelar',
-            okVariant: 'danger',
-            footerClass: 'p-2',
-            centered: true
-          }).then(value => {
-        if (value) {
-          this.deletarCaixa(caixa)
-        }
+    async buscarHistoricos() {
+      await api.get('/ajuste/historico').then(consulta => {
+        this.historicos = consulta.data
+        console.log(this.historicos)
       })
     },
-    async deletarCaixa(caixa) {
-      console.log(caixa)
-      await api.delete(`/caixa/${caixa.item.id}`).then(() => {
-        this.buscarCaixa()
+
+    abrirDetalhes(item, evento) {
+      let removerClass = document.querySelector('.aberto')
+      if (removerClass)
+        removerClass.classList.remove('aberto')
+
+      let tr = evento.target.parentElement
+
+      if (this.expanded[0] === item) {
+        this.expanded = []
+      } else {
+        this.expanded = []
+        tr.classList.add('aberto')
+        this.expanded.push(item)
+      }
+    },
+
+    cadastrado(item) {
+      this.items.push(item)
+      this.dialogCaixa = false
+      this.funcao = 'cadastrado'
+      this.mostrarAlerta = true
+      this.caixa = {}
+    },
+
+    editado(item) {
+      let index = this.items.findIndex(obj => {
+        return obj.id === item.id
+      })
+      this.items[index].movimento = item.movimento
+      this.items[index].valor = item.valor
+      this.items[index].id_conta = item.id_conta
+      this.items[index].conta_nome = item.conta_nome
+      this.items[index].id_imovel = item.id_imovel
+      this.items[index].imovel_nome = item.imovel_nome
+      this.items[index].id_debito_credito = item.id_debito_credito
+      this.items[index].numero_documento = item.numero_documento
+      this.items[index].id_historico = item.id_historico
+      this.items[index].descricao_historico = item.descricao_historico
+      this.items[index].complemento_historico = item.complemento_historico
+      this.dialogCaixa = false
+      this.funcao = 'editado'
+      this.mostrarAlerta = true
+      this.caixa = {}
+    },
+
+    async deletar() {
+      let caixa = this.caixa
+      await api.delete(`/caixa/${caixa.id}`).then(resp => {
+        let {id} = resp.data.caixa
+        let index = this.items.findIndex(obj => {
+          return obj.id === id
+        })
+        this.items.splice(index, 1)
+        this.dialogDeletar = false
+        this.funcao = 'deletado'
+        this.mostrarAlerta = true
       })
     },
 
@@ -389,7 +265,7 @@ export default {
       console.log(this.filtrados)
       let hojeAgr = dayjs().format('DD/MM/YYYY hh:mm:ss')
       let novosDados = JSON.parse(JSON.stringify(this.filtrados))
-      for (let i in novosDados){
+      for (let i in novosDados) {
         let valorFormatado = `${novosDados[i].valor.replace('.', ',')}`
         let movimentoFormatada = dayjs(novosDados[i].movimento).format('DD/MM/YYYY')
         let codigoFormatado = ("000000" + novosDados[i].id).slice(-6)
@@ -398,7 +274,7 @@ export default {
         novosDados[i].id = codigoFormatado
       }
       var doc = new jsPDF()
-      doc.page=1
+      doc.page = 1
       doc.setProperties({
         title: "Relátorio de Caixa"
       });
@@ -419,7 +295,7 @@ export default {
           {header: 'Imóvel', dataKey: 'imovel_nome'},
           {header: 'Conta', dataKey: 'conta_nome'},
         ],
-        columnStyles: { id: { halign: 'center' } },
+        columnStyles: {id: {halign: 'center'}},
         body: novosDados,
         theme: 'striped',
         headStyles: {
@@ -427,7 +303,7 @@ export default {
         },
         startY: 25,
         pageBreak: 'auto',
-        margin: {left:10, right:10, top: 10},
+        margin: {left: 10, right: 10, top: 10},
       })
       const totalPaginas = doc.internal.getNumberOfPages()
 
@@ -440,165 +316,99 @@ export default {
       }
       window.open(doc.output('bloburl', {filename: 'tabela_imovel.pdf'}));
     },
-
-    async buscarHistoricos() {
-      await api.get('/ajuste/historico').then(consulta => {
-        this.historicos = consulta.data
-        console.log(this.historicos)
-      })
-    }
   }
 }
 </script>
 
 <style scoped>
 
-.barra-top-caixa {
-  padding: 0;
-  background-color: white;
-  margin: 0;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
-}
-
-.tabela-caixas {
-  background-color: white;
-  margin: 0;
-  padding:0;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
-}
-
 .debito {
-  color: green;
-}
-
-.credito {
   color: red;
 }
 
-.divider-personalizado {
-  border-top: 1px solid rgb(200, 200, 200);
-  position: absolute;
-  bottom: 0;
-  margin-left: -100px;
-  width: 100%;
-  padding: 10px 100px 15px 100px;
-  background-color: white;
+.credito {
+  color: #105ab9;
 }
 
-.barra-busca-mobile {
-  position: absolute;
-  top: 50px;
-  left: 0;
-  width: 100%;
-  z-index: 2;
-  display: none;
-}
-
-.barra-busca-mobile__form-group {
-  margin-bottom: 0;
-}
-
-.barra-busca-mobile__input {
-  width: 100%;
-  height: 42px;
-  margin-bottom: 0 !important;
-}
-
-.barra-busca-mobile__botao {
-  font-size: 20px;
-  padding-bottom: 7px;
-  padding-top: 8px;
-}
-
-.col-tabela-caixas {
-  padding-top: 15px;
-}
-
-.slide-down__input-busca-enter-active {
-  transition: all .2s ease;
-}
-
-.slide-down__input-busca-leave-active {
-  transition: all .2s ease;
-}
-
-.slide-down__input-busca-enter, .slide-down__input-busca-leave-to {
-  transform: translateY(-30px);
-  opacity: 0;
-}
-
-table#tabela-caixa .flip-list-move {
-  transition: transform 0.4s;
-}
-
-.container-paginacao-total-mobile {
-  position: fixed;
-  bottom: 0;
-  margin-left: -10px;
-  margin-right: 0;
-  border-top: 1px solid rgb(200, 200, 200);
-  background-color: white;
-  padding: 0px 0px 10px 5px;
-  display: none;
-}
-
-.botao-add-total-mobile {
-  padding-top: 15px;
-  display: none;
-  width: 100%;
-}
-
-.total-mobile {
-  padding-top: 9px;
+.caixa-tabela >>> tbody tr:nth-of-type(even) {
+  cursor: pointer;
 
 }
 
-.total-mobile h6 {
-  font-size: 1.4rem;
+.caixa-tabela >>> tbody tr:nth-of-type(odd) {
+  background-color: #dedddd;
+  cursor: pointer;
+  /*color: white;*/
 }
 
-.barra-paginacao-total-paginas-mobile {
-  width: 100%;
+.caixa-tabela >>> tbody tr:hover {
+  background-color: #4c9afc !important;
+  color: white;
 }
 
-.col-paginacao-mobile {
-  max-width: 400px;
-  padding-top: 25px;
-  margin-bottom: 0;
+.caixa-tabela >>> thead {
+  background-color: #01479a;
+  /*color:white !important;*/
 }
 
-.titulo {
-  font-size: 170%;
+.caixa-tabela >>> thead th {
+  color: white !important;
+  border: 1px solid rgb(90, 90, 90);
 }
 
-.botao-add-mobile {
-  max-width: 300px;
+.caixa-tabela >>> thead th i {
+  color: white !important;
 }
 
-@media screen and (max-width: 992px) {
-  .tabela-caixa{
-    max-height: calc(((((100vh - 82px) - 30px) - 48px) - 52px) - 55px - 20px) !important;
-  }
-  .barra-busca-mobile {
-    display: block;
-  }
-  .botao-add-total-mobile {
-    display: block;
-  }
+.caixa-tabela >>> tbody td {
+  border: 1px solid rgb(150, 150, 150);
+}
 
-  .col-tabela-caixas {
-    padding-top: 10px;
-  }
+.caixa-tabela >>> .acoes {
+  padding: 2px;
+}
 
-  .esconder-quando-mobile {
+.caixa-tabela >>> tbody tr:hover .acoes i {
+  color: white;
+}
+
+.caixa-tabela >>> tbody tr:hover .debito {
+  color: white;
+}
+
+.caixa-tabela >>> tbody tr:hover .credito {
+  color: white;
+}
+
+.caixa-tabela >>> .aberto {
+  background-color: #63a1f6 !important;
+  color: white !important;
+}
+
+.caixa-tabela >>> .aberto .credito {
+  color: white !important;
+}
+
+.caixa-tabela >>> .aberto .debito {
+  color: white !important;
+}
+
+
+.caixa-tabela >>> .v-data-footer__select .v-input {
+  margin-left: 5px;
+}
+
+.caixa-tabela >>> .v-data-footer__select {
+  margin: 0;
+}
+
+.caixa-tabela >>> .v-data-footer__pagination {
+  margin-right: 5px;
+}
+
+@media screen and (max-width: 390px) {
+  .caixa-tabela >>> .v-data-footer__pagination {
     display: none;
-  }
-  .container-paginacao-total-mobile {
-    display:block;
   }
 }
 

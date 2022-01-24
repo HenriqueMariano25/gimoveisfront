@@ -135,6 +135,7 @@ nav.main-menu.expanded {
 
 .main-menu > ul {
   margin: 7px 0;
+  padding-left: 0 !important;
 }
 
 .main-menu li {
@@ -243,7 +244,7 @@ nav.main-menu li.active > a,
   background: #000;
   color: white;
   height: 0;
-  padding: 0 18px;
+  padding: 0 0;
   -webkit-transition: all .5s ease;
   -moz-transition: all .5s ease;
   transition: all .5s ease;

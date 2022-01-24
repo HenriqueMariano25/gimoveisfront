@@ -1,11 +1,15 @@
 <template>
-  <div id="app">
-    <Fundo/>
-    <Topo v-if="logado"/>
-    <Menu v-if="logado && !$isMobile"/>
-    <menu-mobile v-if="logado && $isMobile"></menu-mobile>
-    <router-view class="pagina"/>
-  </div>
+  <v-app class="app">
+    <div>
+      <Fundo/>
+      <Topo v-if="logado"/>
+      <Menu v-if="logado && !$isMobile"/>
+      <menu-mobile v-if="logado && $isMobile" class="menu_mobile"></menu-mobile>
+      <v-container fluid class="">
+        <router-view class="pagina"></router-view>
+      </v-container>
+    </div>
+  </v-app>
 </template>
 
 <script>
@@ -29,32 +33,43 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+
+:root {
+  --preto-principal: #353a40;
+  --btn-adicionar: #24a45a;
+  --btn-salvar: #24a45a;
+  --btn-cancelar: #707070;
+  --btn-deletar: #dc3545;
+}
 
 html{
   font-size: 16px;
 }
 
-#app{
-  width:100%;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-
+.app{
+  background-color: #f0f0f0 !important;
 }
+
 .pagina{
-  padding: 10px 100px;
+  padding-left: 60px;
   z-index:20;
 }
 
-.centralizar-container{
-  padding-right:15px;
-  padding-left:75px;
+.menu_mobile{
+  display: block;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 3;
 }
 
-@media screen and (max-width: 992px){
-  .centralizar-container{
-    padding: 60px 10px 0px 10px;
+@media screen and (max-width: 992px) {
+  .pagina {
+    padding-left: 0;
+    padding-top: 53px;
   }
 }
+
+
 </style>
