@@ -2,7 +2,7 @@
   <v-dialog
       v-model="mostrar"
       persistent
-      width="550px">
+      :width="width ? width : '550px'">
     <v-card class="pt-3">
       <v-row no-gutters>
         <v-col class="text-center text-h5 ma-1">
@@ -45,7 +45,7 @@
 <script>
 export default {
   name: "DialogDeletar",
-  props: ['texto', 'sub-texto', 'mostrar'],
+  props: ['texto', 'sub-texto', 'mostrar', 'width'],
   methods: {
     emitirDeletar() {
       this.$emit('deletar')

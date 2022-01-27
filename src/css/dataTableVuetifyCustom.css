@@ -1,0 +1,82 @@
+.tabela >>> tbody tr:nth-of-type(even) {
+    cursor: pointer;
+
+}
+
+.tabela >>> tbody tr:nth-of-type(odd) {
+    background-color: #dedddd;
+    cursor: pointer;
+}
+
+.tabela >>> tbody tr:hover {
+    background-color: #4c9afc !important;
+    color: white;
+}
+
+.tabela >>> thead {
+    background-color: #01479a !important;
+}
+
+.tabela >>> th{
+    background-color: #01479a !important;
+}
+
+.tabela >>> thead th {
+    color: white !important;
+    border: 1px solid rgb(90, 90, 90);
+}
+
+.tabela >>> thead th i {
+    color: white !important;
+}
+
+.tabela >>> tbody td {
+    border: 1px solid rgb(150, 150, 150);
+}
+
+.tabela >>> .acoes {
+    padding: 2px;
+}
+
+.tabela >>> tbody tr:hover .acoes i {
+    color: white;
+}
+
+.tabela >>> tbody tr:hover .debito {
+    color: white;
+}
+
+.tabela >>> tbody tr:hover .credito {
+    color: white;
+}
+
+.tabela >>> .aberto {
+    background-color: #63a1f6 !important;
+    color: white !important;
+}
+
+.tabela >>> .aberto .credito {
+    color: white !important;
+}
+
+.tabela >>> .aberto .debito {
+    color: white !important;
+}
+
+.tabela >>> .v-data-footer__select .v-input {
+    margin-left: 5px;
+}
+
+.tabela >>> .v-data-footer__select {
+    margin: 0;
+}
+
+.tabela >>> .v-data-footer__pagination {
+    margin-right: 5px;
+}
+
+@media screen and (max-width: 390px) {
+    .tabela >>> .v-data-footer__pagination {
+        display: none;
+    }
+}

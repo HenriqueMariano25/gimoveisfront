@@ -172,15 +172,6 @@ export default {
       validacoes: {
         required: value => !!value || '',
         requiredValor: value => this.$converterDinherioFloat(value) !== '0.00' || ''
-
-        // console.log(this.$converterDinherioFloat(value))
-
-        // },
-        // counter: value => value.length <= 20 || 'Max 20 characters',
-        // email: value => {
-        //   const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        //   return pattern.test(value) || 'Invalid e-mail.'
-        // },
       }
     }
   },
@@ -211,7 +202,6 @@ export default {
 
     async cadastrar() {
       const isValido = this.$refs.formulario.validate();
-      console.log(isValido)
 
       if(isValido){
         let idUsuario = this.$store.state.usuario.id
@@ -224,43 +214,8 @@ export default {
           this.$emit('cadastrado', caixa)
         })
       }
-
-
-
-
-
-        // let camposValidar = {
-        //   'movimento': this.caixa.movimento,
-        //   'histórico': this.caixa.historico,
-        //   'débito ou crédito': this.caixa.id_debito_credito,
-        //   'valor': caixaClonado.valor,
-        //   'conta': this.caixa.id_conta
-
-      // if (isValid) {
-      //   alert("Obrigado pelo contato, sua mensagem foi enviada com sucesso!");
-      //   // this.form = {
-      //   //   nome: "",
-      //   //   celular: "",
-      //   //   email: "",
-      //   //   mensagem: ""
-      //   // };
-      //   // this.$refs.form.resetValidation(); // Note that v-form also has another function called resetValidation(), so after we empty our fields, it won't show the validation errors again.
-      // }
     },
 
-    //   await validarCamposObrigatorios(camposValidar).then(() => {
-
-    //   }).catch(erros => {
-    //     this.$vs.notify({
-    //       text: `Esses campos estão vazios ou errados: ${erros}`,
-    //       position: 'top-center',
-    //       color: 'danger',
-    //       time: 6000,
-    //       icon: 'check_circle_outline'
-    //     })
-    //   })
-    //
-    // },
     async editar() {
       const isValido = this.$refs.formulario.validate();
       if(isValido){
@@ -274,41 +229,7 @@ export default {
           this.$emit('editado', caixa)
         })
       }
-
-    //   let idUsuario = this.$store.state.usuario.id
-    //   var caixaClonado = Object.assign({}, this.caixa)
-    //   caixaClonado.valor = converterDinherioFloat(this.caixa.valor)
-    //   let camposValidar = {
-    //     'movimento': this.caixa.movimento,
-    //     'histórico': this.caixa.historico,
-    //     'débito ou crédito': this.caixa.id_debito_credito,
-    //     'valor': caixaClonado.valor,
-    //     'conta': this.caixa.id_conta
-    //   }
-    //   await validarCamposObrigatorios(camposValidar).then(() => {
-    //     api.put('/caixa', {caixa: caixaClonado, idUsuario: idUsuario}).then(() => {
-    //       this.$vs.notify({
-    //         text: `Registro editado com sucessoooooo !`,
-    //         position: 'top-center',
-    //         color: 'warning',
-    //         time: 6000,
-    //         icon: 'check_circle_outline'
-    //       })
-    //       this.recarregarDados()
-    //       this.esconderModal()
-    //     })
-    //   }).catch(erros => {
-    //     this.$vs.notify({
-    //       text: `Esses campos estão vazios ou errados: ${erros}`,
-    //       position: 'top-center',
-    //       color: 'danger',
-    //       time: 6000,
-    //       icon: 'check_circle_outline'
-    //     })
-    //   })
     },
-
-
   },
   watch: {
     mostrar: function (valor) {

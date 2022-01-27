@@ -1,6 +1,6 @@
 <template>
   <v-row class="pa-2 bottom  elevation-2" no-gutters justify="end">
-    <v-col>
+    <v-col v-if="btnGerarRelatorio">
       <v-btn depressed :color="'var(--preto-principal)'" dark :large="!$isMobile" @click="clickBtnImprimirRelatorio"
              :fab="$isMobile">
         <v-icon :class="{ 'mr-2': !$isMobile}">
@@ -12,7 +12,7 @@
         </span>
       </v-btn>
     </v-col>
-    <v-col cols="auto">
+    <v-col cols="auto" v-if="btnAdicionar">
       <v-btn depressed :color="'var(--btn-adicionar)'" dark :large="!$isMobile" @click="clickBtnAdicionar"
              :fab="$isMobile">
         <v-icon :class="{ 'mr-2': !$isMobile}">
@@ -29,6 +29,7 @@
 <script>
 export default {
   name: "BarraBottomBotoes",
+  props:['btnGerarRelatorio', 'btnAdicionar'],
   methods: {
     clickBtnAdicionar() {
       this.$emit("clickBtnAdicionar")

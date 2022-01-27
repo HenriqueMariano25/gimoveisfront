@@ -1,0 +1,3 @@
+.tab-personalizada >>> .v-item-group:first-child .v-slide-group__prev:first-child{
+    display: none !important;
+}

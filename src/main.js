@@ -18,8 +18,8 @@ import store from "./services/store";
 
 import isMobile from "./mixin/isMobile";
 import converterDinheiroFloat from "./mixin/converterDinheiroFloat";
+import buscarEndereco from "./mixin/buscarEndereco";
 
-import "./css/global.css"
 
 Vue.use(Vuesax)
 Vue.use(BootstrapVue)
@@ -31,8 +31,10 @@ Vue.use(VueCurrencyInput)
 
 Vue.mixin(isMobile)
 Vue.mixin(converterDinheiroFloat)
+Vue.mixin(buscarEndereco)
 
 Vue.config.productionTip = false
+import "./css/global.css"
 
 new Vue({
   router,

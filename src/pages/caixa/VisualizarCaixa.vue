@@ -16,7 +16,7 @@
                 :footer-props="{
                    itemsPerPageOptions:[10,25,50,-1]
                 }"
-                class="elevation-1 caixa-tabela pointer"
+                class="elevation-1 tabela pointer"
                 :height="$isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 310px)'"
                 single-expand
                 :expanded="expanded"
@@ -98,8 +98,12 @@
 
     </dialog-caixa>
 
-    <barra-bottom-botoes @clickBtnAdicionar="dialogCaixa = true"
-                         @clickBtnImprimirRelatorio="gerarRelatorio"></barra-bottom-botoes>
+    <barra-bottom-botoes
+        @clickBtnAdicionar="dialogCaixa = true"
+        @clickBtnImprimirRelatorio="gerarRelatorio"
+        :btn-adicionar="true"
+        :btn-gerar-relatorio="true"
+    ></barra-bottom-botoes>
 
     <dialog-deletar
         :texto="`Certeza que deseja deletar o caixa ${('000000' + caixa.id).slice(-6)} ?`"
@@ -120,7 +124,6 @@
   </v-row>
 </template>
 <script>
-
 import api from '../../services/api'
 import dayjs from 'dayjs'
 import {jsPDF} from "jspdf";
@@ -128,18 +131,18 @@ import 'jspdf-autotable'
 
 import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
 import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
-import DialogCaixa from "./DialogCaixa"
 import AlertaAcoes from "../../components/shared/AlertaAcoes";
 import DialogDeletar from "../../components/shared/DialogDeletar";
+import DialogCaixa from "./DialogCaixa"
 
 export default {
   name: "VisualizarCaixa.vue",
   components: {
     BarraTopoBusca,
     BarraBottomBotoes,
-    DialogCaixa,
     AlertaAcoes,
-    DialogDeletar
+    DialogDeletar,
+    DialogCaixa,
   },
   data() {
     return {
@@ -190,7 +193,6 @@ export default {
       await api.get('/caixa').then(consulta => {
         this.items = consulta.data
         this.filtrados = consulta.data
-        this.totalRows = this.items.length
         this.carregandoTableCaixa = false
       })
     },
@@ -320,6 +322,9 @@ export default {
 }
 </script>
 
+
+<style scoped src="../../css/dataTableVuetifyCustom.css"/>
+
 <style scoped>
 
 .debito {
@@ -330,86 +335,5 @@ export default {
   color: #105ab9;
 }
 
-.caixa-tabela >>> tbody tr:nth-of-type(even) {
-  cursor: pointer;
-
-}
-
-.caixa-tabela >>> tbody tr:nth-of-type(odd) {
-  background-color: #dedddd;
-  cursor: pointer;
-  /*color: white;*/
-}
-
-.caixa-tabela >>> tbody tr:hover {
-  background-color: #4c9afc !important;
-  color: white;
-}
-
-.caixa-tabela >>> thead {
-  background-color: #01479a;
-  /*color:white !important;*/
-}
-
-.caixa-tabela >>> thead th {
-  color: white !important;
-  border: 1px solid rgb(90, 90, 90);
-}
-
-.caixa-tabela >>> thead th i {
-  color: white !important;
-}
-
-.caixa-tabela >>> tbody td {
-  border: 1px solid rgb(150, 150, 150);
-}
-
-.caixa-tabela >>> .acoes {
-  padding: 2px;
-}
-
-.caixa-tabela >>> tbody tr:hover .acoes i {
-  color: white;
-}
-
-.caixa-tabela >>> tbody tr:hover .debito {
-  color: white;
-}
-
-.caixa-tabela >>> tbody tr:hover .credito {
-  color: white;
-}
-
-.caixa-tabela >>> .aberto {
-  background-color: #63a1f6 !important;
-  color: white !important;
-}
-
-.caixa-tabela >>> .aberto .credito {
-  color: white !important;
-}
-
-.caixa-tabela >>> .aberto .debito {
-  color: white !important;
-}
-
-
-.caixa-tabela >>> .v-data-footer__select .v-input {
-  margin-left: 5px;
-}
-
-.caixa-tabela >>> .v-data-footer__select {
-  margin: 0;
-}
-
-.caixa-tabela >>> .v-data-footer__pagination {
-  margin-right: 5px;
-}
-
-@media screen and (max-width: 390px) {
-  .caixa-tabela >>> .v-data-footer__pagination {
-    display: none;
-  }
-}
 
 </style>

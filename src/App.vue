@@ -41,6 +41,7 @@ export default {
   --btn-salvar: #24a45a;
   --btn-cancelar: #707070;
   --btn-deletar: #dc3545;
+  --btn-adicionar-azul: #5398ff;
 }
 
 html{
@@ -63,6 +64,7 @@ html{
   width: 100%;
   z-index: 3;
 }
+
 
 @media screen and (max-width: 992px) {
   .pagina {
