@@ -11,8 +11,10 @@
           <v-card class="border-radius pa-3">
             <v-data-table
                 :search="busca"
+                @update:page="$paraTopo"
                 :headers="headers"
                 :items="items"
+                fixed-header
                 :footer-props="{
                    itemsPerPageOptions:[10,25,50,-1]
                 }"
@@ -107,7 +109,12 @@
       </v-row>
     </v-col>
 
-    <barra-bottom-botoes :btn-adicionar="true" @clickBtnAdicionar="dialogCliente = true"></barra-bottom-botoes>
+    <barra-bottom-botoes
+        :btn-adicionar="true"
+        @clickBtnAdicionar="dialogCliente = true"
+        @clickBtnImprimirRelatorio="gerarRelatorio"
+        :btn-gerar-relatorio="true"
+    ></barra-bottom-botoes>
 
     <dialog-cliente
         :mostrar="dialogCliente"
@@ -115,7 +122,6 @@
         @cadastrado="cadastrado"
         @editado="editado"
         :idCliente="idCliente"
-
     ></dialog-cliente>
 
     <alerta-acoes
@@ -139,12 +145,16 @@
 
 <script>
 
-import api from '../../services/api'
 import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
 import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
 import DialogCliente from "./DialogCliente";
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import DialogDeletar from "../../components/shared/DialogDeletar"
+
+import api from '../../services/api'
+import {jsPDF} from "jspdf";
+import dayjs from 'dayjs'
+import 'jspdf-autotable'
 
 export default {
   name: "VisualizarCliente",
@@ -173,7 +183,8 @@ export default {
       funcao: '',
       mostrarAlerta: false,
       dialogDeletar: false,
-      cliente: {}
+      cliente: {},
+      filtrados: [],
     }
   },
 
@@ -182,14 +193,13 @@ export default {
       this.carregandoTableCliente = true
       await api.get('/clientes').then(resp => {
         this.items = resp.data
+        this.filtrados = resp.data
       }).catch(erro => {
         console.log(erro)
       })
     },
 
     cancelar(cliente){
-      console.log(cliente)
-
       if(cliente){
         this.items.push(cliente)
       }
@@ -255,6 +265,55 @@ export default {
       })
     },
 
+    gerarRelatorio() {
+      let hojeAgr = dayjs().format('DD/MM/YYYY hh:mm:ss')
+      let novosDados = JSON.parse(JSON.stringify(this.filtrados))
+      for (let dado of novosDados) {
+        if(dado.numero_telefone.length > 0)
+          dado['telefone'] = dado.numero_telefone[0]
+      }
+      var doc = new jsPDF()
+      doc.page = 1
+      doc.setProperties({
+        title: "Relátorio de Clientes"
+      });
+      doc.setFontSize(10)
+      doc.text(hojeAgr, 200, 10, null, null, "right")
+      doc.line(10, 12, 200, 12);
+      doc.setFontSize(24)
+      doc.text(`Relátorio de Clientes`, 10, 22)
+      doc.setFontSize(14)
+      doc.text(`Total: ${this.filtrados.length}`, 200, 21, null, null, "right")
+      doc.autoTable({
+        head: [['Nome', 'Telefone', 'CPF / CNPJ', 'Status']],
+        columns: [
+          {header: 'Nome', dataKey: 'nome'},
+          {header: 'Telefone', dataKey: 'telefone'},
+          {header: 'CPF / CNPJ', dataKey: 'cpf_cnpj'},
+          {header: 'Status', dataKey: 'status'},
+        ],
+        columnStyles: {id: {halign: 'center'}},
+        body: novosDados,
+        theme: 'striped',
+        headStyles: {
+          fillColor: [50, 50, 50]
+        },
+        startY: 25,
+        pageBreak: 'auto',
+        margin: {left: 10, right: 10, top: 10},
+      })
+      const totalPaginas = doc.internal.getNumberOfPages()
+
+      doc.setFontSize(8)
+      for (var i = 1; i <= totalPaginas; i++) {
+        doc.setPage(i)
+        doc.text(`Página ${String(i)} de ${String(totalPaginas)}`, 205, 293, null, null, "right")
+
+      }
+      window.open(doc.output('bloburl', {filename: 'tabela_clientes.pdf'}));
+    },
+
+
 
   },
   mounted() {
@@ -265,6 +324,6 @@ export default {
 
 <style scoped src="../../css/dataTableVuetifyCustom.css"/>
 
-<style>
+<style scoped>
 
 </style>

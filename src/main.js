@@ -19,6 +19,7 @@ import store from "./services/store";
 import isMobile from "./mixin/isMobile";
 import converterDinheiroFloat from "./mixin/converterDinheiroFloat";
 import buscarEndereco from "./mixin/buscarEndereco";
+import paraTopo from './mixin/paraTopo'
 
 
 Vue.use(Vuesax)
@@ -32,6 +33,7 @@ Vue.use(VueCurrencyInput)
 Vue.mixin(isMobile)
 Vue.mixin(converterDinheiroFloat)
 Vue.mixin(buscarEndereco)
+Vue.mixin(paraTopo)
 
 Vue.config.productionTip = false
 import "./css/global.css"

@@ -5,7 +5,7 @@
         <v-col>
           <v-row>
             <v-col>
-              <h3 class="ma-0">{{ editando ? 'Editando caixa' : 'Cadastrando cliente' }}</h3>
+              <h3 class="ma-0">{{ editando ? 'Editando cliente' : 'Cadastrando cliente' }}</h3>
             </v-col>
           </v-row>
           <v-form lazy-validation ref="formulario" v-model="valido">
@@ -647,9 +647,8 @@ export default {
             this.mostrarAlerta = true
             this.editando = true
             this.$emit('cadastrado', {cliente: cliente, notificar: false})
+            this.clienteParaAdicionar = {}
           }
-
-
         }).catch(erro => {
           let mensagem = erro.response.data.erro
           this.funcao = 'erro'

@@ -11,6 +11,8 @@
           <v-card class="border-radius pa-3">
             <v-data-table
                 :search="busca"
+                @update:page="$paraTopo"
+                fixed-header
                 :headers="headers"
                 :items="items"
                 :footer-props="{
@@ -157,18 +159,6 @@ export default {
         {text: 'D/C', value: 'id_debito_credito'},
         {text: '', value: 'acoes', align: 'center', sortable: false, width: '90px'},
       ],
-      totalRows: 1,
-      currentPage: 1,
-      perPage: 25,
-      pageOptions: [25, 50, 100],
-      sortBy: '',
-      sortDesc: false,
-      sortDirection: 'asc',
-      filter: null,
-      filterOn: [],
-      transProps: {
-        name: "flip-list",
-      },
       dayjs: dayjs,
       caixa: {},
       barraBuscaMobile: false,
@@ -200,7 +190,6 @@ export default {
     async buscarHistoricos() {
       await api.get('/ajuste/historico').then(consulta => {
         this.historicos = consulta.data
-        console.log(this.historicos)
       })
     },
 
@@ -264,7 +253,6 @@ export default {
     },
 
     gerarRelatorio() {
-      console.log(this.filtrados)
       let hojeAgr = dayjs().format('DD/MM/YYYY hh:mm:ss')
       let novosDados = JSON.parse(JSON.stringify(this.filtrados))
       for (let i in novosDados) {
@@ -314,7 +302,6 @@ export default {
       for (var i = 1; i <= totalPaginas; i++) {
         doc.setPage(i)
         doc.text(`Página ${String(i)} de ${String(totalPaginas)}`, 205, 293, null, null, "right")
-
       }
       window.open(doc.output('bloburl', {filename: 'tabela_imovel.pdf'}));
     },
