@@ -83,6 +83,7 @@
                             v-bind="attrs"
                             v-on="on"
                             color="black"
+                            @click.prevent="dialogDeletar = true; imovel = item"
                         >
                           <v-icon dark>
                             mdi-delete
@@ -97,31 +98,40 @@
             </v-data-table>
           </v-card>
         </v-col>
-
-        <barra-bottom-botoes
-            :btn-adicionar="true"
-            @clickBtnAdicionar="dialogImovel = true"
-            @clickBtnImprimirRelatorio="gerarRelatorio"
-            :btn-gerar-relatorio="true"
-        ></barra-bottom-botoes>
-
-        <dialog-imovel
-            :mostrar="dialogImovel"
-            @cancelar="cancelar"
-            @cadastrado="cadastrado"
-            @editado="editado"
-            :idImovel="idImovel"
-
-        ></dialog-imovel>
-
       </v-row>
     </v-col>
+
+    <barra-bottom-botoes
+        :btn-adicionar="true"
+        @clickBtnAdicionar="dialogImovel = true"
+        @clickBtnImprimirRelatorio="gerarRelatorio"
+        :btn-gerar-relatorio="true"
+    ></barra-bottom-botoes>
+
+    <dialog-imovel
+        :mostrar="dialogImovel"
+        @cancelar="cancelar"
+        @cadastrado="cadastrado"
+        @editado="editado"
+        :idImovel="idImovel"
+
+    ></dialog-imovel>
+
+    <dialog-deletar
+        :texto="`Certeza que deseja deletar o imóvel: ${ imovel ? imovel.nome : ''} ?`"
+        sub-texto="Após deletar esse imóvel não é possivel recuperar!"
+        :mostrar="dialogDeletar"
+        @cancelar="dialogDeletar = !dialogDeletar; responsavel = {}"
+        @deletar="deletar"
+    >
+    </dialog-deletar>
 
     <alerta-acoes
         palavra-chave='imóvel'
         @sumir="mostrarAlerta = false"
         v-bind:mostrar="mostrarAlerta"
         :funcao="funcao"
+        :texto="textoAlerta"
     ></alerta-acoes>
   </v-row>
 </template>
@@ -137,6 +147,7 @@ import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
 import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
 import DialogImovel from "./DialogImovel";
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
+import DialogDeletar from "../../components/shared/DialogDeletar";
 
 export default {
   name: "VisualizarImovel",
@@ -145,23 +156,10 @@ export default {
     BarraBottomBotoes,
     DialogImovel,
     AlertaAcoes,
+    DialogDeletar
   },
   data() {
     return {
-      real: {
-        decimal: ',',
-        thousands: '.',
-        prefix: 'R$ ',
-        suffix: '',
-        precision: 2,
-      },
-      dolar: {
-        decimal: ',',
-        thousands: '.',
-        prefix: 'US$ ',
-        suffix: '',
-        precision: 2,
-      },
       items: [],
       headers: [
         {text: 'Nome', value: 'nome'},
@@ -169,50 +167,8 @@ export default {
         {text: 'Status', value: 'status'},
         {text: '', value: 'acoes', align: 'center', sortable: false, width: '90px'},
       ],
-      despesa: {
-        valor: "",
-        data: "",
-        data_vencimento: "",
-        tipo_despesa: null,
-        fixa_variavel: null,
-        descricao: "",
-        id_responsavel_pagamento: null
-      },
-      comodo: {
-        id: "",
-        descricao: "",
-        id_tipo_comodo: null,
-        quantidade: ""
-      },
-      tiposStatus: [],
-      tiposImoveis: [],
-      tiposComodos: [],
-      tiposDespesas: [],
-      tiposResponsaveisPagamento: [],
-      editar: false,
-      carregandoCep: false,
-      contratos: [],
-      idContrato: "",
-      boletos: "",
-      fixaVariavel: [
-        {valor: 'fixa', descricao: 'Fixa'},
-        {valor: 'variavel', descricao: "Variável"}
-      ],
-      despesas: [],
-      editandoDespesa: false,
-      comodos: [],
-      carregandoComodos: false,
-      editandoComodo: false,
-      idContratoModal: "",
-      modal_visivel: false,
-      recarregarImovel: false,
-      cep_atual: "",
-      proprietarios: [],
       filtrados: [],
       dayjs: dayjs,
-      barraBuscaMobile: false,
-
-
       busca: '',
       expanded: [],
       dialogImovel: false,
@@ -220,7 +176,8 @@ export default {
       funcao: '',
       mostrarAlerta: false,
       dialogDeletar: false,
-      imovel: {}
+      imovel: {},
+      textoAlerta: ''
     };
   },
 
@@ -327,6 +284,26 @@ export default {
       this.mostrarAlerta = true
       this.idImovel = null
     },
+
+    async deletar() {
+      let imovel = this.imovel
+      await api.delete(`/imovel/deletar/${imovel.id}`).then(() => {
+        let index = this.items.findIndex(obj => {
+          return obj.id === imovel.id
+        })
+        this.dialogDeletar = false
+        this.items.splice(index, 1)
+        this.funcao = 'deletado'
+        this.mostrarAlerta = true
+        this.responsavel = {}
+      }).catch(erro => {
+        let mensagem = erro.response.data.erro
+        this.funcao = 'erro'
+        this.textoAlerta = mensagem
+        this.mostrarAlerta = true
+      })
+    },
+
   },
   async mounted() {
     this.buscarImoveis();
@@ -337,255 +314,4 @@ export default {
 <style scoped src="../../css/dataTableVuetifyCustom.css"/>
 
 <style scoped>
-
-html,
-body {
-  height: 100%;
-}
-
-.input-personalizado {
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.botao-salvar {
-  width: 100%;
-  margin-top: 5px;
-}
-
-.botao-adicionar-comodo {
-  margin-top: 16px;
-}
-
-.vs-input--label {
-  color: rgb(160, 160, 160);
-  font-size: 11px;
-  margin-bottom: 2px;
-}
-
-.input-nascimento {
-  margin-top: -6px !important;
-  margin-bottom: 10px !important;
-}
-
-.vs-con-input-label {
-  width: 100%;
-}
-
-.vs-notifications {
-  max-width: 100% !important;
-}
-
-.item-coluna-centralizada {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.con-select {
-  width: 100%;
-  margin-top: -6px;
-  margin-bottom: 10px;
-}
-
-.vs-select--label {
-  margin: 0;
-}
-
-.vm--modal {
-  margin-top: -20px !important;
-  bottom: 25px;
-  padding: 25px;
-}
-
-.tr-imovel {
-  margin-top: 6px;
-  margin-bottom: 0px;
-}
-
-.barra-top-imovel {
-  padding: 0;
-  margin: 0;
-  margin-bottom: 10px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
-}
-
-.botao-deletar-comodo {
-  margin-top: 17px;
-}
-
-.tabela-imoveis {
-  background-color: white;
-  margin: 0;
-  padding: 0;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
-}
-
-.col-tabela-imoveis {
-  padding-top: 15px;
-}
-
-.divider-personalizado {
-  border-top: 1px solid rgb(200, 200, 200);
-  position: absolute;
-  bottom: 0;
-  margin-left: -100px;
-  width: 100%;
-  padding: 10px 100px 15px 100px;
-  background-color: white;
-}
-
-.material-icons {
-  z-index: 0;
-}
-
-.select-personalizado {
-  margin-bottom: 10px;
-}
-
-.bv-no-focus-ring {
-  margin: 0;
-  padding: 0;
-  color: rgb(110, 110, 110);
-  font-size: 12px;
-}
-
-.tabelas-contrato {
-  padding-top: 0;
-}
-
-.p-contratos {
-  margin: 0;
-}
-
-table#tabela-imovel .flip-list-move {
-  transition: transform 0.3s;
-}
-
-.td-centralizado {
-  padding-top: 10px !important;
-}
-
-.modal-adicionando-imovel {
-  margin-left: 25px;
-}
-
-.titulo {
-  font-size: 170%;
-}
-
-.botao-add-mobile {
-  max-width: 300px;
-}
-
-.total-mobile {
-  padding-top: 9px;
-}
-
-.total-mobile h6 {
-  font-size: 1.4rem;
-}
-
-.container-paginacao-total-mobile {
-  position: fixed;
-  bottom: 0;
-  margin-left: -10px;
-  margin-right: 0;
-  border-top: 1px solid rgb(200, 200, 200);
-  background-color: white;
-  padding: 0px 0px 10px 5px;
-  display: none;
-}
-
-.barra-paginacao-total-paginas-mobile {
-  width: 100%;
-}
-
-.col-paginacao-mobile {
-  max-width: 400px;
-  padding-top: 25px;
-  margin-bottom: 0;
-}
-
-.botao-add-total-mobile {
-  padding-top: 15px;
-  display: none;
-  width: 100%;
-}
-
-.barra-busca-mobile {
-  position: absolute;
-  top: 50px;
-  left: 0;
-  width: 100%;
-  z-index: 2;
-  display: none;
-}
-
-.barra-busca-mobile__form-group {
-  margin-bottom: 0;
-}
-
-.barra-busca-mobile__input {
-  width: 100%;
-  height: 42px;
-  margin-bottom: 0 !important;
-}
-
-.barra-busca-mobile__botao {
-  font-size: 20px;
-  padding-bottom: 7px;
-  padding-top: 8px;
-}
-
-.barra-busca-mobile__imprimir {
-  font-size: 20px;
-  padding-bottom: 3.5px;
-
-}
-
-
-.slide-down__input-busca-enter-active {
-  transition: all .2s ease;
-}
-
-.slide-down__input-busca-leave-active {
-  transition: all .2s ease;
-}
-
-.slide-down__input-busca-enter, .slide-down__input-busca-leave-to {
-  transform: translateY(-30px);
-  opacity: 0;
-}
-
-@media screen and (max-width: 992px) {
-  .tabela-imovel {
-    max-height: calc(((((100vh - 82px) - 30px) - 48px) - 52px) - 55px - 20px) !important;
-  }
-
-  .barra-busca-mobile {
-    display: block;
-  }
-
-  .botao-add-total-mobile {
-    display: block;
-  }
-
-  .col-tabela-imoveis {
-    padding-top: 10px;
-  }
-
-  .esconder-quando-mobile {
-    display: none;
-  }
-
-  .container-paginacao-total-mobile {
-    display: block;
-  }
-}
-
 </style>

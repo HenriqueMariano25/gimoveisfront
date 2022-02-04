@@ -175,7 +175,7 @@
 
                     <v-tab-item eager>
                       <v-row class="mt-1">
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-text-field
                               label="Data de aquisição"
                               outlined
@@ -185,7 +185,7 @@
                               type="date"
                           ></v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-text-field
                               label="Data de venda"
                               outlined
@@ -195,7 +195,7 @@
                               type="date"
                           ></v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-text-field
                               label="Área total m²"
                               outlined
@@ -205,7 +205,7 @@
                               type="number"
                           ></v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-text-field
                               label="Área construída m²"
                               outlined
@@ -217,7 +217,7 @@
                         </v-col>
                       </v-row>
                       <v-row>
-                        <v-col>
+                        <v-col cols="12" xl="4" lg="4" md="4">
                           <v-text-field
                               label="Valor da aquisição"
                               outlined
@@ -229,7 +229,7 @@
                             allowNegative: false, currency:'BRL'}"
                           ></v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="4" lg="4" md="4">
                           <v-text-field
                               label="Valor da aquisiçao em Dólar"
                               outlined
@@ -241,7 +241,7 @@
                           allowNegative: false, currency:'USD'}"
                           ></v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="4" lg="4" md="4">
                           <v-text-field
                               label="Valor atual"
                               outlined
@@ -255,7 +255,7 @@
                         </v-col>
                       </v-row>
                       <v-row>
-                        <v-col>
+                        <v-col cols="12" xl="6" lg="6" md="6">
                           <v-text-field
                               label="Nº cliente luz"
                               outlined
@@ -264,7 +264,7 @@
                               v-model="imovel.numero_cliente_luz"
                           ></v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="6" lg="6" md="6">
                           <v-text-field
                               label="Nº cliente água"
                               outlined
@@ -850,7 +850,9 @@ export default {
       dialogDeletarDespesa: false,
       expandedDespesa: [],
       editandoDespesa: false,
-      contratosForamBuscados: false
+      contratosForamBuscados: false,
+      imovelParaAdicionar: {},
+      adicionaImovelAItens: false
     }
   },
   created() {
