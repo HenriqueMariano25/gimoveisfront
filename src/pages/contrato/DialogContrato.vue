@@ -1,0 +1,970 @@
+<template>
+  <v-dialog v-model="mostrar" persistent max-width="1100px">
+    <v-card class="pa-5">
+      <v-row>
+        <v-col>
+          <v-row>
+            <v-col>
+              <h3 class="ma-0">{{ editando ? 'Editando contrato' : 'Cadastrando contrato' }}</h3>
+            </v-col>
+          </v-row>
+          <v-form lazy-validation ref="formulario" v-model="valido">
+            <v-row>
+              <v-col>
+                <v-tabs
+                    v-model="tab"
+                    grow
+                    class="tab-personalizada"
+                >
+                  <v-tab>Dados gerais</v-tab>
+                  <v-tab>Inf. Adicionais</v-tab>
+                  <v-tab :disabled="!editando" @click="buscarBoletos">Boletos</v-tab>
+                  <v-tab :disabled="!editando" @click="buscarFiadores">Fiador</v-tab>
+
+                  <v-tabs-items v-model="tab">
+
+                    <v-tab-item>
+                      <v-row class="mt-1">
+                        <v-col>
+                          <v-autocomplete
+                              :items="clientes"
+                              outlined
+                              hide-details="auto"
+                              label="Cliente 1*"
+                              item-value="id"
+                              item-text="nome"
+                              dense
+                              v-model="contrato.id_cliente"
+                              :rules="[validacoes.required]"
+                          >
+                          </v-autocomplete>
+                        </v-col>
+                        <v-col>
+                          <v-autocomplete
+                              :items="clientes"
+                              outlined
+                              hide-details="auto"
+                              label="Cliente 2"
+                              item-value="id"
+                              item-text="nome"
+                              dense
+                              v-model="contrato.id_cliente2"
+                          >
+                          </v-autocomplete>
+                        </v-col>
+                        <v-col>
+                          <v-autocomplete
+                              :items="responsaveis"
+                              outlined
+                              hide-details="auto"
+                              label="Responsável*"
+                              item-value="id"
+                              item-text="nome"
+                              dense
+                              v-model="contrato.id_responsavel"
+                              :rules="[validacoes.required]"
+                          >
+                          </v-autocomplete>
+                        </v-col>
+                        <v-col>
+                          <v-autocomplete
+                              :items="imoveis"
+                              outlined
+                              hide-details="auto"
+                              label="Imóvel*"
+                              item-value="id"
+                              item-text="nome"
+                              dense
+                              v-model="contrato.id_imovel"
+                              :rules="[validacoes.required]"
+                          >
+                          </v-autocomplete>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col>
+                          <v-autocomplete
+                              :items="statusContrato"
+                              outlined
+                              hide-details="auto"
+                              label="Status*"
+                              item-value="id"
+                              item-text="descricao"
+                              dense
+                              v-model="contrato.status"
+                              :rules="[validacoes.required]"
+                          >
+                          </v-autocomplete>
+                        </v-col>
+                        <v-col>
+                          <v-text-field
+                              label="Data de início*"
+                              outlined
+                              dense
+                              hide-details
+                              v-model="contrato.data_inicio"
+                              type="date"
+                              :rules="[validacoes.required]"
+                          >
+                          </v-text-field>
+                        </v-col>
+                        <v-col>
+                          <v-text-field
+                              label="Data de término*"
+                              outlined
+                              dense
+                              hide-details
+                              v-model="contrato.data_fim"
+                              type="date"
+                              :rules="[validacoes.required]"
+                              :disabled="!ativo_data_termino"
+                          >
+                          </v-text-field>
+                        </v-col>
+                        <v-col>
+                          <!--                          :value="dayjs(contrato.data_fim).diff(contrato.data_inicio, 'month') >= 0 ? dayjs(contrato.data_fim).diff(contrato.data_inicio, 'month') : ''"-->
+                          <v-text-field
+                              label="Vigência (mês)"
+                              outlined
+                              dense
+                              hide-details
+                              readonly
+                              v-model="contrato.vigencia"
+                          >
+                          </v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col>
+                          <v-text-field
+                              label="Carencia"
+                              outlined
+                              v-model="contrato.carencia"
+                              dense
+                              hide-details
+                          >
+                          </v-text-field>
+                        </v-col>
+                        <v-col>
+                          <v-text-field
+                              label="Vencimento*"
+                              outlined
+                              v-model="contrato.data_vencimento"
+                              dense
+                              hide-details
+                              type="date"
+                              :rules="[validacoes.required]"
+                          >
+                          </v-text-field>
+                        </v-col>
+                        <v-col>
+                          <v-text-field
+                              label="Valor do boleto*"
+                              outlined
+                              v-model="contrato.valor_boleto"
+                              dense
+                              hide-details
+                              ref="valor_boleto"
+                              :rules="[validacoes.required]"
+                              v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                        allowNegative: false, currency:'BRL'}"
+                          >
+                          </v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col>
+                          <v-text-field
+                              label="Garantia"
+                              outlined
+                              v-model="contrato.garantia"
+                              dense
+                              hide-details
+                          >
+                          </v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-tab-item>
+
+
+                    <v-tab-item eager>
+                      <v-row class="mt-1">
+                        <v-col>
+                          <v-file-input
+                              label="Importar contrato"
+                              outlined
+                              dense
+                              hide-details
+                              prepend-icon="mdi-file-document"
+                              :placeholder="textoInputImportarContrato"
+                              :disabled="!editando"
+                              multiple
+                              persistent-placeholder
+                              v-model="contratoPDF"
+                          ></v-file-input>
+                        </v-col>
+                        <v-col cols="auto">
+                          <v-btn color="var(--btn-salvar)" :dark="editando" block :disabled="!editando"
+                                 @click="importarPDF()">
+                            <v-icon>
+                              mdi-upload
+                            </v-icon>
+                            Importar
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                      <v-row class="mt-0">
+                        <v-col>
+                          <v-file-input
+                              label="Importar aditivo"
+                              outlined
+                              dense
+                              hide-details
+                              prepend-icon="mdi-file-edit"
+                              :placeholder="textoInputImportarAditivo"
+                              :disabled="!contrato.nome_pdf"
+                              multiple
+                              persistent-placeholder
+                              v-model="aditivoPDF"
+                          ></v-file-input>
+                        </v-col>
+                        <v-col cols="auto">
+                          <v-btn color="var(--btn-salvar)" :dark="editando" block :disabled="!editando"
+                                 @click="importarAditivo()">
+                            <v-icon>
+                              mdi-upload
+                            </v-icon>
+                            Importar
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col class="ml-2" cols="auto">
+                          <v-checkbox
+                              dense
+                              hide-details
+                              label="Juros e multa"
+                              v-model="contrato.juros_multa"
+                              :disabled="!editando"
+                          ></v-checkbox>
+                        </v-col>
+                        <v-col>
+                          <v-text-field
+                              label="Juros ao mês"
+                              outlined
+                              dense
+                              hide-details
+                              v-model="contrato.juros_mes"
+                              v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                            allowNegative: false, currency:{suffix:'%'}}"
+                              ref="juros"
+                              :disabled="!editando"
+                          >
+                          </v-text-field>
+                        </v-col>
+                        <v-col>
+                          <v-text-field
+                              label="Multa"
+                              outlined
+                              dense
+                              hide-details
+                              ref="multa"
+                              v-model="contrato.multa"
+                              v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                            allowNegative: false, currency:{suffix:'%'}}"
+                              :disabled="!editando"
+                          >
+                          </v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row align="center">
+                        <v-col>
+                          <v-text-field
+                              label="Reajuste do aluguel"
+                              outlined
+                              dense
+                              hide-details
+                              v-model="contrato.reajuste"
+                              v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                            allowNegative: false, currency:{suffix:'%'}}"
+                              :disabled="!editando"
+                          >
+                          </v-text-field>
+                        </v-col>
+                        <v-col>
+                          <v-btn color="var(--btn-salvar)" :dark="editando" large block @click="aplicarReajuste()"
+                                 :disabled="!editando">
+                            <v-icon>
+                              mdi-plus
+                            </v-icon>
+                            Aplicar reajuste
+                          </v-btn>
+                        </v-col>
+                        <v-col>
+                          <v-text-field
+                              label="Valor reajustado"
+                              outlined
+                              dense
+                              hide-details
+                              v-model="contrato.valor_reajustado"
+                              readonly
+                              ref="valor_reajustado"
+                              v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                        allowNegative: false, currency:'BRL'}"
+                              :disabled="!editando"
+                          >
+                          </v-text-field>
+                        </v-col>
+                        <v-col>
+                          <v-text-field
+                              label="Último reajuste"
+                              outlined
+                              dense
+                              hide-details
+                              type="date"
+                              v-model="contrato.ultimo_reajuste"
+                              readonly
+                              :disabled="!editando"
+                          >
+                          </v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col>
+                          <v-textarea
+                              label="Observação"
+                              outlined
+                              dense
+                              hide-details
+                              rows="2"
+                              v-model="contrato.observacao"
+                          ></v-textarea>
+                        </v-col>
+                      </v-row>
+                    </v-tab-item>
+
+                    <v-tab-item>
+                      <v-row class="mt-1">
+                        <v-col>
+                          <v-data-table
+                              :headers="headersBoletos"
+                              :items="boletos"
+                              class="elevation-1 tabela pointer"
+                              mobile-breakpoint="0"
+                              disable-pagination
+                              hide-default-footer
+                              height="450px"
+                              fixed-header
+                              item-key="id"
+                          >
+                            <template v-slot:item="{ item }">
+                              <tr>
+                                <td class="text-center">{{ ("000000" + item.id).slice(-6) }}</td>
+                                <td class="text-center">{{ $dayjs(item.data_vencimento).format('DD/MM/YYYY') }}</td>
+                                <td class="text-center">R$ {{ item.valor.replace('.', ',') }}</td>
+                                <td class="text-center"><span
+                                    v-if="item.valor_juros">R$ {{ item.valor_juros.replace('.', ',') }}</span></td>
+                                <td class="text-center"><span v-if="item.data_quitacao">{{
+                                    $dayjs(item.data_quitacao).format('DD/MM/YYYY')
+                                  }}</span></td>
+                                <td class="text-center">{{ item.status }}</td>
+                                <td class="acoes text-center">
+                                  <v-tooltip top>
+                                    <template v-slot:activator="{ on, attrs }">
+                                      <v-btn icon v-bind="attrs" v-on="on" color="black"
+                                             @click="dialogBoleto = true; boleto = item">
+                                        <v-icon dark>
+                                          mdi-pencil
+                                        </v-icon>
+                                      </v-btn>
+                                    </template>
+                                    <span>Editar</span>
+                                  </v-tooltip>
+                                  <v-tooltip top>
+                                    <template v-slot:activator="{ on, attrs }">
+                                      <v-btn
+                                          icon
+                                          v-bind="attrs"
+                                          v-on="on"
+                                          color="black"
+                                          @click.prevent="dialogDeletarBoleto = true; boleto = item"
+                                      >
+                                        <v-icon dark>
+                                          mdi-delete
+                                        </v-icon>
+                                      </v-btn>
+                                    </template>
+                                    <span>Deletar</span>
+                                  </v-tooltip>
+                                </td>
+                              </tr>
+                            </template>
+                          </v-data-table>
+                        </v-col>
+                      </v-row>
+                    </v-tab-item>
+
+                    <v-tab-item>
+                      <v-row class="mt-1">
+                        <v-col>
+                          <v-data-table
+                              :headers="headersFiador"
+                              :items="fiadores"
+                              class="elevation-1 tabela pointer"
+                              mobile-breakpoint="0"
+                              disable-pagination
+                              hide-default-footer
+                              fixed-header
+                              item-key="id"
+                          >
+                            <template v-slot:item="{ item }">
+                              <tr>
+                                <td class="text-center">{{ item.nome }}</td>
+                                <td class="text-center">{{ item.telefone }}</td>
+                                <td class="text-center">{{ item.email }}</td>
+                                <td class="text-center">{{ item.cpf_cnpj }}</td>
+                                <td class="acoes text-center">
+                                  <v-tooltip top>
+                                    <template v-slot:activator="{ on, attrs }">
+                                      <v-btn icon v-bind="attrs" v-on="on" color="black"
+                                             @click="dialogFiador = true; fiador = item">
+                                        <v-icon dark>
+                                          mdi-pencil
+                                        </v-icon>
+                                      </v-btn>
+                                    </template>
+                                    <span>Editar</span>
+                                  </v-tooltip>
+                                  <v-tooltip top>
+                                    <template v-slot:activator="{ on, attrs }">
+                                      <v-btn
+                                          icon
+                                          v-bind="attrs"
+                                          v-on="on"
+                                          color="black"
+                                          @click.prevent="dialogDeletarFiador = true; fiador = item"
+                                      >
+                                        <v-icon dark>
+                                          mdi-delete
+                                        </v-icon>
+                                      </v-btn>
+                                    </template>
+                                    <span>Deletar</span>
+                                  </v-tooltip>
+                                </td>
+                              </tr>
+                            </template>
+                          </v-data-table>
+                        </v-col>
+                      </v-row>
+                    </v-tab-item>
+
+                  </v-tabs-items>
+                </v-tabs>
+              </v-col>
+            </v-row>
+          </v-form>
+          <v-row :justify="$isMobile ? 'space-between' : 'end'">
+            <v-col v-if="tab === 3">
+              <v-btn color="var(--btn-salvar)" dark large @click="dialogFiador = true">
+                <v-icon>
+                  mdi-plus
+                </v-icon>
+                Adicionar fiador
+              </v-btn>
+            </v-col>
+            <v-col v-if="tab === 2">
+              <v-btn color="var(--btn-salvar)" dark large @click="dialogBoleto = true;">
+                <v-icon>
+                  mdi-plus
+                </v-icon>
+                Adicionar boleto
+              </v-btn>
+            </v-col>
+            <v-col cols="auto">
+              <v-btn color="var(--btn-salvar)" dark large
+                     @click="editando ? editarContrato() : cadastrarContrato(false)">
+                <v-icon class="mr-1">mdi-content-save</v-icon>
+                {{ !$isMobile ? 'Salvar' : '' }}
+              </v-btn>
+            </v-col>
+            <v-col cols="auto" v-if="!editando">
+              <v-btn color="var(--btn-salvar)" dark large @click="cadastrarContrato(true)">
+                <v-icon :class=" $isMobile ? '' : 'mr-1' ">mdi-content-save-move</v-icon>
+                {{ !$isMobile ? 'Salvar e sair' : '' }}
+              </v-btn>
+            </v-col>
+            <v-col cols="auto">
+              <v-btn dark color="var(--btn-cancelar)" large @click="cancelar">
+                <v-icon class="mr-1">
+                  mdi-close
+                </v-icon>
+                {{ !$isMobile ? 'Cancelar' : '' }}
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+
+      <dialog-fiador
+          :mostrar="dialogFiador"
+          :idContrato="idContrato"
+          :dados="fiador"
+          @cancelar="dialogFiador = false; fiador = {}"
+          @editado="fiadorEditado"
+          @cadastrado="fiadorCadastrado"
+      ></dialog-fiador>
+
+      <dialog-boleto
+          :mostrar="dialogBoleto"
+          :idBoleto="idBoleto"
+          :dados="boleto"
+          :idContrato="idContrato"
+          @cancelar="dialogBoleto = false; boleto = {}"
+          @editado="boletoEditado"
+          @cadastrado="boletoCadastrado"
+      ></dialog-boleto>
+
+      <alerta-acoes
+          :palavra-chave="palavraChave"
+          @sumir="mostrarAlerta = false"
+          v-bind:mostrar="mostrarAlerta"
+          :funcao="funcao"
+      ></alerta-acoes>
+
+      <dialog-deletar
+          :texto="`Certeza que deseja deletar o fiador: ${ fiador ? fiador.nome : ''} ?`"
+          sub-texto="Após deletar esse fiador não é possivel recuperar!"
+          :mostrar="dialogDeletarFiador"
+          @cancelar="dialogDeletarFiador = !dialogDeletarFiador; fiador = {}"
+          @deletar="deletarFiador"
+      >
+      </dialog-deletar>
+
+      <dialog-deletar
+          :texto="`Certeza que deseja deletar o boleto: ${ boleto ? ('000000' + boleto.id).slice(-6) : ''} ?`"
+          sub-texto="Após deletar esse boleto não é possivel recuperar!"
+          :mostrar="dialogDeletarBoleto"
+          @cancelar="dialogDeletarBoleto = !dialogDeletarBoleto; boleto = {}"
+          @deletar="deletarBoleto"
+      >
+      </dialog-deletar>
+
+    </v-card>
+  </v-dialog>
+</template>
+
+<script>
+import api from "../../services/api"
+import dayjs from 'dayjs'
+
+import DialogFiador from "../../components/Dialogs/DialogFiador"
+import AlertaAcoes from '../../components/shared/AlertaAcoes'
+import DialogBoleto from "../../components/Dialogs/DialogBoleto"
+import {setValue} from "vue-currency-input"
+import DialogDeletar from "../../components/shared/DialogDeletar"
+
+export default {
+  name: "DialogContrato",
+  props: ['mostrar', 'idContrato'],
+  components: {
+    DialogFiador,
+    AlertaAcoes,
+    DialogBoleto,
+    DialogDeletar
+  },
+  data() {
+    return {
+      headersBoletos: [
+        {text: 'Código', value: 'id', align: 'center'},
+        {text: 'Vencimento', value: 'data_vencimento', align: 'center'},
+        {text: 'Valor', value: 'valor', align: 'center'},
+        {text: 'Valor c/ juros', value: 'valor_juros'},
+        {text: 'Quitacao', value: 'data_quitacao'},
+        {text: 'Status', value: 'status'},
+        {text: '', value: 'acoes', align: 'center', sortable: false, width: '90px'},
+      ],
+      headersFiador: [
+        {text: 'Nome', value: 'nome', align: 'center'},
+        {text: 'Telefone', value: 'telefone', align: 'center'},
+        {text: 'Email', value: 'email', align: 'center'},
+        {text: 'CPF / CNPJ', value: 'cpf_cnpj'},
+        {text: '', value: 'acoes', align: 'center', sortable: false, width: '90px'},
+      ],
+      dayjs: dayjs,
+      editando: false,
+      valido: false,
+      tab: null,
+      clientes: [],
+      imoveis: [],
+      responsaveis: [],
+      contrato: {
+        id: '',
+        id_responsavel: null,
+        id_cliente: null,
+        id_cliente2: null,
+        id_imovel: null,
+        data_inicio: "",
+        data_fim: "",
+        vigencia: "",
+        data_vencimento: "",
+        valor_boleto: "",
+        carencia: "",
+        garantia: "",
+        fiador: null,
+        locador: "",
+        nome_pdf: "",
+        observacao: "",
+        status: null,
+        juros_multa: false,
+        juros_mes: '',
+        multa: '',
+        reajuste: '',
+        valor_reajustado: '',
+        ultimo_reajuste: null
+      },
+      boletos: [],
+      fiadores: [],
+      validacoes: {
+        required: value => !!value || '',
+      },
+      statusContrato: [],
+      dialogFiador: false,
+      funcao: '',
+      palavraChave: 'contrato',
+      mostrarAlerta: false,
+      adicionaContratoAItens: false,
+      contratoParaAdicionar: {},
+      boletosForamBuscados: false,
+      idBoleto: null,
+      dialogBoleto: false,
+      boleto: {},
+      fiador: {},
+      fiadoresForamBuscados: false,
+      dialogDeletarFiador: false,
+      dialogDeletarBoleto: false,
+      contratoPDF: null,
+      aditivoPDF: null,
+      ativo_data_termino: false,
+      textoInputImportarContrato: '',
+      textoInputImportarAditivo: '',
+    }
+  },
+  created() {
+    this.buscarClientes()
+    this.buscarResponsaveis()
+    this.buscarImoveis()
+    this.buscarStatusContrato()
+  },
+  methods: {
+    async buscarResponsaveis() {
+      await api.get('/contrato/responsaveis').then(resp => {
+        this.responsaveis = resp.data
+      })
+    },
+    async buscarClientes() {
+      await api.get('/contrato/clientes').then(resp => {
+        this.clientes = resp.data
+      })
+    },
+    async buscarImoveis() {
+      await api.get('/contrato/imoveis').then(resp => {
+        this.imoveis = resp.data
+      })
+    },
+    async buscarStatusContrato() {
+      await api.get('/contrato/status').then(resp => {
+        this.statusContrato = resp.data
+      })
+    },
+    async buscarBoletos() {
+      if (this.boletosForamBuscados === false) {
+        await api.get('/contrato/boletos', {params: {idContrato: this.contrato.id}}).then(resp => {
+          this.boletos = resp.data
+          this.boletosForamBuscados = true
+        })
+      }
+    },
+    async buscarFiadores() {
+      if (this.fiadoresForamBuscados === false) {
+        await api.get('/contrato/fiadores', {params: {idContrato: this.idContrato}}).then(resp => {
+              this.fiadores = resp.data
+              this.fiadoresForamBuscados = true
+            }
+        )
+      }
+    },
+
+    cancelar() {
+      if (this.adicionaContratoAItens) {
+        this.$emit('cancelar', this.contratoParaAdicionar)
+      } else {
+        this.$emit('cancelar')
+      }
+      this.tab = null
+      this.contrato = {}
+      this.boletos = []
+      this.boletosForamBuscados = false
+    },
+
+    async cadastrarContrato(sair) {
+      this.contrato.valor_boleto_convertido = this.$converterDinherioFloat(this.contrato.valor_boleto)
+      const isValido = this.$refs.formulario.validate()
+
+      if (isValido) {
+        let inicio = this.contrato.data_inicio
+        let fim = this.contrato.data_fim
+
+        if (fim > inicio) {
+          let idUsuario = this.$store.state.usuario.id
+
+          await api.post('/contrato/cadastrar', {
+            contrato: this.contrato,
+            idUsuario: idUsuario,
+          }).then(resp => {
+            let contrato = resp.data
+            if (sair) {
+              this.tab = null
+              this.contrato = {}
+              this.$emit('cadastrado', {contrato: contrato, notificar: true})
+            } else {
+              this.contratoParaAdicionar = contrato
+              this.adicionaContratoAItens = true
+              this.contrato.id = contrato.id
+              this.funcao = 'cadastrado'
+              this.palavraChave = 'contrato'
+              this.mostrarAlerta = true
+              this.editando = true
+              this.$emit('cadastrado', {contrato: contrato, notificar: false})
+            }
+          }).catch(erro => {
+            console.log(erro.response)
+          })
+        }
+      }
+    },
+
+    async editarContrato() {
+      const isValido = this.$refs.formulario.validate()
+      if (isValido) {
+        this.contrato.valor_boleto_convertido = this.$converterDinherioFloat(this.contrato.valor_boleto)
+        if (this.contrato.juros_mes)
+          this.contrato.juros_mes = this.contrato.juros_mes.replace('%', '').replace(',', '.')
+        else
+          this.contrato.juros_mes = ''
+
+        if (this.contrato.multa)
+          this.contrato.multa = this.contrato.multa.replace('%', '').replace(',', '.')
+        else
+          this.contrato.multa = ''
+
+        let idUsuario = this.$store.state.usuario.id
+        await api.post(`/contrato/editar`, {
+          contrato: this.contrato,
+          idUsuario: idUsuario,
+        }).then(resp => {
+          let {contrato} = resp.data
+          this.$emit('editado', contrato)
+          this.tab = 0
+        }).catch(erro => {
+          console.log(erro.response)
+        })
+      }
+    },
+
+    boletoEditado(boleto) {
+      let index = this.boletos.findIndex(obj => {
+        return obj.id === boleto.id
+      })
+
+      for (let key of Object.keys(boleto)) {
+        this.boletos[index][key] = boleto[key]
+      }
+      this.funcao = 'editado'
+      this.palavraChave = 'boleto'
+      this.mostrarAlerta = true
+      this.dialogBoleto = false
+
+    },
+
+    boletoCadastrado(boleto) {
+      this.boletos.push(boleto)
+      this.dialogBoleto = false
+      this.funcao = 'cadastrado'
+      this.palavraChave = 'boleto'
+      this.mostrarAlerta = true
+    },
+
+    async deletarBoleto() {
+      let {id} = this.boleto
+      await api.delete('/contrato/boleto/deletar', {params: {id: id}}).then(resp => {
+        let {id} = resp.data.boleto
+        let index = this.boletos.findIndex(obj => {
+          return obj.id === id
+        })
+        this.boletos.splice(index, 1)
+        this.funcao = 'deletado'
+        this.palavraChave = 'boleto'
+        this.mostrarAlerta = true
+        this.dialogDeletarBoleto = false
+      })
+    },
+
+    fiadorCadastrado(fiador) {
+      this.fiadores.push(fiador)
+      this.dialogFiador = false
+      this.funcao = 'cadastrado'
+      this.palavraChave = 'fiador'
+      this.mostrarAlerta = true
+    },
+
+    fiadorEditado(fiador) {
+      let index = this.fiadores.findIndex(obj => {
+        return obj.id === fiador.id
+      })
+
+      for (let key of Object.keys(fiador)) {
+        this.fiadores[index][key] = fiador[key]
+      }
+      this.funcao = 'editado'
+      this.palavraChave = 'fiador'
+      this.mostrarAlerta = true
+      this.dialogFiador = false
+
+    },
+
+    async deletarFiador() {
+      let fiador = this.fiador
+      await api.delete('/contrato/fiador/deletar', {params: {idFiador: fiador.id}}).then(resp => {
+        let {id} = resp.data.fiador
+        let index = this.fiadores.findIndex(obj => {
+          return obj.id === id
+        })
+        this.fiadores.splice(index, 1)
+        this.funcao = 'deletado'
+        this.palavraChave = 'fiador'
+        this.mostrarAlerta = true
+        this.dialogDeletarFiador = false
+      })
+    },
+
+    async aplicarReajuste() {
+      let reajusteFormatado = this.contrato.reajuste.replace('%', '').replace(',', '.')
+      let valorFormatado = this.contrato.valor_boleto.replace('R$', '').replace(',', '.').trim()
+      let valorReajustadoFormatado
+      if(this.contrato.valor_reajustado === null){
+        valorReajustadoFormatado = valorFormatado
+      }else{
+        valorReajustadoFormatado = this.contrato.valor_reajustado.replace('R$', '').replace(',', '.').trim()
+      }
+
+      let id = this.contrato.id
+      await api.patch('/contrato/reajuste', {
+        reajuste: reajusteFormatado, valor: valorFormatado, valor_reajustado: valorReajustadoFormatado, id: id
+      }).then(resp => {
+        let {valor_reajustado, ultimo_reajuste} = resp.data
+        setValue(this.$refs.valor_reajustado, valor_reajustado)
+        this.contrato.ultimo_reajuste = ultimo_reajuste
+        this.contrato.reajuste = ''
+      })
+    },
+
+    async importarPDF() {
+      const formData = new FormData();
+      for (const i of Object.keys(this.contratoPDF)) {
+        formData.append('files', this.contratoPDF[i])
+      }
+      api.post(`/contrato/${this.contrato.id}/importar/pdf`, formData, {}).then((resp) => {
+        let pdf = resp.data[0]
+        this.contrato.nome_pdf = pdf.nome
+        this.contrato.url = pdf.url
+        this.textoInputImportarContrato = 'CONTRATO importado com sucesso'
+        this.contratoPDF = []
+        if (!this.contrato.nome_aditivo)
+          this.textoInputImportarAditivo = 'Escolha um ADITIVO para importar'
+      })
+    },
+    async importarAditivo() {
+      const formData = new FormData();
+      for (const i of Object.keys(this.aditivoPDF)) {
+        formData.append('files', this.aditivoPDF[i])
+      }
+      api.post(`/contrato/${this.contrato.id}/importar/aditivo`, formData, {}).then((resp) => {
+        this.textoInputImportarAditivo = 'ADITIVO importado com sucesso'
+        this.contrato.nome_aditivo = resp.data[0].nome
+        this.aditivoPDF = []
+      })
+    }
+  },
+  watch: {
+    mostrar: async function (valor) {
+      if (valor === true) {
+        if (this.idContrato) {
+          await api.get('/contrato', {params: {id: this.idContrato}}).then(resp => {
+            let {contrato} = resp.data
+            this.contrato = contrato
+            setValue(this.$refs.valor_boleto, contrato.valor_boleto)
+            setValue(this.$refs.valor_reajustado, contrato.valor_reajustado)
+            setValue(this.$refs.multa, contrato.multa)
+            setValue(this.$refs.juros, contrato.juros_mes)
+            // if(contrato.nome_pdf) {
+            //
+            //   if(contrato.nome_aditivo) this.textoInputImportarAditivo = 'Aditivo já importado'
+            // }
+            this.editando = true
+
+            if (contrato.nome_pdf) {
+              this.textoInputImportarContrato = 'Contrato já importado'
+            } else {
+              this.textoInputImportarContrato = 'Escolha um CONTRATO para importar'
+            }
+
+            if (contrato.nome_aditivo) {
+              this.textoInputImportarAditivo = 'Aditivo já importado'
+            } else if (contrato.nome_pdf) {
+              this.textoInputImportarAditivo = 'Escolha um ADITIVO para importar'
+            } else {
+              this.textoInputImportarAditivo = 'Para realizar a importação primeiro importe um contrato'
+            }
+          })
+        } else {
+          this.editando = false
+          this.textoInputImportarContrato = 'Para realizar a importação primeiro cadastre esse contrato'
+          this.textoInputImportarAditivo = 'Para realizar a importação primeiro importe um contrato'
+        }
+      } else {
+        this.$refs.formulario.reset()
+      }
+    },
+
+    'contrato.data_inicio': function (inicio) {
+      if (inicio) {
+        if (inicio.length == 10) {
+          this.ativo_data_termino = true
+        } else {
+          this.ativo_data_termino = false
+          this.contrato.data_fim = ""
+          this.contrato.vigencia = ""
+        }
+      }
+    },
+    'contrato.data_fim': function (fim) {
+      if (fim) {
+        if (fim.length == 10) {
+          let inicio = this.contrato.data_inicio
+          this.contrato.vigencia = dayjs(fim).diff(inicio, 'month')
+        } else {
+          this.contrato.vigencia = ""
+        }
+      }
+    },
+  }
+}
+</script>
+
+<style scoped src="../../css/dataTableVuetifyCustom.css"/>
+<style scoped src="../../css/tabVuetifyCustom.css"/>
+
+<style scoped>
+
+</style>

@@ -501,7 +501,6 @@ export default {
       },
       validacoes: {
         required: value => !!value || '',
-        requiredValor: value => this.$converterDinherioFloat(value) !== '0.00' || ''
       },
       tiposEstadosCivis: [],
       tiposStatus: [],
