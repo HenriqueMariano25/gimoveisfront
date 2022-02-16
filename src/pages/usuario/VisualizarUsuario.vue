@@ -160,7 +160,7 @@ export default {
 
     gerarRelatorio() {
       let novosDados = JSON.parse(JSON.stringify(this.items))
-      let hojeAgr = dayjs().format('DD/MM/YYYY hh:mm:ss')
+      let hojeAgr = dayjs().format('DD/MM/YYYY HH:mm:ss')
       var doc = new jsPDF()
       doc.page = 1
       doc.setProperties({

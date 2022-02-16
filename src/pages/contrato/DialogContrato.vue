@@ -550,6 +550,11 @@
       >
       </dialog-deletar>
 
+      <dialog-carregando
+        :mostrar="dialogCarregando"
+      >
+      </dialog-carregando>
+
     </v-card>
   </v-dialog>
 </template>
@@ -563,6 +568,8 @@ import AlertaAcoes from '../../components/shared/AlertaAcoes'
 import DialogBoleto from "../../components/Dialogs/DialogBoleto"
 import {setValue} from "vue-currency-input"
 import DialogDeletar from "../../components/shared/DialogDeletar"
+import DialogCarregando from "../../components/shared/DialogCarregando";
+
 
 export default {
   name: "DialogContrato",
@@ -571,7 +578,8 @@ export default {
     DialogFiador,
     AlertaAcoes,
     DialogBoleto,
-    DialogDeletar
+    DialogDeletar,
+    DialogCarregando
   },
   data() {
     return {
@@ -648,6 +656,7 @@ export default {
       ativo_data_termino: false,
       textoInputImportarContrato: '',
       textoInputImportarAditivo: '',
+      dialogCarregando: false
     }
   },
   created() {
@@ -900,17 +909,17 @@ export default {
     mostrar: async function (valor) {
       if (valor === true) {
         if (this.idContrato) {
+          this.$nextTick(() => {
+            this.dialogCarregando = true
+          })
           await api.get('/contrato', {params: {id: this.idContrato}}).then(resp => {
+            this.dialogCarregando = false
             let {contrato} = resp.data
             this.contrato = contrato
             setValue(this.$refs.valor_boleto, contrato.valor_boleto)
             setValue(this.$refs.valor_reajustado, contrato.valor_reajustado)
             setValue(this.$refs.multa, contrato.multa)
             setValue(this.$refs.juros, contrato.juros_mes)
-            // if(contrato.nome_pdf) {
-            //
-            //   if(contrato.nome_aditivo) this.textoInputImportarAditivo = 'Aditivo já importado'
-            // }
             this.editando = true
 
             if (contrato.nome_pdf) {
@@ -926,6 +935,7 @@ export default {
             } else {
               this.textoInputImportarAditivo = 'Para realizar a importação primeiro importe um contrato'
             }
+
           })
         } else {
           this.editando = false

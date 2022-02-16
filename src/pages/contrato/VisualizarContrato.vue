@@ -243,7 +243,7 @@ export default {
       for (let dado of novosDados) {
         dado.codigo = ("0000" + dado.id).slice(-4)
       }
-      let hojeAgr = dayjs().format('DD/MM/YYYY hh:mm:ss')
+      let hojeAgr = dayjs().format('DD/MM/YYYY HH:mm:ss')
       var doc = new jsPDF()
       doc.page = 1
       doc.setProperties({

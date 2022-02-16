@@ -197,7 +197,7 @@ export default {
         let rua_formatada = `${novosDados[i].rua}, N° ${novosDados[i].numero}, ${novosDados[i].complemento}`
         novosDados[i].rua = rua_formatada
       }
-      let hojeAgr = dayjs().format('DD/MM/YYYY hh:mm:ss')
+      let hojeAgr = dayjs().format('DD/MM/YYYY HH:mm:ss')
       var doc = new jsPDF()
       doc.page = 1
       doc.setProperties({

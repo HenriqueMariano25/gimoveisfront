@@ -253,7 +253,7 @@ export default {
     },
 
     gerarRelatorio() {
-      let hojeAgr = dayjs().format('DD/MM/YYYY hh:mm:ss')
+      let hojeAgr = dayjs().format('DD/MM/YYYY HH:mm:ss')
       let novosDados = JSON.parse(JSON.stringify(this.filtrados))
       for (let i in novosDados) {
         let valorFormatado = `${novosDados[i].valor.replace('.', ',')}`
