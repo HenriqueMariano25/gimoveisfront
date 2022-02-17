@@ -18,14 +18,14 @@
                 <v-tab>Conta</v-tab>
                 <v-tab>Histórico</v-tab>
 
-                <v-tabs-items v-model="tab">
+                <v-tabs-items v-model="tab" touchless>
 
                   <v-tab-item>
                     <v-row class="pa-4 mt-0" no-gutters>
                       <v-col>
                         <v-row >
                           <v-col>
-                            <h1>Conta</h1>
+                            <h1 class="ml-2">Conta</h1>
                           </v-col>
                           <v-col cols="auto">
                             <v-btn color="var(--btn-salvar)" dark large @click="dialogConta = true;">
@@ -46,6 +46,7 @@
                                 :footer-props="{
                                     itemsPerPageOptions:[10,25,50,-1]
                                  }"
+                                :height="$isMobile ? 'calc(100vh - 345px)' : 'calc(100vh - 368px)'"
                                 class="elevation-1 tabela pointer"
                                 mobile-breakpoint="0"
                                 item-key="id"
@@ -79,7 +80,7 @@
                       <v-col>
                         <v-row >
                           <v-col>
-                            <h1>Histórico</h1>
+                            <h1 class="ml-2">Histórico</h1>
                           </v-col>
                           <v-col cols="auto">
                             <v-btn color="var(--btn-salvar)" dark large @click="dialogHistorico = true;">
@@ -102,6 +103,7 @@
                                  }"
                                 class="elevation-1 tabela pointer"
                                 mobile-breakpoint="0"
+                                :height="$isMobile ? 'calc(100vh - 345px)' : 'calc(100vh - 368px)'"
                                 item-key="id"
                             >
                               <template v-slot:item="{ item }">
@@ -193,13 +195,13 @@ export default {
       contas: [],
       camposConta: [
         {text: 'Nome', value: 'nome'},
-        {text: '', value: 'acoes', align: 'center', sortable: false, width: '90px'},
+        {text: '', value: 'acoes', align: 'center', sortable: false, width: '70px'},
       ],
       historicos: [],
       historico: '',
       camposHistorico: [
         {text: 'Descrição', value: 'descricao'},
-        {text: '', value: 'acoes', align: 'center', sortable: false, width: '90px'},
+        {text: '', value: 'acoes', align: 'center', sortable: false, width: '70px'},
       ],
     }
   },

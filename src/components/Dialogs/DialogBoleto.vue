@@ -9,7 +9,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col>
+            <v-col cols="12" xl="3" lg="3" md="3">
               <v-text-field
                   label="Data de vencimento"
                   outlined
@@ -20,7 +20,7 @@
               >
               </v-text-field>
             </v-col>
-            <v-col>
+            <v-col cols="12" xl="3" lg="3" md="3">
               <v-text-field
                   label="Data de quitação"
                   outlined
@@ -31,7 +31,7 @@
               >
               </v-text-field>
             </v-col>
-            <v-col>
+            <v-col cols="12" xl="3" lg="3" md="3">
               <v-text-field
                   label="Valor"
                   outlined
@@ -44,7 +44,7 @@
               >
               </v-text-field>
             </v-col>
-            <v-col>
+            <v-col cols="12" xl="3" lg="3" md="3">
               <v-autocomplete
                   :items="statusBoleto"
                   outlined
@@ -58,13 +58,13 @@
               </v-autocomplete>
             </v-col>
           </v-row>
-          <v-row justify="end">
+          <v-row :justify="$isMobile ? 'space-between' : 'end'">
             <v-col cols="auto">
               <v-btn color="var(--btn-salvar)" dark large @click="editando ? editarBoleto() : cadastrarBoleto()">
                 <v-icon class="mr-1">
                   mdi-content-save
                 </v-icon>
-                Salvar
+                {{ !$isMobile ? 'Salvar' : '' }}
               </v-btn>
             </v-col>
             <v-col cols="auto">
@@ -72,7 +72,7 @@
                 <v-icon class="mr-1">
                   mdi-close
                 </v-icon>
-                Cancelar
+                {{ !$isMobile ? 'Cancelar' : '' }}
               </v-btn>
             </v-col>
           </v-row>

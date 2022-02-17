@@ -15,17 +15,18 @@
                     v-model="tab"
                     grow
                     class="tab-personalizada"
+
                 >
                   <v-tab>Dados gerais</v-tab>
                   <v-tab>Inf. Adicionais</v-tab>
                   <v-tab :disabled="!editando" @click="buscarBoletos">Boletos</v-tab>
                   <v-tab :disabled="!editando" @click="buscarFiadores">Fiador</v-tab>
 
-                  <v-tabs-items v-model="tab">
+                  <v-tabs-items v-model="tab" touchless>
 
                     <v-tab-item>
                       <v-row class="mt-1">
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-autocomplete
                               :items="clientes"
                               outlined
@@ -39,7 +40,7 @@
                           >
                           </v-autocomplete>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-autocomplete
                               :items="clientes"
                               outlined
@@ -52,7 +53,7 @@
                           >
                           </v-autocomplete>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-autocomplete
                               :items="responsaveis"
                               outlined
@@ -66,7 +67,7 @@
                           >
                           </v-autocomplete>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-autocomplete
                               :items="imoveis"
                               outlined
@@ -82,7 +83,7 @@
                         </v-col>
                       </v-row>
                       <v-row>
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-autocomplete
                               :items="statusContrato"
                               outlined
@@ -96,7 +97,7 @@
                           >
                           </v-autocomplete>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-text-field
                               label="Data de início*"
                               outlined
@@ -108,7 +109,7 @@
                           >
                           </v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-text-field
                               label="Data de término*"
                               outlined
@@ -121,8 +122,7 @@
                           >
                           </v-text-field>
                         </v-col>
-                        <v-col>
-                          <!--                          :value="dayjs(contrato.data_fim).diff(contrato.data_inicio, 'month') >= 0 ? dayjs(contrato.data_fim).diff(contrato.data_inicio, 'month') : ''"-->
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-text-field
                               label="Vigência (mês)"
                               outlined
@@ -135,7 +135,7 @@
                         </v-col>
                       </v-row>
                       <v-row>
-                        <v-col>
+                        <v-col cols="12" xl="4" lg="4" md="4">
                           <v-text-field
                               label="Carencia"
                               outlined
@@ -145,7 +145,7 @@
                           >
                           </v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="4" lg="4" md="4">
                           <v-text-field
                               label="Dia do vencimento*"
                               outlined
@@ -157,7 +157,7 @@
                           >
                           </v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="4" lg="4" md="4">
                           <v-text-field
                               label="Valor do boleto*"
                               outlined
@@ -189,7 +189,7 @@
 
                     <v-tab-item eager>
                       <v-row class="mt-1">
-                        <v-col>
+                        <v-col cols="12" xl="" lg="" md="">
                           <v-file-input
                               label="Importar contrato"
                               outlined
@@ -203,7 +203,7 @@
                               v-model="contratoPDF"
                           ></v-file-input>
                         </v-col>
-                        <v-col cols="auto">
+                        <v-col cols="12" xl="auto" lg="auto" md="auto">
                           <v-btn color="var(--btn-salvar)" :dark="editando" block :disabled="!editando"
                                  @click="importarPDF()">
                             <v-icon>
@@ -213,8 +213,8 @@
                           </v-btn>
                         </v-col>
                       </v-row>
-                      <v-row class="mt-0">
-                        <v-col>
+                      <v-row class="">
+                        <v-col cols="12" xl="" lg="" md="">
                           <v-file-input
                               label="Importar aditivo"
                               outlined
@@ -228,7 +228,7 @@
                               v-model="aditivoPDF"
                           ></v-file-input>
                         </v-col>
-                        <v-col cols="auto">
+                        <v-col cols="12" xl="auto" lg="auto" md="auto">
                           <v-btn color="var(--btn-salvar)" :dark="editando" block :disabled="!editando"
                                  @click="importarAditivo()">
                             <v-icon>
@@ -239,7 +239,7 @@
                         </v-col>
                       </v-row>
                       <v-row>
-                        <v-col class="ml-2" cols="auto">
+                        <v-col class="ml-2" cols="12" xl="auto" lg="auto" md="auto">
                           <v-checkbox
                               dense
                               hide-details
@@ -248,7 +248,7 @@
                               :disabled="!editando"
                           ></v-checkbox>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="" lg="" md="">
                           <v-text-field
                               label="Juros ao mês"
                               outlined
@@ -262,7 +262,7 @@
                           >
                           </v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="" lg="" md="">
                           <v-text-field
                               label="Multa"
                               outlined
@@ -278,7 +278,7 @@
                         </v-col>
                       </v-row>
                       <v-row align="center">
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-text-field
                               label="Reajuste do aluguel"
                               outlined
@@ -291,7 +291,7 @@
                           >
                           </v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-btn color="var(--btn-salvar)" :dark="editando" large block @click="aplicarReajuste()"
                                  :disabled="!editando">
                             <v-icon>
@@ -300,7 +300,7 @@
                             Aplicar reajuste
                           </v-btn>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-text-field
                               label="Valor reajustado"
                               outlined
@@ -315,7 +315,7 @@
                           >
                           </v-text-field>
                         </v-col>
-                        <v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
                           <v-text-field
                               label="Último reajuste"
                               outlined
@@ -465,16 +465,16 @@
             </v-row>
           </v-form>
           <v-row :justify="$isMobile ? 'space-between' : 'end'">
-            <v-col v-if="tab === 3">
-              <v-btn color="var(--btn-salvar)" dark large @click="dialogFiador = true">
+            <v-col v-if="tab === 3" cols="12" xl="" lg="" md="">
+              <v-btn color="var(--btn-salvar)" dark large @click="dialogFiador = true" :block="$isMobile">
                 <v-icon>
                   mdi-plus
                 </v-icon>
                 Adicionar fiador
               </v-btn>
             </v-col>
-            <v-col v-if="tab === 2">
-              <v-btn color="var(--btn-salvar)" dark large @click="dialogBoleto = true;">
+            <v-col v-if="tab === 2" cols="12" xl="" lg="" md="">
+              <v-btn color="var(--btn-salvar)" dark large @click="dialogBoleto = true;" :block="$isMobile">
                 <v-icon>
                   mdi-plus
                 </v-icon>
@@ -963,16 +963,6 @@ export default {
         }
       }
     },
-    // 'contrato.data_fim': function (fim) {
-    //   if (fim) {
-    //     if (fim.length == 10) {
-    //       let inicio = this.contrato.data_inicio
-    //       this.contrato.vigencia = dayjs(fim).diff(inicio, 'month')
-    //     } else {
-    //       this.contrato.vigencia = ""
-    //     }
-    //   }
-    // },
   }
 }
 </script>

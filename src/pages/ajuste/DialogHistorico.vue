@@ -21,7 +21,7 @@
                 </v-text-field>
               </v-col>
             </v-row>
-            <v-row justify="end">
+            <v-row :justify="$isMobile ? 'space-between' : 'end'">
               <v-col cols="auto">
                 <v-btn color="var(--btn-salvar)" dark large
                        @click="editando ? editarHistorico() : cadastrarHistorico()">

@@ -21,12 +21,12 @@
                   <v-tab :disabled="!editando" @click="buscarTelefones">Telefones</v-tab>
                   <v-tab :disabled="!editando" @click="buscarContratos">Contratos</v-tab>
 
-                  <v-tabs-items v-model="tab">
+                  <v-tabs-items v-model="tab" touchless>
 
                     <v-tab-item>
-                      <v-row align="center" class="mt-1">
+                      <v-row align="center" class="mt-1" >
                         <v-col>
-                          <v-radio-group row dense hide-details class="radio-debito-credito"
+                          <v-radio-group row dense hide-details class="mt-0"
                                          v-model="cliente.tipo_cliente" :rules="[validacoes.required]">
                             <v-radio
                                 label="Pessoa física*"

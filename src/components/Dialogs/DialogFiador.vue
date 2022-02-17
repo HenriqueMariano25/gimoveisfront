@@ -10,7 +10,7 @@
           </v-row>
           <v-form lazy-validation ref="formulario" v-model="valido">
             <v-row>
-              <v-col cols="5">
+              <v-col cols="12" xl="5" lg="5" md="5">
                 <v-text-field
                     label="Nome*"
                     outlined
@@ -21,7 +21,7 @@
                 >
                 </v-text-field>
               </v-col>
-              <v-col>
+              <v-col cols="12" xl="" lg="" md="">
                 <v-text-field
                     label="E-mail"
                     outlined
@@ -31,7 +31,7 @@
                 >
                 </v-text-field>
               </v-col>
-              <v-col cols="2">
+              <v-col cols="12" xl="2" lg="2" md="2">
                 <v-autocomplete
                     :items="estadosCivis"
                     outlined
@@ -46,7 +46,7 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col>
+              <v-col cols="12" xl="3" lg="3" md="3">
                 <v-text-field
                     label="Data de nascimento"
                     outlined
@@ -57,7 +57,7 @@
                 >
                 </v-text-field>
               </v-col>
-              <v-col>
+              <v-col cols="12" xl="3" lg="3" md="3">
                 <v-text-field
                     label="CPF / CNPJ"
                     outlined
@@ -67,7 +67,7 @@
                 >
                 </v-text-field>
               </v-col>
-              <v-col>
+              <v-col cols="12" xl="3" lg="3" md="3">
                 <v-text-field
                     label="Identidade"
                     outlined
@@ -77,7 +77,7 @@
                 >
                 </v-text-field>
               </v-col>
-              <v-col>
+              <v-col cols="12" xl="3" lg="3" md="3">
                 <v-text-field
                     label="Telefone"
                     outlined
@@ -159,13 +159,13 @@
               </v-col>
             </v-row>
           </v-form>
-          <v-row justify="end">
+          <v-row :justify="$isMobile ? 'space-between' : 'end'">
             <v-col cols="auto">
               <v-btn color="var(--btn-salvar)" dark large @click="editando ? editarFiador() : cadastrarFiador()">
                 <v-icon class="mr-1">
                   mdi-content-save
                 </v-icon>
-                Salvar
+                {{ !$isMobile ? 'Salvar' : '' }}
               </v-btn>
             </v-col>
             <v-col cols="auto">
@@ -173,7 +173,7 @@
                 <v-icon class="mr-1">
                   mdi-close
                 </v-icon>
-                Cancelar
+                {{ !$isMobile ? 'Cancelar' : '' }}
               </v-btn>
             </v-col>
           </v-row>

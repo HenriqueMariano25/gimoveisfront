@@ -2,7 +2,7 @@ s
 <template>
   <v-row>
     <v-col>
-      <v-card>
+      <v-card class="border-radius pa-3">
         <v-tabs
             v-model="tab"
             grow
@@ -12,7 +12,7 @@ s
           <v-tab>Boletos vencidos</v-tab>
           <v-tab>Contratos para reajustar</v-tab>
 
-          <v-tabs-items v-model="tab">
+          <v-tabs-items v-model="tab" touchless>
 
             <v-tab-item>
               <v-row class="mt-1" no-gutters>

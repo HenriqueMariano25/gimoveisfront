@@ -22,7 +22,7 @@
                   <v-tab :disabled="!editando" @click="buscarDespesas()">Despesas</v-tab>
                   <v-tab :disabled="!editando" @click="buscarContratos()">Contratos</v-tab>
 
-                  <v-tabs-items v-model="tab">
+                  <v-tabs-items v-model="tab" touchless>
 
                     <v-tab-item>
                       <v-row align="center" class="mt-1">
