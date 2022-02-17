@@ -34,7 +34,7 @@
                     <li><span><strong>Data de término: </strong>{{ $dayjs(item.data_fim).format('DD/MM/YYYY') }}</span>
                     </li>
                     <li><span><strong>Data de vencimento: </strong>{{
-                        $dayjs(item.data_vencimento).format('DD/MM/YYYY')
+                        item.data_vencimento
                       }}</span></li>
                     <li><span><strong>Valor: </strong>R$ {{ item.valor_boleto.replace('.', ',') }}</span></li>
                     <li v-if="item.fiadores">
@@ -306,8 +306,12 @@ export default {
       let index = this.items.findIndex(obj => {
         return obj.id === contrato.id
       })
-      for (let key of Object.keys(contrato)) {
-        this.items[index][key] = contrato[key]
+      if(index >= 0){
+        for (let key of Object.keys(contrato)) {
+          this.items[index][key] = contrato[key]
+        }
+      }else{
+        this.items.push(contrato)
       }
 
       this.dialogContrato = false

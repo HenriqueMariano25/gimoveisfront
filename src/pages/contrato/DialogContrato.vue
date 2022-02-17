@@ -146,14 +146,19 @@
                           </v-text-field>
                         </v-col>
                         <v-col>
+<!--                          <v-date-picker-->
+
+<!--                              type="day"-->
+<!--                              color=""-->
+<!--                          ></v-date-picker>-->
                           <v-text-field
-                              label="Vencimento*"
+                              label="Dia do vencimento*"
                               outlined
                               v-model="contrato.data_vencimento"
                               dense
                               hide-details
-                              type="date"
-                              :rules="[validacoes.required]"
+                              v-mask="'##'"
+                              :rules="[validacoes.dia]"
                           >
                           </v-text-field>
                         </v-col>
@@ -635,6 +640,7 @@ export default {
       fiadores: [],
       validacoes: {
         required: value => !!value || '',
+        dia: value => value > 0 && value <= 31,
       },
       statusContrato: [],
       dialogFiador: false,
@@ -737,6 +743,7 @@ export default {
               this.contrato = {}
               this.$emit('cadastrado', {contrato: contrato, notificar: true})
             } else {
+              this.contrato.vigencia = contrato.vigencia
               this.contratoParaAdicionar = contrato
               this.adicionaContratoAItens = true
               this.contrato.id = contrato.id
@@ -916,6 +923,9 @@ export default {
             this.dialogCarregando = false
             let {contrato} = resp.data
             this.contrato = contrato
+            if(contrato.data_vencimento.length > 2){
+              this.contrato.data_vencimento = dayjs(contrato.data_vencimento).get('date')
+            }
             setValue(this.$refs.valor_boleto, contrato.valor_boleto)
             setValue(this.$refs.valor_reajustado, contrato.valor_reajustado)
             setValue(this.$refs.multa, contrato.multa)
@@ -958,16 +968,16 @@ export default {
         }
       }
     },
-    'contrato.data_fim': function (fim) {
-      if (fim) {
-        if (fim.length == 10) {
-          let inicio = this.contrato.data_inicio
-          this.contrato.vigencia = dayjs(fim).diff(inicio, 'month')
-        } else {
-          this.contrato.vigencia = ""
-        }
-      }
-    },
+    // 'contrato.data_fim': function (fim) {
+    //   if (fim) {
+    //     if (fim.length == 10) {
+    //       let inicio = this.contrato.data_inicio
+    //       this.contrato.vigencia = dayjs(fim).diff(inicio, 'month')
+    //     } else {
+    //       this.contrato.vigencia = ""
+    //     }
+    //   }
+    // },
   }
 }
 </script>
