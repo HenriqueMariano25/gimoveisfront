@@ -1,246 +1,279 @@
 <template>
-  <b-container fluid class="centralizar-container">
-    <b-row class="barra-top-ajuste" align-v="center">
-      <b-col>
-        <h1>Ajustes</h1>
-      </b-col>
-    </b-row>
-    <b-row class="tabelas">
-      <b-col cols="12" class="bloco" id="bloco-conta" md="6" >
-        <b-row class="bloco__titulo_e_btn no-gutters">
-          <b-col class="titulo">
-            <h3>Conta</h3>
-          </b-col>
-          <b-col cols="auto">
-            <vs-button color="#24a35a" type="filled" icon="add" @click="modalCadastrarConta">
-              Adicionar
-            </vs-button>
-          </b-col>
-        </b-row>
-        <b-row class="no-gutters">
-          <b-col class="bloco__tabela">
-            <b-table
-                class="tabela"
-                id="tabela"
-                primary-key="id"
-                bordered
-                head-variant="dark"
-                sort-icon-left
-                :items="contas"
-                :fields="camposConta"
-                show-empty
-                small
-                striped
-                hover
-                outlined
-                sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
-                tbody-tr-class="linhas-tabela"
-                no-border-collapse>
-              <template #table-colgroup>
-                <col>
-                <col style="width: 15px">
-              </template>
-              <template #cell(nome)="row">
-                  <label class="linhas-tabela">{{ row.item.nome }}</label>
-              </template>
-              <template #cell(editar)="row">
-                <vs-tooltip text="Editar">
-                  <vs-button type="flat" color="dark" icon="edit" @click.native="modalEditarModalConta(row)"></vs-button>
-                </vs-tooltip>
-              </template>
-<!--              <template #cell(deletar)>-->
-<!--                <vs-tooltip text="Deletar">-->
-<!--                  <vs-button type="flat" color="dark" icon="delete"></vs-button>-->
-<!--                </vs-tooltip>-->
-<!--              </template>-->
-            </b-table>
-          </b-col>
-        </b-row>
-      </b-col>
-      <b-col cols="12" class="bloco" md="6">
-        <b-row class="bloco__titulo_e_btn no-gutters">
-          <b-col class="titulo">
-            <h3>Histórico</h3>
-          </b-col>
-          <b-col cols="auto">
-            <vs-button color="#24a35a" type="filled" icon="add" @click="modalCadastrarHistorico">
-              Adicionar
-            </vs-button>
-          </b-col>
-        </b-row>
-        <b-row class="no-gutters">
-          <b-col class="bloco__tabela">
-            <b-table
-                class="tabela"
-                id="tabela"
-                primary-key="id"
-                bordered
-                head-variant="dark"
-                sort-icon-left
-                :items="historicos"
-                :fields="camposHistorico"
-                show-empty
-                small
-                striped
-                hover
-                outlined
-                sticky-header="calc(100vh - 82px - 30px - 48px - 52px - 55px)"
-                tbody-tr-class="linhas-tabela"
-                no-border-collapse>
-              <template #table-colgroup>
-                <col>
-                <col style="width: 15px">
-              </template>
-              <template #cell(descricao)="row">
-                <label class="linhas-tabela">{{ row.item.descricao }}</label>
-              </template>
-              <template #cell(editar)="row">
-                <vs-tooltip text="Editar">
-                  <vs-button type="flat" color="dark" icon="edit" @click.native="modalEditarModalHistorico(row)"></vs-button>
-                </vs-tooltip>
-              </template>
-              <!--              <template #cell(deletar)>-->
-              <!--                <vs-tooltip text="Deletar">-->
-              <!--                  <vs-button type="flat" color="dark" icon="delete"></vs-button>-->
-              <!--                </vs-tooltip>-->
-              <!--              </template>-->
-            </b-table>
-          </b-col>
-        </b-row>
-      </b-col>
-    </b-row>
-    <ModalConta @recarregarDados="buscarContas" :dados="conta"></ModalConta>
-    <ModalHistorico @recarregarDados="buscarHistoricos" :dados="historico"></ModalHistorico>
-  </b-container>
+  <v-row no-gutters>
+    <v-col>
+      <v-row no-gutters>
+        <v-col>
+          <barra-topo-busca titulo="Ajuste" :temBusca="false"></barra-topo-busca>
+        </v-col>
+      </v-row>
+      <v-row class="mt-0">
+        <v-col>
+          <v-card class="border-radius pa-3">
+            <v-row>
+              <v-tabs
+                  v-model="tab"
+                  grow
+                  class="tab-personalizada"
+              >
+                <v-tab>Conta</v-tab>
+                <v-tab>Histórico</v-tab>
+
+                <v-tabs-items v-model="tab">
+
+                  <v-tab-item>
+                    <v-row class="pa-4 mt-0" no-gutters>
+                      <v-col>
+                        <v-row >
+                          <v-col>
+                            <h1>Conta</h1>
+                          </v-col>
+                          <v-col cols="auto">
+                            <v-btn color="var(--btn-salvar)" dark large @click="dialogConta = true;">
+                              <v-icon class="mr-2">
+                                mdi-plus
+                              </v-icon>
+                              Adicionar
+                            </v-btn>
+                          </v-col>
+                        </v-row>
+                        <v-row class="mt-0">
+                          <v-col>
+                            <v-data-table
+                                @update:page="$paraTopo"
+                                :headers="camposConta"
+                                :items="contas"
+                                fixed-header
+                                :footer-props="{
+                                    itemsPerPageOptions:[10,25,50,-1]
+                                 }"
+                                class="elevation-1 tabela pointer"
+                                mobile-breakpoint="0"
+                                item-key="id"
+                            >
+                              <template v-slot:item="{ item }">
+                                <tr>
+                                  <td>{{ item.nome }}</td>
+                                  <td class="acoes text-center">
+                                    <v-tooltip top>
+                                      <template v-slot:activator="{ on, attrs }">
+                                        <v-btn icon v-bind="attrs" v-on="on" color="black" @click="dialogConta = true; conta = item">
+                                          <v-icon dark>
+                                            mdi-pencil
+                                          </v-icon>
+                                        </v-btn>
+                                      </template>
+                                      <span>Editar</span>
+                                    </v-tooltip>
+                                  </td>
+                                </tr>
+                              </template>
+                            </v-data-table>
+                          </v-col>
+                        </v-row>
+                      </v-col>
+                    </v-row>
+                  </v-tab-item>
+
+                  <v-tab-item>
+                    <v-row class="pa-4 mt-0" no-gutters>
+                      <v-col>
+                        <v-row >
+                          <v-col>
+                            <h1>Histórico</h1>
+                          </v-col>
+                          <v-col cols="auto">
+                            <v-btn color="var(--btn-salvar)" dark large @click="dialogHistorico = true;">
+                              <v-icon class="mr-2">
+                                mdi-plus
+                              </v-icon>
+                              Adicionar
+                            </v-btn>
+                          </v-col>
+                        </v-row>
+                        <v-row class="mt-0">
+                          <v-col>
+                            <v-data-table
+                                @update:page="$paraTopo"
+                                :headers="camposHistorico"
+                                :items="historicos"
+                                fixed-header
+                                :footer-props="{
+                                    itemsPerPageOptions:[10,25,50,-1]
+                                 }"
+                                class="elevation-1 tabela pointer"
+                                mobile-breakpoint="0"
+                                item-key="id"
+                            >
+                              <template v-slot:item="{ item }">
+                                <tr>
+                                  <td>{{ item.descricao }}</td>
+                                  <td class="acoes text-center">
+                                    <v-tooltip top>
+                                      <template v-slot:activator="{ on, attrs }">
+                                        <v-btn icon v-bind="attrs" v-on="on" color="black" @click="dialogHistorico = true; historico = item">
+                                          <v-icon dark>
+                                            mdi-pencil
+                                          </v-icon>
+                                        </v-btn>
+                                      </template>
+                                      <span>Editar</span>
+                                    </v-tooltip>
+                                  </td>
+                                </tr>
+                              </template>
+                            </v-data-table>
+                          </v-col>
+                        </v-row>
+                      </v-col>
+                    </v-row>
+                  </v-tab-item>
+
+                </v-tabs-items>
+              </v-tabs>
+            </v-row>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-col>
+
+    <dialog-conta
+      :mostrar="dialogConta"
+      :dados="conta"
+      @cancelar="dialogConta = false; conta = null"
+      @editado="contaEditada"
+      @cadastrado="contaCadastrada"
+    />
+
+    <dialog-historico
+        :mostrar="dialogHistorico"
+        :dados="historico"
+        @cancelar="dialogHistorico = false; historico = null"
+        @editado="historicoEditada"
+        @cadastrado="historicoCadastrada"
+    />
+
+    <alerta-acoes
+        :palavra-chave="palavraChave"
+        @sumir="mostrarAlerta = false"
+        v-bind:mostrar="mostrarAlerta"
+        :funcao="funcao"
+    />
+
+
+  </v-row>
 </template>
 
 <script>
+import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
+import DialogConta from "./DialogConta";
+import AlertaAcoes from "../../components/shared/AlertaAcoes";
+import DialogHistorico from "./DialogHistorico";
 
-import ModalConta from "@/components/Ajuste/ModalConta"
-import ModalHistorico from "@/components/Ajuste/ModalHistorico"
+
 import api from '../../services/api'
 
 export default {
   name: "VisualizarAjuste",
   components: {
-    ModalConta,
-    ModalHistorico
+    BarraTopoBusca,
+    DialogConta,
+    AlertaAcoes,
+    DialogHistorico
   },
-  data(){
-    return{
-      contas:[],
-      conta: '',
+  data() {
+    return {
+      tab: null,
+      dialogConta: false,
+      dialogHistorico: false,
+      conta: null,
+      funcao: '',
+      palavraChave: 'conta',
+      mostrarAlerta: false,
+
+      contas: [],
       camposConta: [
-        {key: 'nome', label: 'Nome', sortable: true, thClass: 'text-center'},
-        {key: 'editar', label: ''},
-        // {key: 'deletar', label: ''},
+        {text: 'Nome', value: 'nome'},
+        {text: '', value: 'acoes', align: 'center', sortable: false, width: '90px'},
       ],
-      historicos:[],
+      historicos: [],
       historico: '',
       camposHistorico: [
-        {key: 'descricao', label: 'Descrição', sortable: true, thClass: 'text-center'},
-        {key: 'editar', label: ''},
-      ]
+        {text: 'Descrição', value: 'descricao'},
+        {text: '', value: 'acoes', align: 'center', sortable: false, width: '90px'},
+      ],
     }
   },
   created() {
     this.buscarContas()
     this.buscarHistoricos()
   },
-  methods:{
-    async buscarContas(){
+  methods: {
+    async buscarContas() {
       await api.get('ajuste/conta').then(consulta => {
         this.contas = consulta.data
       })
     },
-    mostrarModalConta(){
-      this.$modal.show('modal-conta')
-    },
-    modalCadastrarConta(){
-      this.mostrarModalConta()
-      this.conta = {}
-    },
-    modalEditarModalConta(conta){
-      this.conta = {nome: conta.item.nome, id:conta.item.id}
-      this.mostrarModalConta()
-    },
-
-    async buscarHistoricos(){
+    async buscarHistoricos() {
       await api.get('ajuste/historico').then(consulta => {
         this.historicos = consulta.data
       })
     },
-    mostrarModalHistorico(){
-      this.$modal.show('modal-historico')
+
+
+    contaEditada(conta) {
+      let index = this.contas.findIndex(obj => {
+        return obj.id === conta.id
+      })
+
+      for (let key of Object.keys(conta)) {
+        this.contas[index][key] = conta[key]
+      }
+      this.conta = null
+      this.funcao = 'editado'
+      this.palavraChave = 'conta'
+      this.mostrarAlerta = true
+      this.dialogConta = false
     },
-    modalCadastrarHistorico(){
-      this.mostrarModalHistorico()
-      this.historico = {}
+
+    contaCadastrada(conta) {
+      this.contas.push(conta)
+      this.dialogConta = false
+      this.funcao = 'cadastrado'
+      this.palavraChave = 'conta'
+      this.mostrarAlerta = true
+      this.conta = null
     },
-    modalEditarModalHistorico(historico){
-      this.historico = {descricao: historico.item.descricao, id:historico.item.id}
-      this.mostrarModalHistorico()
+
+
+    historicoEditada(historico) {
+      let index = this.historicos.findIndex(obj => {
+        return obj.id === historico.id
+      })
+
+      for (let key of Object.keys(historico)) {
+        this.historicos[index][key] = historico[key]
+      }
+      this.historico = null
+      this.funcao = 'editado'
+      this.palavraChave = 'histórico'
+      this.mostrarAlerta = true
+      this.dialogHistorico = false
+    },
+
+    historicoCadastrada(historico) {
+      this.historicos.push(historico)
+      this.dialogHistorico = false
+      this.funcao = 'cadastrado'
+      this.palavraChave = 'histórico'
+      this.mostrarAlerta = true
+      this.historico = null
     },
   }
 }
 </script>
 
+<style scoped src="../../css/dataTableVuetifyCustom.css"/>
+
 <style scoped>
-
-.barra-top-ajuste {
-  padding: 0;
-  background-color: white;
-  margin: 0;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
-}
-
-.tabelas {
-  background-color: white;
-  margin: 0;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5)
-}
-
-.bloco {
-  padding: 10px;
-  border-radius: 5px;
-  background-color: rgb(220, 220, 220);
-  box-shadow: 0px 1px 5px rgba(200, 200, 200, 0.5);
-}
-
-.bloco__titulo_e_btn {
-}
-
-.titulo {
-  margin: 0;
-  padding-top: 3px;
-  padding-left: 10px;
-}
-
-.bloco__tabela{
-  margin-top: 10px;
-  margin-bottom: 0;
-  background-color: white;
-  padding: 0;
-}
-
-.tabela{
-  margin: 0;
-  padding: 0;
-}
-
-.linhas-tabela{
-  padding-top: 7px;
-  padding-left: 3px;
-  margin:0;
-}
-
-@media screen and (max-width: 992px) {
-
-}
 
 </style>

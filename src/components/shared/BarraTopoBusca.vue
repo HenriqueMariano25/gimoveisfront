@@ -3,7 +3,7 @@
     <v-col>
       <h1 class="titulo ma-0 ml-1">{{ titulo }}</h1>
     </v-col>
-    <v-col cols="auto" xl="3" lg="3" md="3">
+    <v-col cols="auto" xl="3" lg="3" md="3" v-if="temBusca">
       <v-text-field
           outlined
           hide-details
@@ -22,7 +22,15 @@
 <script>
 export default {
   name: "BarraTopoBusca",
-  props:['titulo', 'busca'],
+  t:['titulo', 'busca'],
+  props: {
+    titulo: String,
+    busca: String,
+    temBusca: {
+      type: Boolean,
+      default: true
+    },
+  },
   data(){
     return{
       valor: ''

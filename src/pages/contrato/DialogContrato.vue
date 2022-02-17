@@ -146,11 +146,6 @@
                           </v-text-field>
                         </v-col>
                         <v-col>
-<!--                          <v-date-picker-->
-
-<!--                              type="day"-->
-<!--                              color=""-->
-<!--                          ></v-date-picker>-->
                           <v-text-field
                               label="Dia do vencimento*"
                               outlined
