@@ -78,6 +78,8 @@
                     hide-details
                     v-model="responsavel.cep"
                     v-mask="'#####-###'"
+                    @focusin="cep_atual = responsavel.cep"
+                    @focusout="buscarEndereco"
                 ></v-text-field>
               </v-col>
               <v-col>
@@ -210,7 +212,8 @@ export default {
       responsavelParaAdicionar: {},
       adicionaResponsavelAItens: false,
       mostrarAlerta: false,
-      funcao: ''
+      funcao: '',
+      cep_atual: '',
     }
   },
   created(){
@@ -283,6 +286,21 @@ export default {
         }).catch(erro => {
           console.log(erro)
         });
+      }
+    },
+    async buscarEndereco(input) {
+      let valor = input.target.value
+      if(valor.length === 9){
+        if(this.cep_atual !== valor){
+          let endereco = await this.$buscarEndereco(valor)
+
+          this.responsavel.bairro = endereco.bairro
+          this.responsavel.complemento = endereco.complemento
+          this.responsavel.cidade = endereco.localidade
+          this.responsavel.rua = endereco.logradouro
+          this.responsavel.estado = endereco.uf
+          this.responsavel.numero = null
+        }
       }
     },
   },

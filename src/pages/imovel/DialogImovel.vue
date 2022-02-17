@@ -111,6 +111,8 @@
                               hide-details
                               v-model="imovel.cep"
                               v-mask="'#####-###'"
+                              @focusin="cep_atual = imovel.cep"
+                              @focusout="buscarEndereco"
                           ></v-text-field>
                         </v-col>
                         <v-col>
@@ -852,7 +854,8 @@ export default {
       editandoDespesa: false,
       contratosForamBuscados: false,
       imovelParaAdicionar: {},
-      adicionaImovelAItens: false
+      adicionaImovelAItens: false,
+      cep_atual: '',
     }
   },
   created() {
@@ -1128,7 +1131,22 @@ export default {
         this.funcao = 'deletado'
         this.mostrarAlerta = true
       })
-    }
+    },
+    async buscarEndereco(input) {
+      let valor = input.target.value
+      if(valor.length === 9){
+        if(this.cep_atual !== valor){
+          let endereco = await this.$buscarEndereco(valor)
+
+          this.imovel.bairro = endereco.bairro
+          this.imovel.complemento = endereco.complemento
+          this.imovel.cidade = endereco.localidade
+          this.imovel.rua = endereco.logradouro
+          this.imovel.estado = endereco.uf
+          this.imovel.numero = null
+        }
+      }
+    },
   },
 
   watch: {
