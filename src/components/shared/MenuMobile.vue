@@ -83,14 +83,6 @@
               </li>
             </ul>
           </li>
-<!--          <router-link to="/questoes" class="cada-item text-decoration-none">-->
-<!--            <li class="cada-item pl-3" @click="expand = false">-->
-<!--              <v-icon dark class="icone-menu" large>-->
-<!--                mdi-account-circle-->
-<!--              </v-icon>-->
-<!--              <span class="ml-2">{{ $store.state.usuario.nome.split(" ")[0] }}</span>-->
-<!--            </li>-->
-<!--          </router-link>-->
           <router-link to="/ajuste" class="cada-item text-decoration-none">
             <li class="ultimo-cada-item pl-3" @click="expand = false">
               <v-icon dark class="icone-menu" large>
