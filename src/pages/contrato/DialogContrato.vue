@@ -166,8 +166,9 @@
                               hide-details
                               ref="valor_boleto"
                               :rules="[validacoes.required]"
-                              v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
-                        allowNegative: false, currency:'BRL'}"
+                              v-currency="{useGrouping: false, precision: 2,autoDecimalMode: true, currencyDisplay: 'symbol',
+                                allowNegative: false, currency:'BRL', autoSign: true,
+                              }"
                           >
                           </v-text-field>
                         </v-col>
@@ -256,7 +257,12 @@
                               hide-details
                               v-model="contrato.juros_mes"
                               v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
-                            allowNegative: false, currency:{suffix:'%'}}"
+                            allowNegative: false, currency:{suffix:'%'},
+                              'valueRange': {
+                                'min': 0,
+                                'max': 999
+                              },
+                              }"
                               ref="juros"
                               :disabled="!editando"
                           >
@@ -271,7 +277,12 @@
                               ref="multa"
                               v-model="contrato.multa"
                               v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
-                            allowNegative: false, currency:{suffix:'%'}}"
+                            allowNegative: false, currency:{suffix:'%'},
+                            'valueRange': {
+                                'min': 0,
+                                'max': 999
+                              },
+                              }"
                               :disabled="!editando"
                           >
                           </v-text-field>
@@ -551,7 +562,7 @@
       </dialog-deletar>
 
       <dialog-carregando
-        :mostrar="dialogCarregando"
+          :mostrar="dialogCarregando"
       >
       </dialog-carregando>
 
@@ -861,14 +872,13 @@ export default {
 
     async aplicarReajuste() {
       let reajusteFormatado = this.contrato.reajuste.replace('%', '').replace(',', '.')
-      let valorFormatado = this.contrato.valor_boleto.replace('R$', '').replace(',', '.').trim()
+      let valorFormatado = this.$converterDinherioFloat(this.contrato.valor_boleto)
       let valorReajustadoFormatado
-      if(this.contrato.valor_reajustado === null){
+      if (this.contrato.valor_reajustado === null) {
         valorReajustadoFormatado = valorFormatado
-      }else{
-        valorReajustadoFormatado = this.contrato.valor_reajustado.replace('R$', '').replace(',', '.').trim()
+      } else {
+        valorReajustadoFormatado = this.$converterDinherioFloat(this.contrato.valor_reajustado)
       }
-
       let id = this.contrato.id
       await api.patch('/contrato/reajuste', {
         reajuste: reajusteFormatado, valor: valorFormatado, valor_reajustado: valorReajustadoFormatado, id: id
@@ -918,7 +928,7 @@ export default {
             this.dialogCarregando = false
             let {contrato} = resp.data
             this.contrato = contrato
-            if(contrato.data_vencimento.length > 2){
+            if (contrato.data_vencimento.length > 2) {
               this.contrato.data_vencimento = dayjs(contrato.data_vencimento).get('date')
             }
             setValue(this.$refs.valor_boleto, contrato.valor_boleto)
