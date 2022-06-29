@@ -1,18 +1,10 @@
 <template>
   <v-row no-gutters>
+    <barra-topo-busca titulo="Usuário"></barra-topo-busca>
     <v-col>
-      <v-row no-gutters>
-        <v-col>
-          <barra-topo-busca
-            titulo="Usuário"
-            :busca="busca"
-            @buscar="busca = $event"
-          ></barra-topo-busca>
-        </v-col>
-      </v-row>
       <v-row class="mt-0">
         <v-col>
-          <v-card class="border-radius pa-3">
+          <v-card>
             <v-data-table
               :search="busca"
               @update:page="$paraTopo"
@@ -22,9 +14,9 @@
               :footer-props="{
                 itemsPerPageOptions: [50, 100, 220, -1],
               }"
-              class="elevation-1 tabela pointer"
+              class="tabela pointer"
               :height="
-                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 230px)'
+                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 180px)'
               "
               single-expand
               :expanded="expanded"

@@ -53,7 +53,7 @@ html {
 }
 
 .pagina {
-  padding-left: 60px;
+  padding-left: 55px;
   z-index: 20;
 }
 

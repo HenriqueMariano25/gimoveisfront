@@ -1,20 +1,11 @@
 <template>
   <v-row no-gutters>
+    <barra-topo-busca titulo="Caixa"></barra-topo-busca>
     <v-col>
-      <v-row no-gutters>
-        <v-col>
-          <barra-topo-busca
-            titulo="Caixa"
-            :busca="busca"
-            @buscar="busca = $event"
-          ></barra-topo-busca>
-        </v-col>
-      </v-row>
       <v-row class="mt-0">
         <v-col>
-          <v-card class="border-radius pa-3">
+          <v-card class="">
             <v-data-table
-              :search="busca"
               @update:page="$paraTopo"
               fixed-header
               :headers="headers"
@@ -22,9 +13,9 @@
               :footer-props="{
                 itemsPerPageOptions: [50, 100, 220, -1],
               }"
-              class="elevation-1 tabela pointer"
+              class="tabela pointer"
               :height="
-                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 230px)'
+                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 180px)'
               "
               single-expand
               :expanded="expanded"
@@ -233,7 +224,6 @@ export default {
       mostrarAlerta: false,
       dialogDeletar: false,
       expanded: [],
-      busca: "",
     }
   },
   created() {
