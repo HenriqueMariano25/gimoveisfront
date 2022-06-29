@@ -3,38 +3,57 @@
     <v-col>
       <v-row no-gutters>
         <v-col>
-          <barra-topo-busca titulo="Caixa" :busca="busca" @buscar="busca = $event"></barra-topo-busca>
+          <barra-topo-busca
+            titulo="Caixa"
+            :busca="busca"
+            @buscar="busca = $event"
+          ></barra-topo-busca>
         </v-col>
       </v-row>
       <v-row class="mt-0">
         <v-col>
           <v-card class="border-radius pa-3">
             <v-data-table
-                :search="busca"
-                @update:page="$paraTopo"
-                fixed-header
-                :headers="headers"
-                :items="items"
-                :footer-props="{
-                   itemsPerPageOptions:[10,25,50,-1]
-                }"
-                class="elevation-1 tabela pointer"
-                :height="$isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 310px)'"
-                single-expand
-                :expanded="expanded"
-                mobile-breakpoint="0"
-                item-key="id"
+              :search="busca"
+              @update:page="$paraTopo"
+              fixed-header
+              :headers="headers"
+              :items="items"
+              :footer-props="{
+                itemsPerPageOptions: [50, 100, 220, -1],
+              }"
+              class="elevation-1 tabela pointer"
+              :height="
+                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 230px)'
+              "
+              single-expand
+              :expanded="expanded"
+              mobile-breakpoint="0"
+              item-key="id"
+              dense
             >
               <template v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length" style="background-color: #d5e6fd">
-                  <ul class="pa-3" style="list-style-type: none;">
+                  <ul class="pa-3" style="list-style-type: none">
                     <li v-if="item.complemento_historico">
-                      <span><strong>Complemento histórico: </strong>{{ item.complemento_historico }}</span>
+                      <span
+                        ><strong>Complemento histórico: </strong
+                        >{{ item.complemento_historico }}</span
+                      >
                     </li>
-                    <li><span><strong>Ímovel: </strong>{{ item.imovel_nome }}</span></li>
-                    <li><span><strong>Conta: </strong>{{ item.conta_nome }}</span></li>
+                    <li>
+                      <span
+                        ><strong>Ímovel: </strong>{{ item.imovel_nome }}</span
+                      >
+                    </li>
+                    <li>
+                      <span><strong>Conta: </strong>{{ item.conta_nome }}</span>
+                    </li>
                     <li v-if="item.numero_documento">
-                      <span><strong>N° do documento: </strong>{{ item.numero_documento }}</span>
+                      <span
+                        ><strong>N° do documento: </strong
+                        >{{ item.numero_documento }}</span
+                      >
                     </li>
                   </ul>
                 </td>
@@ -42,25 +61,57 @@
 
               <template v-slot:item="{ item }">
                 <tr>
-                  <td @click.prevent="abrirDetalhes(item, $event)">{{ ("000000" + item.id).slice(-6) }}</td>
-                  <td @click.prevent="abrirDetalhes(item, $event)">{{ item.descricao_historico }}</td>
-                  <td @click.prevent="abrirDetalhes(item, $event)">R$ {{ item.valor.replace('.', ',') }}</td>
                   <td @click.prevent="abrirDetalhes(item, $event)">
-                    {{ item.movimento ? dayjs(item.movimento).format('DD/MM/YYYY') : '' }}
+                    {{ ("000000" + item.id).slice(-6) }}
                   </td>
-                  <td @click.prevent="abrirDetalhes(item, $event)">{{ item.imovel_nome }}</td>
-                  <td @click.prevent="abrirDetalhes(item, $event)">{{ item.conta_nome }}</td>
-                  <td @click.prevent="abrirDetalhes(item, $event)"
-                      :class="{'debito': item.id_debito_credito === 1, 'credito' : item.id_debito_credito === 2}">
-                    {{ item.id_debito_credito === 1 ? 'Débito' : item.id_debito_credito === 2 ? 'Crédito' : '' }}
+                  <td @click.prevent="abrirDetalhes(item, $event)">
+                    {{ item.descricao_historico }}
+                  </td>
+                  <td @click.prevent="abrirDetalhes(item, $event)">
+                    R$ {{ item.valor.replace(".", ",") }}
+                  </td>
+                  <td @click.prevent="abrirDetalhes(item, $event)">
+                    {{
+                      item.movimento
+                        ? dayjs(item.movimento).format("DD/MM/YYYY")
+                        : ""
+                    }}
+                  </td>
+                  <td @click.prevent="abrirDetalhes(item, $event)">
+                    {{ item.imovel_nome }}
+                  </td>
+                  <td @click.prevent="abrirDetalhes(item, $event)">
+                    {{ item.conta_nome }}
+                  </td>
+                  <td
+                    @click.prevent="abrirDetalhes(item, $event)"
+                    :class="{
+                      debito: item.id_debito_credito === 1,
+                      credito: item.id_debito_credito === 2,
+                    }"
+                  >
+                    {{
+                      item.id_debito_credito === 1
+                        ? "Débito"
+                        : item.id_debito_credito === 2
+                        ? "Crédito"
+                        : ""
+                    }}
                   </td>
                   <td class="acoes text-center">
                     <v-tooltip top>
                       <template v-slot:activator="{ on, attrs }">
-                        <v-btn icon v-bind="attrs" v-on="on" color="black" @click="dialogCaixa = true; caixa = item">
-                          <v-icon dark>
-                            mdi-pencil
-                          </v-icon>
+                        <v-btn
+                          icon
+                          v-bind="attrs"
+                          v-on="on"
+                          color="black"
+                          @click="
+                            dialogCaixa = true
+                            caixa = item
+                          "
+                        >
+                          <v-icon dark> mdi-pencil </v-icon>
                         </v-btn>
                       </template>
                       <span>Editar</span>
@@ -68,15 +119,16 @@
                     <v-tooltip top>
                       <template v-slot:activator="{ on, attrs }">
                         <v-btn
-                            icon
-                            v-bind="attrs"
-                            v-on="on"
-                            color="black"
-                            @click.prevent="dialogDeletar = true; caixa = item"
+                          icon
+                          v-bind="attrs"
+                          v-on="on"
+                          color="black"
+                          @click.prevent="
+                            dialogDeletar = true
+                            caixa = item
+                          "
                         >
-                          <v-icon dark>
-                            mdi-delete
-                          </v-icon>
+                          <v-icon dark> mdi-delete </v-icon>
                         </v-btn>
                       </template>
                       <span>Deletar</span>
@@ -91,50 +143,54 @@
     </v-col>
 
     <dialog-caixa
-        :mostrar="dialogCaixa"
-        @cancelar="dialogCaixa = false; caixa = {}"
-        :dadosCaixa="caixa"
-        @cadastrado="cadastrado"
-        @editado="editado"
+      :mostrar="dialogCaixa"
+      @cancelar="
+        dialogCaixa = false
+        caixa = {}
+      "
+      :dadosCaixa="caixa"
+      @cadastrado="cadastrado"
+      @editado="editado"
     >
-
     </dialog-caixa>
 
     <barra-bottom-botoes
-        @clickBtnAdicionar="dialogCaixa = true"
-        @clickBtnImprimirRelatorio="gerarRelatorio"
-        :btn-adicionar="true"
-        :btn-gerar-relatorio="true"
+      @clickBtnAdicionar="dialogCaixa = true"
+      @clickBtnImprimirRelatorio="gerarRelatorio"
+      :btn-adicionar="true"
+      :btn-gerar-relatorio="true"
     ></barra-bottom-botoes>
 
     <dialog-deletar
-        :texto="`Certeza que deseja deletar o caixa ${('000000' + caixa.id).slice(-6)} ?`"
-        sub-texto="Após deletar esse caixa não é possivel recuperar!"
-        :mostrar="dialogDeletar"
-        @cancelar="dialogDeletar = !dialogDeletar"
-        @deletar="deletar"
+      :texto="`Certeza que deseja deletar o caixa ${('000000' + caixa.id).slice(
+        -6
+      )} ?`"
+      sub-texto="Após deletar esse caixa não é possivel recuperar!"
+      :mostrar="dialogDeletar"
+      @cancelar="dialogDeletar = !dialogDeletar"
+      @deletar="deletar"
     >
     </dialog-deletar>
 
     <alerta-acoes
-        :palavra-chave="'caixa'"
-        @sumir="mostrarAlerta = false"
-        v-bind:mostrar="mostrarAlerta"
-        :funcao="funcao"
+      :palavra-chave="'caixa'"
+      @sumir="mostrarAlerta = false"
+      v-bind:mostrar="mostrarAlerta"
+      :funcao="funcao"
     >
     </alerta-acoes>
   </v-row>
 </template>
 <script>
-import api from '../../services/api'
-import dayjs from 'dayjs'
-import {jsPDF} from "jspdf";
-import 'jspdf-autotable'
+import api from "../../services/api"
+import dayjs from "dayjs"
+import { jsPDF } from "jspdf"
+import "jspdf-autotable"
 
 import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
 import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
-import AlertaAcoes from "../../components/shared/AlertaAcoes";
-import DialogDeletar from "../../components/shared/DialogDeletar";
+import AlertaAcoes from "../../components/shared/AlertaAcoes"
+import DialogDeletar from "../../components/shared/DialogDeletar"
 import DialogCaixa from "./DialogCaixa"
 
 export default {
@@ -150,14 +206,20 @@ export default {
     return {
       items: [],
       headers: [
-        {text: 'Lançamento', value: 'id', align: 'center', width: '120px'},
-        {text: 'Histórico', value: 'descricao_historico'},
-        {text: 'Valor', value: 'valor'},
-        {text: 'Movimento', value: 'movimento'},
-        {text: 'Imóvel', value: 'imovel_nome'},
-        {text: 'Conta', value: 'conta_nome'},
-        {text: 'D/C', value: 'id_debito_credito'},
-        {text: '', value: 'acoes', align: 'center', sortable: false, width: '90px'},
+        { text: "Lançamento", value: "id", align: "center", width: "120px" },
+        { text: "Histórico", value: "descricao_historico" },
+        { text: "Valor", value: "valor" },
+        { text: "Movimento", value: "movimento" },
+        { text: "Imóvel", value: "imovel_nome" },
+        { text: "Conta", value: "conta_nome" },
+        { text: "D/C", value: "id_debito_credito" },
+        {
+          text: "",
+          value: "acoes",
+          align: "center",
+          sortable: false,
+          width: "90px",
+        },
       ],
       dayjs: dayjs,
       caixa: {},
@@ -167,11 +229,11 @@ export default {
       historicos: [],
       dialogCaixa: false,
 
-      funcao: '',
+      funcao: "",
       mostrarAlerta: false,
       dialogDeletar: false,
       expanded: [],
-      busca: ''
+      busca: "",
     }
   },
   created() {
@@ -180,7 +242,7 @@ export default {
   methods: {
     async buscarCaixa() {
       this.carregandoTableCaixa = true
-      await api.get('/caixa').then(consulta => {
+      await api.get("/caixa").then((consulta) => {
         this.items = consulta.data
         this.filtrados = consulta.data
         this.carregandoTableCaixa = false
@@ -188,15 +250,14 @@ export default {
     },
 
     async buscarHistoricos() {
-      await api.get('/ajuste/historico').then(consulta => {
+      await api.get("/ajuste/historico").then((consulta) => {
         this.historicos = consulta.data
       })
     },
 
     abrirDetalhes(item, evento) {
-      let removerClass = document.querySelector('.aberto')
-      if (removerClass)
-        removerClass.classList.remove('aberto')
+      let removerClass = document.querySelector(".aberto")
+      if (removerClass) removerClass.classList.remove("aberto")
 
       let tr = evento.target.parentElement
 
@@ -204,7 +265,7 @@ export default {
         this.expanded = []
       } else {
         this.expanded = []
-        tr.classList.add('aberto')
+        tr.classList.add("aberto")
         this.expanded.push(item)
       }
     },
@@ -212,13 +273,13 @@ export default {
     cadastrado(item) {
       this.items.push(item)
       this.dialogCaixa = false
-      this.funcao = 'cadastrado'
+      this.funcao = "cadastrado"
       this.mostrarAlerta = true
       this.caixa = {}
     },
 
     editado(item) {
-      let index = this.items.findIndex(obj => {
+      let index = this.items.findIndex((obj) => {
         return obj.id === item.id
       })
       this.items[index].movimento = item.movimento
@@ -233,31 +294,33 @@ export default {
       this.items[index].descricao_historico = item.descricao_historico
       this.items[index].complemento_historico = item.complemento_historico
       this.dialogCaixa = false
-      this.funcao = 'editado'
+      this.funcao = "editado"
       this.mostrarAlerta = true
       this.caixa = {}
     },
 
     async deletar() {
       let caixa = this.caixa
-      await api.delete(`/caixa/${caixa.id}`).then(resp => {
-        let {id} = resp.data.caixa
-        let index = this.items.findIndex(obj => {
+      await api.delete(`/caixa/${caixa.id}`).then((resp) => {
+        let { id } = resp.data.caixa
+        let index = this.items.findIndex((obj) => {
           return obj.id === id
         })
         this.items.splice(index, 1)
         this.dialogDeletar = false
-        this.funcao = 'deletado'
+        this.funcao = "deletado"
         this.mostrarAlerta = true
       })
     },
 
     gerarRelatorio() {
-      let hojeAgr = dayjs().format('DD/MM/YYYY HH:mm:ss')
+      let hojeAgr = dayjs().format("DD/MM/YYYY HH:mm:ss")
       let novosDados = JSON.parse(JSON.stringify(this.filtrados))
       for (let i in novosDados) {
-        let valorFormatado = `${novosDados[i].valor.replace('.', ',')}`
-        let movimentoFormatada = dayjs(novosDados[i].movimento).format('DD/MM/YYYY')
+        let valorFormatado = `${novosDados[i].valor.replace(".", ",")}`
+        let movimentoFormatada = dayjs(novosDados[i].movimento).format(
+          "DD/MM/YYYY"
+        )
         let codigoFormatado = ("000000" + novosDados[i].id).slice(-6)
         novosDados[i].valor = valorFormatado
         novosDados[i].movimento = movimentoFormatada
@@ -266,54 +329,68 @@ export default {
       var doc = new jsPDF()
       doc.page = 1
       doc.setProperties({
-        title: "Relátorio de Caixa"
-      });
+        title: "Relátorio de Caixa",
+      })
       doc.setFontSize(10)
       doc.text(hojeAgr, 200, 10, null, null, "right")
-      doc.line(10, 12, 200, 12);
+      doc.line(10, 12, 200, 12)
       doc.setFontSize(24)
       doc.text(`Relátorio de Caixa`, 10, 22)
       doc.setFontSize(14)
       doc.text(`Total: ${this.filtrados.length}`, 200, 21, null, null, "right")
       doc.autoTable({
-        head: [['Código', 'Histórico', 'Valor', 'Movimento', 'Imóvel', 'Conta', 'D/C']],
-        columns: [
-          {header: 'Código', dataKey: 'id'},
-          {header: 'Histórico', dataKey: 'descricao_historico'},
-          {header: 'Valor', dataKey: 'valor'},
-          {header: 'Movimento', dataKey: 'movimento'},
-          {header: 'Imóvel', dataKey: 'imovel_nome'},
-          {header: 'Conta', dataKey: 'conta_nome'},
+        head: [
+          [
+            "Código",
+            "Histórico",
+            "Valor",
+            "Movimento",
+            "Imóvel",
+            "Conta",
+            "D/C",
+          ],
         ],
-        columnStyles: {id: {halign: 'center'}},
+        columns: [
+          { header: "Código", dataKey: "id" },
+          { header: "Histórico", dataKey: "descricao_historico" },
+          { header: "Valor", dataKey: "valor" },
+          { header: "Movimento", dataKey: "movimento" },
+          { header: "Imóvel", dataKey: "imovel_nome" },
+          { header: "Conta", dataKey: "conta_nome" },
+        ],
+        columnStyles: { id: { halign: "center" } },
         body: novosDados,
-        theme: 'striped',
+        theme: "striped",
         headStyles: {
-          fillColor: [50, 50, 50]
+          fillColor: [50, 50, 50],
         },
         startY: 25,
-        pageBreak: 'auto',
-        margin: {left: 10, right: 10, top: 10},
+        pageBreak: "auto",
+        margin: { left: 10, right: 10, top: 10 },
       })
       const totalPaginas = doc.internal.getNumberOfPages()
-
 
       doc.setFontSize(8)
       for (var i = 1; i <= totalPaginas; i++) {
         doc.setPage(i)
-        doc.text(`Página ${String(i)} de ${String(totalPaginas)}`, 205, 293, null, null, "right")
+        doc.text(
+          `Página ${String(i)} de ${String(totalPaginas)}`,
+          205,
+          293,
+          null,
+          null,
+          "right"
+        )
       }
-      window.open(doc.output('bloburl', {filename: 'tabela_imovel.pdf'}));
+      window.open(doc.output("bloburl", { filename: "tabela_imovel.pdf" }))
     },
-  }
+  },
 }
 </script>
 
-
-<style scoped src="../../css/dataTableVuetifyCustom.css"/>
+<style scoped src="../../css/dataTableVuetifyCustom.css" />
 
 <style scoped>
-
 .debito {
   color: red;
 }
@@ -321,6 +398,4 @@ export default {
 .credito {
   color: #105ab9;
 }
-
-
 </style>

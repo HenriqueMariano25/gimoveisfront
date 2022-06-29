@@ -1,26 +1,27 @@
 <template>
-  <v-row class="pa-2 bottom  elevation-2" no-gutters justify="end">
+  <v-row class="pa-2 bottom elevation-2" no-gutters justify="end">
     <v-col v-if="btnGerarRelatorio">
-      <v-btn depressed :color="'var(--preto-principal)'" dark :large="!$isMobile" @click="clickBtnImprimirRelatorio"
-             :fab="$isMobile">
-        <v-icon :class="{ 'mr-2': !$isMobile}">
-          mdi-printer
-        </v-icon>
-        <span v-if="!$isMobile">
-
-        Imprimir relatório
-        </span>
+      <v-btn
+        depressed
+        :color="'var(--preto-principal)'"
+        dark
+        @click="clickBtnImprimirRelatorio"
+        :fab="$isMobile"
+      >
+        <v-icon :class="{ 'mr-2': !$isMobile }"> mdi-printer </v-icon>
+        <span v-if="!$isMobile"> Imprimir relatório </span>
       </v-btn>
     </v-col>
     <v-col cols="auto" v-if="btnAdicionar">
-      <v-btn depressed :color="'var(--btn-adicionar)'" dark :large="!$isMobile" @click="clickBtnAdicionar"
-             :fab="$isMobile">
-        <v-icon :class="{ 'mr-2': !$isMobile}">
-          mdi-plus
-        </v-icon>
-        <span v-if="!$isMobile">
-        Adicionar
-        </span>
+      <v-btn
+        depressed
+        :color="'var(--btn-adicionar)'"
+        dark
+        @click="clickBtnAdicionar"
+        :fab="$isMobile"
+      >
+        <v-icon :class="{ 'mr-2': !$isMobile }"> mdi-plus </v-icon>
+        <span v-if="!$isMobile"> Adicionar </span>
       </v-btn>
     </v-col>
   </v-row>
@@ -29,7 +30,7 @@
 <script>
 export default {
   name: "BarraBottomBotoes",
-  props:['btnGerarRelatorio', 'btnAdicionar'],
+  props: ["btnGerarRelatorio", "btnAdicionar"],
   methods: {
     clickBtnAdicionar() {
       this.$emit("clickBtnAdicionar")
@@ -37,8 +38,8 @@ export default {
 
     clickBtnImprimirRelatorio() {
       this.$emit("clickBtnImprimirRelatorio")
-    }
-  }
+    },
+  },
 }
 </script>
 
