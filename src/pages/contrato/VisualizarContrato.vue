@@ -22,6 +22,8 @@
               mobile-breakpoint="0"
               item-key="id"
               dense
+              calculate-widths
+              some-items
             >
               <template v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length" style="background-color: #d5e6fd">
@@ -84,14 +86,22 @@
                   <td @click.prevent="abrirDetalhes(item, $event)">
                     {{ ("0000" + item.id).slice(-4) }}
                   </td>
-                  <td @click.prevent="abrirDetalhes(item, $event)">
+                  <td
+                    @click.prevent="abrirDetalhes(item, $event)"
+                    style="white-space: nowrap"
+                  >
                     {{ item.nome_imovel }}
                   </td>
-                  <td @click.prevent="abrirDetalhes(item, $event)">
-                    {{ item.nome_responsavel }}
+                  <td
+                    @click.prevent="abrirDetalhes(item, $event)"
+                    style="white-space: nowrap"
+                  >
+                    {{ item.nome_cliente }}
                   </td>
                   <td @click.prevent="abrirDetalhes(item, $event)">
-                    {{ item.nome_cliente }}
+                    <span style="white-space: nowrap">{{
+                      item.nome_responsavel
+                    }}</span>
                   </td>
                   <td @click.prevent="abrirDetalhes(item, $event)">
                     <span
@@ -240,8 +250,8 @@ export default {
       busca: "",
       items: [],
       headers: [
-        { text: "Código", value: "id" },
-        { text: "Imóvel", value: "nome_imovel" },
+        { text: "Código", value: "id", width: "120px", fixed: true },
+        { text: "Imóvel", value: "nome_imovel", fixed: true },
         { text: "Cliente", value: "nome_cliente" },
         { text: "Responsável", value: "nome_responsavel" },
         { text: "Status", value: "status" },
