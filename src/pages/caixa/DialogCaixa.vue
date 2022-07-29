@@ -1,14 +1,13 @@
 e
 <template>
   <v-dialog v-model="mostrar" persistent max-width="1000px">
-    <v-card class="pa-5">
+    <v-card class="pa-3">
+      <CabecalhoDialog
+          :texto-cadastrando="editando ? 'Editando caixa' : 'Cadastrando caixa'"
+          @fechar="cancelar()"
+      />
       <v-row>
-        <v-col>
-          <v-row>
-            <v-col>
-              <h3 class="ma-0">{{ editando ? 'Editando caixa' : 'Cadastrando caixa' }}</h3>
-            </v-col>
-          </v-row>
+        <v-col class="pt-0">
           <v-form lazy-validation ref="formulario" v-model="valido">
             <v-row align="center" :class="{'mt-0': !$isMobile}">
               <v-col cols="12" xl="" lg="" md="">
@@ -120,31 +119,22 @@ e
               </v-col>
             </v-row>
           </v-form>
-          <v-row :justify="$isMobile ? 'space-between' : 'end'" class="mt-1">
-            <v-col cols="auto">
-              <v-btn color="var(--btn-salvar)" dark large @click.prevent="editando ? editar() : cadastrar()">
-                <v-icon class="mr-1">
-                  mdi-content-save
-                </v-icon>
-                Salvar
-              </v-btn>
-            </v-col>
-            <v-col cols="auto">
-              <v-btn dark color="var(--btn-cancelar)" large @click="clickBtnCancelar">
-                <v-icon class="mr-1">
-                  mdi-close
-                </v-icon>
-                Cancelar
-              </v-btn>
-            </v-col>
-          </v-row>
         </v-col>
       </v-row>
+
+      <RodapeDialog
+          @cancelar="cancelar()" :editando="editando" @salvar="cadastrar()" @editar="editar()"
+
+      >
+      </RodapeDialog>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
+import CabecalhoDialog from "@/components/shared/Dialog/CabecalhoDialog";
+import RodapeDialog from "@/components/shared/Dialog/RodapeDialog";
+
 import api from "../../services/api";
 import {setValue} from "vue-currency-input";
 import dayjs from 'dayjs'
@@ -152,6 +142,10 @@ import dayjs from 'dayjs'
 export default {
   name: "DialogCaixa",
   props: ['mostrar', 'dadosCaixa'],
+  components: {
+    CabecalhoDialog,
+    RodapeDialog
+  },
   data() {
     return {
       contas: [],
@@ -196,7 +190,7 @@ export default {
         this.historicos = resp.data
       })
     },
-    clickBtnCancelar() {
+    cancelar() {
       this.$emit('cancelar')
     },
 

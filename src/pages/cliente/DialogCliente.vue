@@ -1,13 +1,12 @@
 <template>
   <v-dialog v-model="mostrar" persistent max-width="1100px">
-    <v-card class="pa-5">
+    <v-card class="pa-3">
+      <CabecalhoDialog
+          :texto-cadastrando="editando ? 'Editando caixa' : 'Cadastrando caixa'"
+          @fechar="cancelar()"
+      />
       <v-row>
-        <v-col>
-          <v-row>
-            <v-col>
-              <h3 class="ma-0">{{ editando ? 'Editando cliente' : 'Cadastrando cliente' }}</h3>
-            </v-col>
-          </v-row>
+        <v-col class="pt-0">
           <v-form lazy-validation ref="formulario" v-model="valido">
             <v-row>
               <v-col>
@@ -415,30 +414,11 @@
               </v-col>
             </v-row>
           </v-form>
-          <v-row :justify="$isMobile ? 'space-between' : 'end'">
-            <v-col cols="auto">
-              <v-btn color="var(--btn-salvar)" dark large @click="editando ? editarCliente() : cadastrarCliente(false)">
-                <v-icon class="mr-1">mdi-content-save</v-icon>
-                {{ !$isMobile ? 'Salvar' : '' }}
-              </v-btn>
-            </v-col>
-            <v-col cols="auto" v-if="!editando">
-              <v-btn color="var(--btn-salvar)" dark large @click="cadastrarCliente(true)">
-                <v-icon :class=" $isMobile ? '' : 'mr-1' ">mdi-content-save-move</v-icon>
-                {{ !$isMobile ? 'Salvar e sair' : '' }}
-              </v-btn>
-            </v-col>
-            <v-col cols="auto">
-              <v-btn dark color="var(--btn-cancelar)" large @click="cancelar">
-                <v-icon class="mr-1">
-                  mdi-close
-                </v-icon>
-                {{ !$isMobile ? 'Cancelar' : '' }}
-              </v-btn>
-            </v-col>
-          </v-row>
         </v-col>
       </v-row>
+
+      <RodapeDialog @cancelar="cancelar()" :editando="editando" @salvar="cadastrar()" @editar="editar()">
+      </RodapeDialog>
 
       <alerta-acoes
           :palavra-chave="palavraChave"
@@ -457,6 +437,8 @@
           @deletar="deletarTelefone"
       >
       </dialog-deletar>
+
+
     </v-card>
   </v-dialog>
 </template>
@@ -467,12 +449,17 @@ import api from '../../services/api'
 import AlertaAcoes from '../../components/shared/AlertaAcoes'
 import DialogDeletar from "../../components/shared/DialogDeletar";
 
+import CabecalhoDialog from "@/components/shared/Dialog/CabecalhoDialog";
+import RodapeDialog from "@/components/shared/Dialog/RodapeDialog";
+
 export default {
   name: "DialogCliente",
   props: ['mostrar', 'idCliente'],
   components: {
     AlertaAcoes,
-    DialogDeletar
+    DialogDeletar,
+    RodapeDialog,
+    CabecalhoDialog
   },
   data() {
     return {

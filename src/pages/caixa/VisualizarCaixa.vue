@@ -9,7 +9,7 @@
               @update:page="$paraTopo"
               fixed-header
               :headers="headers"
-              :items="items"
+              :items="filtrarCaixa"
               :footer-props="{
                 itemsPerPageOptions: [50, 100, 220, -1],
               }"
@@ -22,7 +22,65 @@
               mobile-breakpoint="0"
               item-key="id"
               dense
+              calculate-widths
             >
+              <template v-slot:[`header.id`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                  textoFiltro="Buscar por lançamento"
+                  @enviar-filtro="buscaLancamento = $event"
+                  @limpar-filtro="buscaLancamento = null"
+                />
+              </template>
+              <template v-slot:[`header.descricao_historico`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                  textoFiltro="Buscar por histórico"
+                  @enviar-filtro="buscaHistorico = $event"
+                  @limpar-filtro="buscaHistorico = null"
+                />
+              </template>
+              <template v-slot:[`header.valor`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                  textoFiltro="Buscar por valor"
+                  @enviar-filtro="buscaValor = $event"
+                  @limpar-filtro="buscaValor = null"
+                />
+              </template>
+              <template v-slot:[`header.movimento`]="{ header }">
+                {{ header.text }}
+                <FiltroData
+                  textoFiltro="Buscar por movimento"
+                  @enviar-filtro="buscaMovimento = $event"
+                  @limpar-filtro="buscaMovimento = null"
+                />
+              </template>
+
+              <template v-slot:[`header.imovel_nome`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                  textoFiltro="Buscar por imóvel"
+                  @enviar-filtro="buscaImovel = $event"
+                  @limpar-filtro="buscaImovel = null"
+                />
+              </template>
+              <template v-slot:[`header.conta_nome`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                  textoFiltro="Buscar por conta"
+                  @enviar-filtro="buscaConta = $event"
+                  @limpar-filtro="buscaConta = null"
+                />
+              </template>
+              <template v-slot:[`header.id_debito_credito`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                  textoFiltro="Buscar por Debito/Crédito"
+                  @enviar-filtro="buscaDebitoCredito = $event"
+                  @limpar-filtro="buscaDebitoCredito = null"
+                />
+              </template>
               <template v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length" style="background-color: #d5e6fd">
                   <ul class="pa-3" style="list-style-type: none">
@@ -49,30 +107,47 @@
                   </ul>
                 </td>
               </template>
+              <template v-slot:[`item.id`]="{ item }">
+                <span style="white-space: nowrap">{{
+                  ("000000" + item.id).slice(-6)
+                }}</span>
+              </template>
 
               <template v-slot:item="{ item }">
                 <tr>
                   <td @click.prevent="abrirDetalhes(item, $event)">
-                    {{ ("000000" + item.id).slice(-6) }}
+                    <span style="white-space: nowrap">
+                      {{ ("000000" + item.id).slice(-6) }}
+                    </span>
                   </td>
                   <td @click.prevent="abrirDetalhes(item, $event)">
-                    {{ item.descricao_historico }}
+                    <span style="white-space: nowrap">
+                      {{ item.descricao_historico }}
+                    </span>
                   </td>
                   <td @click.prevent="abrirDetalhes(item, $event)">
-                    R$ {{ item.valor.replace(".", ",") }}
+                    <span style="white-space: nowrap">
+                      R$ {{ item.valor.replace(".", ",") }}
+                    </span>
                   </td>
                   <td @click.prevent="abrirDetalhes(item, $event)">
-                    {{
-                      item.movimento
-                        ? dayjs(item.movimento).format("DD/MM/YYYY")
-                        : ""
-                    }}
+                    <span style="white-space: nowrap">
+                      {{
+                        item.movimento
+                          ? dayjs(item.movimento).format("DD/MM/YYYY")
+                          : ""
+                      }}
+                    </span>
                   </td>
                   <td @click.prevent="abrirDetalhes(item, $event)">
-                    {{ item.imovel_nome }}
+                    <span style="white-space: nowrap">
+                      {{ item.imovel_nome }}
+                    </span>
                   </td>
                   <td @click.prevent="abrirDetalhes(item, $event)">
-                    {{ item.conta_nome }}
+                    <span style="white-space: nowrap">
+                      {{ item.conta_nome }}
+                    </span>
                   </td>
                   <td
                     @click.prevent="abrirDetalhes(item, $event)"
@@ -81,13 +156,15 @@
                       credito: item.id_debito_credito === 2,
                     }"
                   >
-                    {{
-                      item.id_debito_credito === 1
-                        ? "Débito"
-                        : item.id_debito_credito === 2
-                        ? "Crédito"
-                        : ""
-                    }}
+                    <span style="white-space: nowrap">
+                      {{
+                        item.id_debito_credito === 1
+                          ? "Débito"
+                          : item.id_debito_credito === 2
+                          ? "Crédito"
+                          : ""
+                      }}
+                    </span>
                   </td>
                   <td class="acoes text-center">
                     <v-tooltip top>
@@ -174,7 +251,6 @@
 </template>
 <script>
 import api from "../../services/api"
-import dayjs from "dayjs"
 import { jsPDF } from "jspdf"
 import "jspdf-autotable"
 
@@ -184,6 +260,13 @@ import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import DialogDeletar from "../../components/shared/DialogDeletar"
 import DialogCaixa from "./DialogCaixa"
 
+import FiltroData from "@/components/shared/Filtros/FiltroData"
+import FiltroSimples from "@/components/shared/Filtros/FiltroSimples"
+
+import dayjs from "dayjs"
+var isBetween = require("dayjs/plugin/isBetween")
+dayjs.extend(isBetween)
+
 export default {
   name: "VisualizarCaixa.vue",
   components: {
@@ -192,18 +275,20 @@ export default {
     AlertaAcoes,
     DialogDeletar,
     DialogCaixa,
+    FiltroSimples,
+    FiltroData
   },
   data() {
     return {
       items: [],
       headers: [
-        { text: "Lançamento", value: "id", align: "center", width: "120px" },
-        { text: "Histórico", value: "descricao_historico" },
-        { text: "Valor", value: "valor" },
-        { text: "Movimento", value: "movimento" },
-        { text: "Imóvel", value: "imovel_nome" },
-        { text: "Conta", value: "conta_nome" },
-        { text: "D/C", value: "id_debito_credito" },
+        { text: "Lançamento", value: "id", align: "center", width: "165px" },
+        { text: "Histórico", value: "descricao_historico", width: "143px" },
+        { text: "Valor", value: "valor", width: "130px" },
+        { text: "Movimento", value: "movimento", width: "155px" },
+        { text: "Imóvel", value: "imovel_nome", width: "130px" },
+        { text: "Conta", value: "conta_nome", width: "130px" },
+        { text: "D/C", value: "id_debito_credito", width: "115px" },
         {
           text: "",
           value: "acoes",
@@ -219,17 +304,98 @@ export default {
       filtrados: [],
       historicos: [],
       dialogCaixa: false,
-
       funcao: "",
       mostrarAlerta: false,
       dialogDeletar: false,
       expanded: [],
+      buscaLancamento: null,
+      buscaHistorico: null,
+      buscaValor: null,
+      buscaMovimento: null,
+      buscaImovel: null,
+      buscaConta: null,
+      buscaDebitoCredito: null,
     }
   },
   created() {
     this.buscarCaixa()
   },
+  computed: {
+    filtrarCaixa() {
+      let condicoes = []
+
+      if (this.buscaLancamento) {
+        condicoes.push(this.filtrarLancamento)
+      }
+
+      if (this.buscaHistorico) {
+        condicoes.push(this.filtrarHistorico)
+      }
+
+      if (this.buscaValor) {
+        condicoes.push(this.filtrarValor)
+      }
+
+      if (this.buscaMovimento) {
+        condicoes.push(this.filtrarMovimento)
+      }
+
+      if (this.buscaImovel) {
+        condicoes.push(this.filtrarImovel)
+      }
+
+      if (this.buscaConta) {
+        condicoes.push(this.filtrarConta)
+      }
+
+      if (this.buscaDebitoCredito) {
+        condicoes.push(this.filtrarDebitoCredito)
+      }
+
+      if (condicoes.length > 0) {
+        return this.items.filter((caixa) => {
+          return condicoes.every((condicao) => {
+            return condicao(caixa)
+          })
+        })
+      }
+
+      return this.items
+    },
+  },
   methods: {
+    filtrarLancamento(item) {
+      return item.id.toLowerCase().includes(this.buscaLancamento.toLowerCase())
+    },
+
+    filtrarHistorico(item) {
+      return item.descricao_historico
+        .toLowerCase()
+        .includes(this.buscaHistorico.toLowerCase())
+    },
+
+    filtrarValor(item) {
+      return item.valor.toLowerCase().includes(this.buscaValor.toLowerCase())
+    },
+
+    filtrarMovimento(item) {
+      let { inicio, fim } = this.buscaMovimento
+
+      return dayjs(item.movimento).isBetween(inicio, fim, "day", "[]")
+    },
+
+    filtrarImovel(item) {
+      return item.imovel_nome
+        .toLowerCase()
+        .includes(this.buscaImovel.toLowerCase())
+    },
+
+    filtrarConta(item) {
+      return item.conta_nome
+        .toLowerCase()
+        .includes(this.buscaConta.toLowerCase())
+    },
+
     async buscarCaixa() {
       this.carregandoTableCaixa = true
       await api.get("/caixa").then((consulta) => {
@@ -305,12 +471,23 @@ export default {
 
     gerarRelatorio() {
       let hojeAgr = dayjs().format("DD/MM/YYYY HH:mm:ss")
-      let novosDados = JSON.parse(JSON.stringify(this.filtrados))
+      let novosDados = JSON.parse(JSON.stringify(this.filtrarCaixa))
+      let valorTotal = 0
       for (let i in novosDados) {
-        let valorFormatado = `${novosDados[i].valor.replace(".", ",")}`
+        // let valorFormatado = `${novosDados[i].valor.replace(".", ",")}`
         let movimentoFormatada = dayjs(novosDados[i].movimento).format(
           "DD/MM/YYYY"
         )
+        let valorFormatado
+        console.log(parseFloat(novosDados[i].valor))
+        console.log(novosDados[i])
+        if(novosDados[i].id_debito_credito === 1){
+          valorTotal -= parseFloat(novosDados[i].valor)
+          valorFormatado = `-${novosDados[i].valor.replace(".", ",")}`
+        }else if(novosDados[i].id_debito_credito === 2){
+          valorTotal += parseFloat(novosDados[i].valor)
+          valorFormatado = `${novosDados[i].valor.replace(".", ",")}`
+        }
         let codigoFormatado = ("000000" + novosDados[i].id).slice(-6)
         novosDados[i].valor = valorFormatado
         novosDados[i].movimento = movimentoFormatada
@@ -327,7 +504,10 @@ export default {
       doc.setFontSize(24)
       doc.text(`Relátorio de Caixa`, 10, 22)
       doc.setFontSize(14)
-      doc.text(`Total: ${this.filtrados.length}`, 200, 21, null, null, "right")
+      doc.text(`Total: ${this.filtrarCaixa.length}`, 200, 21, null, null, "right")
+
+
+      doc.setTextColor(0,0,0);
       doc.autoTable({
         head: [
           [
@@ -356,12 +536,15 @@ export default {
         },
         startY: 25,
         pageBreak: "auto",
-        margin: { left: 10, right: 10, top: 10 },
+        margin: { left: 10, right: 10, top: 10, bottom: 13 },
       })
+
+
       const totalPaginas = doc.internal.getNumberOfPages()
 
       doc.setFontSize(8)
       for (var i = 1; i <= totalPaginas; i++) {
+        doc.line(10, 284, 200, 284)
         doc.setPage(i)
         doc.text(
           `Página ${String(i)} de ${String(totalPaginas)}`,
@@ -371,6 +554,16 @@ export default {
           null,
           "right"
         )
+
+        doc.setFontSize(16)
+        if(valorTotal < 0){
+          doc.setTextColor(255,0,0);
+        }else if(valorTotal > 0){
+          doc.setTextColor(1,71,154);
+        }
+        doc.text(`R$: ${valorTotal.toFixed(2).replace(".", ",")}`, 10, 290)
+        doc.setFontSize(8)
+        doc.setTextColor(0,0,0);
       }
       window.open(doc.output("bloburl", { filename: "tabela_imovel.pdf" }))
     },

@@ -36,6 +36,10 @@ export default {
 
 <style>
 :root {
+  --azul-principal: #061733;
+  --azul-secundaria: #01479A;
+  --azul-terceario: #014461;
+  --azul-btn-simples: #014461;
   --preto-principal: #353a40;
   --btn-adicionar: #24a45a;
   --btn-salvar: #24a45a;
