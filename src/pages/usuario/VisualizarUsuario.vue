@@ -10,7 +10,7 @@
               @update:page="$paraTopo"
               fixed-header
               :headers="headers"
-              :items="items"
+              :items="filtrarUsuarios"
               :footer-props="{
                 itemsPerPageOptions: [50, 100, 220, -1],
               }"
@@ -24,6 +24,38 @@
               item-key="id"
               dense
             >
+              <template v-slot:[`header.nome`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por nome"
+                    @enviar-filtro="buscaNome = $event"
+                    @limpar-filtro="buscaNome = null"
+                />
+              </template>
+              <template v-slot:[`header.email`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por email"
+                    @enviar-filtro="buscaEmail = $event"
+                    @limpar-filtro="buscaEmail = null"
+                />
+              </template>
+              <template v-slot:[`header.usuario`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por usuário"
+                    @enviar-filtro="buscaUsuario = $event"
+                    @limpar-filtro="buscaUsuario = null"
+                />
+              </template>
+              <template v-slot:[`header.permissao`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por permissão"
+                    @enviar-filtro="buscaPermissao = $event"
+                    @limpar-filtro="buscaPermissao = null"
+                />
+              </template>
               <template v-slot:item="{ item }">
                 <tr>
                   <td>{{ item.nome }}</td>
@@ -124,6 +156,7 @@ import "jspdf-autotable"
 import DialogUsuario from "./DialogUsuario"
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import DialogDeletar from "../../components/shared/DialogDeletar"
+import FiltroSimples from "@/components/shared/Filtros/FiltroSimples"
 
 export default {
   name: "VisualizarUsuario",
@@ -133,6 +166,7 @@ export default {
     DialogUsuario,
     AlertaAcoes,
     DialogDeletar,
+    FiltroSimples
   },
 
   data() {
@@ -144,7 +178,7 @@ export default {
           text: "Nome do Operador",
           value: "nome",
           align: "center",
-          width: "120px",
+          width: "200px",
         },
         { text: "Email", value: "email" },
         { text: "Usuário", value: "usuario" },
@@ -165,11 +199,47 @@ export default {
       textoAlerta: "",
       dialogDeletar: false,
       usuario: {},
+      buscaNome: null,
+      buscaEmail: null,
+      buscaUsuario: null,
+      buscaPermissao: null,
     }
   },
   async mounted() {
     this.buscarUsuarios()
   },
+  computed: {
+    filtrarUsuarios() {
+      let condicoes = []
+
+      if (this.buscaNome) {
+        condicoes.push(this.filtrarNome)
+      }
+
+      if (this.buscaEmail) {
+        condicoes.push(this.filtrarEmail)
+      }
+
+      if (this.buscaUsuario) {
+        condicoes.push(this.filtrarUsuario)
+      }
+
+      if (this.buscaPermissao) {
+        condicoes.push(this.filtrarPermissao)
+      }
+
+      if (condicoes.length > 0) {
+        return this.items.filter((usuario) => {
+          return condicoes.every((condicao) => {
+            return condicao(usuario)
+          })
+        })
+      }
+
+      return this.items
+    },
+  },
+
   methods: {
     async buscarUsuarios() {
       await api
@@ -282,6 +352,26 @@ export default {
           this.mostrarAlerta = true
         })
     },
+    filtrarNome(item) {
+      return item.nome.toLowerCase().includes(this.buscaNome.toLowerCase())
+    },
+
+    filtrarEmail(item) {
+      return item.email.toLowerCase().includes(this.buscaEmail.toLowerCase())
+    },
+
+    filtrarUsuario(item) {
+      return item.usuario
+          .toLowerCase()
+          .includes(this.buscaUsuario.toLowerCase())
+    },
+
+    filtrarPermissao(item) {
+      return item.permissao
+          .toLowerCase()
+          .includes(this.buscaPermissao.toLowerCase())
+    },
+
   },
 }
 </script>

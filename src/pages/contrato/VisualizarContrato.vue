@@ -9,7 +9,7 @@
               @update:page="$paraTopo"
               fixed-header
               :headers="headers"
-              :items="items"
+              :items="filtrarContrato"
               :footer-props="{
                 itemsPerPageOptions: [50, 100, 220, -1],
               }"
@@ -25,6 +25,46 @@
               calculate-widths
               some-items
             >
+              <template v-slot:[`header.nome_imovel`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por imovel"
+                    @enviar-filtro="buscaImovel = $event"
+                    @limpar-filtro="buscaImovel = null"
+                />
+              </template>
+              <template v-slot:[`header.id`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por código"
+                    @enviar-filtro="buscaCodigo = $event"
+                    @limpar-filtro="buscaCodigo = null"
+                />
+              </template>
+              <template v-slot:[`header.nome_cliente`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por cliente"
+                    @enviar-filtro="buscaCliente = $event"
+                    @limpar-filtro="buscaCliente = null"
+                />
+              </template>
+              <template v-slot:[`header.nome_responsavel`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por responsável"
+                    @enviar-filtro="buscaResponsavel = $event"
+                    @limpar-filtro="buscaResponsavel = null"
+                />
+              </template>
+              <template v-slot:[`header.status`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por status"
+                    @enviar-filtro="buscaStatus = $event"
+                    @limpar-filtro="buscaStatus = null"
+                />
+              </template>
               <template v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length" style="background-color: #d5e6fd">
                   <ul class="pa-3" style="list-style-type: none">
@@ -235,6 +275,7 @@ import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import { jsPDF } from "jspdf"
 import "jspdf-autotable"
 import DialogDeletar from "../../components/shared/DialogDeletar"
+import FiltroSimples from "@/components/shared/Filtros/FiltroSimples"
 
 export default {
   name: "VisualizarContrato",
@@ -244,13 +285,14 @@ export default {
     DialogContrato,
     AlertaAcoes,
     DialogDeletar,
+    FiltroSimples
   },
   data() {
     return {
       busca: "",
       items: [],
       headers: [
-        { text: "Código", value: "id", width: "120px", fixed: true },
+        { text: "Código", value: "id", width: "130px", fixed: true },
         { text: "Imóvel", value: "nome_imovel", fixed: true },
         { text: "Cliente", value: "nome_cliente" },
         { text: "Responsável", value: "nome_responsavel" },
@@ -273,7 +315,48 @@ export default {
       mostrarAlerta: false,
       dialogDeletar: false,
       contrato: {},
+      buscaImovel: null,
+      buscaCliente: null,
+      buscaResponsavel: null,
+      buscaCodigo: null,
+      buscaStatus: null,
     }
+  },
+
+  computed: {
+    filtrarContrato() {
+      let condicoes = []
+
+      if (this.buscaCodigo) {
+        condicoes.push(this.filtrarCodigo)
+      }
+
+      if (this.buscaImovel) {
+        condicoes.push(this.filtrarImovel)
+      }
+
+      if (this.buscaCliente) {
+        condicoes.push(this.filtrarCliente)
+      }
+
+      if (this.buscaResponsavel) {
+        condicoes.push(this.filtrarResponsavel)
+      }
+
+      if (this.buscaStatus) {
+        condicoes.push(this.filtrarStatus)
+      }
+
+      if (condicoes.length > 0) {
+        return this.items.filter((contrato) => {
+          return condicoes.every((condicao) => {
+            return condicao(contrato)
+          })
+        })
+      }
+
+      return this.items
+    },
   },
 
   methods: {
@@ -400,6 +483,33 @@ export default {
         this.mostrarAlerta = true
         this.contrato = {}
       })
+    },
+
+    filtrarCodigo(item) {
+      return item.id.toString().toLowerCase().includes(this.buscaCodigo.toLowerCase())
+    },
+
+    filtrarImovel(item) {
+      return item.nome_imovel.toLowerCase().includes(this.buscaImovel.toLowerCase())
+    },
+
+    filtrarCliente(item) {
+        return item.nome_cliente
+            .toLowerCase()
+            .includes(this.buscaCliente.toLowerCase())
+    },
+
+    filtrarResponsavel(item) {
+        return item.nome_responsavel
+            .toLowerCase()
+            .includes(this.buscaResponsavel.toLowerCase())
+    },
+
+    filtrarStatus(item) {
+      if(item.status)
+      return item.status
+          .toLowerCase()
+          .includes(this.buscaStatus.toLowerCase())
     },
   },
   async mounted() {

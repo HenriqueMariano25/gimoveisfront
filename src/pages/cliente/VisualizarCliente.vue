@@ -8,7 +8,7 @@
             <v-data-table
               @update:page="$paraTopo"
               :headers="headers"
-              :items="items"
+              :items="filtrarCliente"
               fixed-header
               :footer-props="{
                 itemsPerPageOptions: [50, 100, 220, -1],
@@ -23,6 +23,39 @@
               item-key="id"
               dense
             >
+              <template v-slot:[`header.nome`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por nome"
+                    @enviar-filtro="buscaNome = $event"
+                    @limpar-filtro="buscaNome = null"
+                />
+              </template>
+              <template v-slot:[`header.telefone`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por telefone"
+                    @enviar-filtro="buscaTelefone = $event"
+                    @limpar-filtro="buscaTelefone = null"
+                />
+              </template>
+              <template v-slot:[`header.cpf_cnpj`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por cpf/cnpj"
+                    @enviar-filtro="buscaCpfCnpj = $event"
+                    @limpar-filtro="buscaCpfCnpj = null"
+                />
+              </template>
+              <template v-slot:[`header.status`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por status"
+                    @enviar-filtro="buscaStatus = $event"
+                    @limpar-filtro="buscaStatus = null"
+                />
+              </template>
+
               <template v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length" style="background-color: #d5e6fd">
                   <ul class="pa-3" style="list-style-type: none">
@@ -183,6 +216,7 @@ import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
 import DialogCliente from "./DialogCliente"
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import DialogDeletar from "../../components/shared/DialogDeletar"
+import FiltroSimples from "@/components/shared/Filtros/FiltroSimples"
 
 import api from "../../services/api"
 import { jsPDF } from "jspdf"
@@ -197,6 +231,7 @@ export default {
     AlertaAcoes,
     DialogDeletar,
     DialogCliente,
+    FiltroSimples
   },
   data() {
     return {
@@ -222,7 +257,43 @@ export default {
       dialogDeletar: false,
       cliente: {},
       filtrados: [],
+      buscaNome: null,
+      buscaTelefone: null,
+      buscaCpfCnpj: null,
+      buscaStatus: null,
     }
+  },
+
+  computed: {
+    filtrarCliente() {
+      let condicoes = []
+
+      if (this.buscaNome) {
+        condicoes.push(this.filtrarNome)
+      }
+
+      if (this.buscaTelefone) {
+        condicoes.push(this.filtrarTelefone)
+      }
+
+      if (this.buscaCpfCnpj) {
+        condicoes.push(this.filtrarCpfCnpj)
+      }
+
+      if (this.buscaStatus) {
+        condicoes.push(this.filtrarStatus)
+      }
+
+      if (condicoes.length > 0) {
+        return this.items.filter((cliente) => {
+          return condicoes.every((condicao) => {
+            return condicao(cliente)
+          })
+        })
+      }
+
+      return this.items
+    },
   },
 
   methods: {
@@ -355,6 +426,29 @@ export default {
         )
       }
       window.open(doc.output("bloburl", { filename: "tabela_clientes.pdf" }))
+    },
+
+    filtrarNome(item) {
+      return item.nome.toLowerCase().includes(this.buscaNome.toLowerCase())
+    },
+
+    filtrarTelefone(item) {
+
+      if(item.numero_telefone[0])
+        return item.numero_telefone[0]
+              .toLowerCase()
+              .includes(this.buscaTelefone.toLowerCase())
+    },
+
+    filtrarCpfCnpj(item) {
+      return item.cpf_cnpj.toLowerCase().includes(this.buscaCpfCnpj.toLowerCase())
+    },
+
+    filtrarStatus(item) {
+      if(item.status)
+        return item.status
+            .toLowerCase()
+            .includes(this.buscaStatus.toLowerCase())
     },
   },
   mounted() {

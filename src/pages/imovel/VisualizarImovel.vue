@@ -9,7 +9,7 @@
               @update:page="$paraTopo"
               fixed-header
               :headers="headers"
-              :items="items"
+              :items="filtrarImovel"
               :footer-props="{
                 itemsPerPageOptions: [50, 100, 220, -1],
               }"
@@ -23,6 +23,30 @@
               item-key="id"
               dense
             >
+              <template v-slot:[`header.nome`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por nome"
+                    @enviar-filtro="buscaNome = $event"
+                    @limpar-filtro="buscaNome = null"
+                />
+              </template>
+              <template v-slot:[`header.rua`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por endereço"
+                    @enviar-filtro="buscaEndereco = $event"
+                    @limpar-filtro="buscaEndereco = null"
+                />
+              </template>
+              <template v-slot:[`header.status`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por status"
+                    @enviar-filtro="buscaStatus = $event"
+                    @limpar-filtro="buscaStatus = null"
+                />
+              </template>
               <template v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length" style="background-color: #d5e6fd">
                   <ul class="pa-3" style="list-style-type: none">
@@ -196,8 +220,10 @@ import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
 import DialogImovel from "./DialogImovel"
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import DialogDeletar from "../../components/shared/DialogDeletar"
+import FiltroSimples from "@/components/shared/Filtros/FiltroSimples"
 
 export default {
+
   name: "VisualizarImovel",
   components: {
     BarraTopoBusca,
@@ -205,6 +231,7 @@ export default {
     DialogImovel,
     AlertaAcoes,
     DialogDeletar,
+    FiltroSimples
   },
   data() {
     return {
@@ -232,7 +259,38 @@ export default {
       dialogDeletar: false,
       imovel: {},
       textoAlerta: "",
+      buscaNome: null,
+      buscaEndereco: null,
+      buscaStatus: null,
     }
+  },
+
+  computed: {
+    filtrarImovel() {
+      let condicoes = []
+
+      if (this.buscaNome) {
+        condicoes.push(this.filtrarNome)
+      }
+
+      if (this.buscaEndereco) {
+        condicoes.push(this.filtrarEndereco)
+      }
+
+      if (this.buscaStatus) {
+        condicoes.push(this.filtrarStatus)
+      }
+
+      if (condicoes.length > 0) {
+        return this.items.filter((cliente) => {
+          return condicoes.every((condicao) => {
+            return condicao(cliente)
+          })
+        })
+      }
+
+      return this.items
+    },
   },
 
   methods: {
@@ -368,6 +426,25 @@ export default {
           this.textoAlerta = mensagem
           this.mostrarAlerta = true
         })
+    },
+
+    filtrarNome(item) {
+      return item.nome.toLowerCase().includes(this.buscaNome.toLowerCase())
+    },
+
+    filtrarEndereco(item) {
+
+      if(item.rua)
+        return item.rua
+            .toLowerCase()
+            .includes(this.buscaEndereco.toLowerCase())
+    },
+
+    filtrarStatus(item) {
+      if(item.status)
+        return item.status
+            .toLowerCase()
+            .includes(this.buscaStatus.toLowerCase())
     },
   },
   async mounted() {

@@ -9,7 +9,7 @@
               @update:page="$paraTopo"
               fixed-header
               :headers="headers"
-              :items="items"
+              :items="filtrarResponsavel"
               :footer-props="{
                 itemsPerPageOptions: [50, 100, 220, -1],
               }"
@@ -23,6 +23,30 @@
               item-key="id"
               dense
             >
+              <template v-slot:[`header.nome`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por nome"
+                    @enviar-filtro="buscaNome = $event"
+                    @limpar-filtro="buscaNome = null"
+                />
+              </template>
+              <template v-slot:[`header.endereco`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por endereço"
+                    @enviar-filtro="buscaEndereco = $event"
+                    @limpar-filtro="buscaEndereco = null"
+                />
+              </template>
+              <template v-slot:[`header.cpf_cnpj`]="{ header }">
+                {{ header.text }}
+                <FiltroSimples
+                    textoFiltro="Buscar por status"
+                    @enviar-filtro="buscaCpfCnpj = $event"
+                    @limpar-filtro="buscaCpfCnpj = null"
+                />
+              </template>
               <template v-slot:item="{ item }">
                 <tr>
                   <td>{{ item.nome }}</td>
@@ -123,6 +147,7 @@ import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
 import DialogResponsavel from "./DialogResponsavel"
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import DialogDeletar from "../../components/shared/DialogDeletar"
+import FiltroSimples from "@/components/shared/Filtros/FiltroSimples"
 
 import dayjs from "dayjs"
 import "jspdf-autotable"
@@ -137,6 +162,7 @@ export default {
     DialogResponsavel,
     AlertaAcoes,
     DialogDeletar,
+    FiltroSimples
   },
   data() {
     return {
@@ -162,7 +188,38 @@ export default {
       responsavel: {},
       dialogResponsavel: false,
       textoAlerta: "",
+      buscaNome: null,
+      buscaEndereco: null,
+      buscaCpfCnpj: null,
     }
+  },
+
+  computed: {
+    filtrarResponsavel() {
+      let condicoes = []
+
+      if (this.buscaNome) {
+        condicoes.push(this.filtrarNome)
+      }
+
+      if (this.buscaEndereco) {
+        condicoes.push(this.filtrarEndereco)
+      }
+
+      if (this.buscaCpfCnpj) {
+        condicoes.push(this.filtrarCpfCnpj)
+      }
+
+      if (condicoes.length > 0) {
+        return this.items.filter((responsavel) => {
+          return condicoes.every((condicao) => {
+            return condicao(responsavel)
+          })
+        })
+      }
+
+      return this.items
+    },
   },
 
   methods: {
@@ -285,6 +342,23 @@ export default {
         .catch((erro) => {
           console.log(erro)
         })
+    },
+
+    filtrarNome(item) {
+      return item.nome.toLowerCase().includes(this.buscaNome.toLowerCase())
+    },
+
+    filtrarEndereco(item) {
+      if(item.rua)
+        return item.rua
+            .toLowerCase()
+            .includes(this.buscaEndereco.toLowerCase())
+    },
+
+    filtrarCpfCnpj(item) {
+        return item.cpf_cnpj
+            .toLowerCase()
+            .includes(this.buscaCpfCnpj.toLowerCase())
     },
   },
   async mounted() {
