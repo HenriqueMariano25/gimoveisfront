@@ -295,8 +295,8 @@ export default {
         { text: "Código", value: "id", width: "130px", fixed: true },
         { text: "Imóvel", value: "nome_imovel", fixed: true },
         { text: "Cliente", value: "nome_cliente" },
-        { text: "Responsável", value: "nome_responsavel" },
-        { text: "Status", value: "status" },
+        { text: "Responsável", value: "nome_responsavel", width: "160px"},
+        { text: "Status", value: "status", width: "128px" },
         {
           text: "",
           value: "acoes",

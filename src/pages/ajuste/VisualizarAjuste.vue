@@ -46,7 +46,7 @@
                                 :footer-props="{
                                     itemsPerPageOptions:[10,25,50,-1]
                                  }"
-                                :height="$isMobile ? 'calc(100vh - 345px)' : 'calc(100vh - 368px)'"
+                                :height="$isMobile ? 'calc(100vh - 345px)' : 'calc(100vh - 268px)'"
                                 class="elevation-1 tabela pointer"
                                 mobile-breakpoint="0"
                                 item-key="id"
@@ -103,7 +103,7 @@
                                  }"
                                 class="elevation-1 tabela pointer"
                                 mobile-breakpoint="0"
-                                :height="$isMobile ? 'calc(100vh - 345px)' : 'calc(100vh - 368px)'"
+                                :height="$isMobile ? 'calc(100vh - 345px)' : 'calc(100vh - 268px)'"
                                 item-key="id"
                             >
                               <template v-slot:item="{ item }">

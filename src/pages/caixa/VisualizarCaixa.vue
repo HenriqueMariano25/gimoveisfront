@@ -10,12 +10,10 @@
               fixed-header
               :headers="headers"
               :items="filtrarCaixa"
-              :footer-props="{
-                itemsPerPageOptions: [50, 100, 220, -1],
-              }"
+
               class="tabela pointer"
               :height="
-                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 180px)'
+                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 187px)'
               "
               single-expand
               :expanded="expanded"
@@ -23,6 +21,11 @@
               item-key="id"
               dense
               calculate-widths
+              :page.sync="pagina"
+              hide-default-footer
+              @page-count="contadorPagina = $event"
+              :server-items-length="totalItens"
+              :items-per-page="itensPorPagina"
             >
               <template v-slot:[`header.id`]="{ header }">
                 {{ header.text }}
@@ -208,6 +211,32 @@
           </v-card>
         </v-col>
       </v-row>
+      <v-row justify="space-between" align="center" class="paginacao pa-3 mt-0 elevation-1" no-gutters>
+        <v-col class="pt-0" cols="8">
+          <v-pagination
+              v-model="pagina"
+              :length="contadorPagina"
+              :total-visible="10"
+          ></v-pagination>
+        </v-col>
+        <v-col class="pt-0" cols="auto">
+          <span>Total de laudos: {{ totalItens }}</span>
+        </v-col>
+        <v-col class="pt-0" cols="2">
+          <v-text-field
+              :value="itensPorPagina"
+              label="Itens por pagina"
+              type="number"
+              outlined
+              min="-1"
+              dense
+              max="200"
+              @input="itensPorPagina = parseInt($event, 10)"
+              hide-details
+              background-color="white"
+          ></v-text-field>
+        </v-col>
+      </v-row>
     </v-col>
 
     <dialog-caixa
@@ -315,9 +344,13 @@ export default {
       buscaImovel: null,
       buscaConta: null,
       buscaDebitoCredito: null,
+      pagina: 1,
+      contadorPagina: 1,
+      itensPorPagina: 20,
+      totalItens: 0,
     }
   },
-  created() {
+  mounted() {
     this.buscarCaixa()
   },
   computed: {
@@ -398,10 +431,17 @@ export default {
 
     async buscarCaixa() {
       this.carregandoTableCaixa = true
-      await api.get("/caixa").then((consulta) => {
+
+      let page = this.pagina - 1
+      let size = this.itensPorPagina
+
+      await api.get("/caixa", { params: { page, size } }).then((consulta) => {
         this.items = consulta.data
         this.filtrados = consulta.data
         this.carregandoTableCaixa = false
+        if(consulta.data.length > 0){
+          this.totalItens = parseInt(consulta.data[0].total_itens)
+        }
       })
     },
 
@@ -568,6 +608,11 @@ export default {
       window.open(doc.output("bloburl", { filename: "tabela_imovel.pdf" }))
     },
   },
+  watch: {
+    pagina: function () {
+      this.buscarCaixa();
+    },
+  }
 }
 </script>
 
@@ -580,5 +625,9 @@ export default {
 
 .credito {
   color: #105ab9;
+}
+
+.paginacao{
+  background-color:white;
 }
 </style>
