@@ -253,7 +253,7 @@
 
     <barra-bottom-botoes
       @clickBtnAdicionar="dialogCaixa = true"
-      @clickBtnImprimirRelatorio="gerarRelatorio"
+      @clickBtnImprimirRelatorio="dialogRelatorioCaixa = true"
       :btn-adicionar="true"
       :btn-gerar-relatorio="true"
     ></barra-bottom-botoes>
@@ -276,18 +276,21 @@
       :funcao="funcao"
     >
     </alerta-acoes>
+
+    <DialogRelatorioCaixa :mostrar="dialogRelatorioCaixa" @cancelar="dialogRelatorioCaixa = false"/>
+
+
   </v-row>
 </template>
 <script>
 import api from "../../services/api"
-import { jsPDF } from "jspdf"
-import "jspdf-autotable"
 
 import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
 import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import DialogDeletar from "../../components/shared/DialogDeletar"
 import DialogCaixa from "./DialogCaixa"
+import DialogRelatorioCaixa from "@/pages/caixa/DialogRelatorioCaixa";
 
 import FiltroData from "@/components/shared/Filtros/FiltroData"
 import FiltroSimples from "@/components/shared/Filtros/FiltroSimples"
@@ -305,7 +308,8 @@ export default {
     DialogDeletar,
     DialogCaixa,
     FiltroSimples,
-    FiltroData
+    FiltroData,
+    DialogRelatorioCaixa
   },
   data() {
     return {
@@ -348,6 +352,7 @@ export default {
       contadorPagina: 1,
       itensPorPagina: 20,
       totalItens: 0,
+      dialogRelatorioCaixa: false
     }
   },
   mounted() {
@@ -507,105 +512,6 @@ export default {
         this.funcao = "deletado"
         this.mostrarAlerta = true
       })
-    },
-
-    gerarRelatorio() {
-      let hojeAgr = dayjs().format("DD/MM/YYYY HH:mm:ss")
-      let novosDados = JSON.parse(JSON.stringify(this.filtrarCaixa))
-      let valorTotal = 0
-      for (let i in novosDados) {
-        // let valorFormatado = `${novosDados[i].valor.replace(".", ",")}`
-        let movimentoFormatada = dayjs(novosDados[i].movimento).format(
-          "DD/MM/YYYY"
-        )
-        let valorFormatado
-        console.log(parseFloat(novosDados[i].valor))
-        console.log(novosDados[i])
-        if(novosDados[i].id_debito_credito === 1){
-          valorTotal -= parseFloat(novosDados[i].valor)
-          valorFormatado = `-${novosDados[i].valor.replace(".", ",")}`
-        }else if(novosDados[i].id_debito_credito === 2){
-          valorTotal += parseFloat(novosDados[i].valor)
-          valorFormatado = `${novosDados[i].valor.replace(".", ",")}`
-        }
-        let codigoFormatado = ("000000" + novosDados[i].id).slice(-6)
-        novosDados[i].valor = valorFormatado
-        novosDados[i].movimento = movimentoFormatada
-        novosDados[i].id = codigoFormatado
-      }
-      var doc = new jsPDF()
-      doc.page = 1
-      doc.setProperties({
-        title: "Relátorio de Caixa",
-      })
-      doc.setFontSize(10)
-      doc.text(hojeAgr, 200, 10, null, null, "right")
-      doc.line(10, 12, 200, 12)
-      doc.setFontSize(24)
-      doc.text(`Relátorio de Caixa`, 10, 22)
-      doc.setFontSize(14)
-      doc.text(`Total: ${this.filtrarCaixa.length}`, 200, 21, null, null, "right")
-
-
-      doc.setTextColor(0,0,0);
-      doc.autoTable({
-        head: [
-          [
-            "Código",
-            "Histórico",
-            "Valor",
-            "Movimento",
-            "Imóvel",
-            "Conta",
-            "D/C",
-          ],
-        ],
-        columns: [
-          { header: "Código", dataKey: "id" },
-          { header: "Histórico", dataKey: "descricao_historico" },
-          { header: "Valor", dataKey: "valor" },
-          { header: "Movimento", dataKey: "movimento" },
-          { header: "Imóvel", dataKey: "imovel_nome" },
-          { header: "Conta", dataKey: "conta_nome" },
-        ],
-        columnStyles: { id: { halign: "center" } },
-        body: novosDados,
-        theme: "striped",
-        headStyles: {
-          fillColor: [50, 50, 50],
-        },
-        startY: 25,
-        pageBreak: "auto",
-        margin: { left: 10, right: 10, top: 10, bottom: 13 },
-      })
-
-
-      const totalPaginas = doc.internal.getNumberOfPages()
-
-      doc.setFontSize(8)
-      for (var i = 1; i <= totalPaginas; i++) {
-        doc.line(10, 284, 200, 284)
-        doc.setPage(i)
-        doc.text(
-          `Página ${String(i)} de ${String(totalPaginas)}`,
-          205,
-          293,
-          null,
-          null,
-          "right"
-        )
-
-        doc.setFontSize(16)
-        if(valorTotal < 0){
-          doc.setTextColor(255,0,0);
-        }else if(valorTotal > 0){
-          doc.setTextColor(1,71,154);
-        }
-        doc.text(`R$: ${valorTotal.toFixed(2).replace(".", ",")}`, 10, 290)
-        doc.setFontSize(8)
-        doc.setTextColor(0,0,0);
-      }
-      window.open(doc.output("bloburl", { filename: "tabela_imovel.pdf" }))
     },
   },
   watch: {
