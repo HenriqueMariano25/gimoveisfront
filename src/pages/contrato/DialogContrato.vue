@@ -1,13 +1,13 @@
 <template>
-  <v-dialog v-model="mostrar" persistent max-width="1100px">
-    <v-card class="pa-5">
-      <v-row>
+  <v-dialog v-model="mostrar" persistent max-width="1200px">
+    <v-card class="pa-3">
+      <CabecalhoDialog
+          :texto-cadastrando="editando ? 'Editando contrato' : 'Cadastrando contrato'"
+          @fechar="cancelar()"
+      />
+
+      <v-row class="mt-0">
         <v-col>
-          <v-row>
-            <v-col>
-              <h3 class="ma-0">{{ editando ? 'Editando contrato' : 'Cadastrando contrato' }}</h3>
-            </v-col>
-          </v-row>
           <v-form lazy-validation ref="formulario" v-model="valido">
             <v-row>
               <v-col>
@@ -336,8 +336,49 @@
                               v-model="contrato.ultimo_reajuste"
                               readonly
                               :disabled="!editando"
+                              v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                          allowNegative: false, currency:'BRL'}"
+                            >
+                          </v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row align="center">
+                        <v-col cols="12" xl="3" lg="3" md="3">
+                          <v-text-field
+                              label="Valor anterior"
+                              outlined
+                              dense
+                              hide-details
+                              v-model="contrato.valor_anterior_reajustado"
+                              readonly
+                              ref="valor_anterior"
+                              :disabled="!editando"
+                              v-currency="{precision: 2,autoDecimalMode: true,distractionFree: false,
+                          allowNegative: false, currency:'BRL'}"
                           >
                           </v-text-field>
+                        </v-col>
+                        <v-col cols="12" xl="3" lg="3" md="3">
+                            <v-btn color="var(--azul-secundaria)" :dark="podeReveter" large block @click="confirmacaoReveterAjuste = true"
+                                   :disabled="!podeReveter">
+                              <v-icon>
+                                mdi-eraser
+                              </v-icon>
+                              Reverter reajuste
+                            </v-btn>
+                        </v-col>
+                        <v-col cols="12" xl="auto" lg="auto" md="auto" v-if="confirmacaoReveterAjuste">
+                          <span><strong>Certeza que deseja reverter reajuste ?</strong></span>
+                        </v-col>
+                        <v-col cols="auto" v-if="confirmacaoReveterAjuste">
+                          <v-btn color="var(--btn-salvar)" block dark @click="reverterReajuste()">
+                            Sim
+                          </v-btn>
+                        </v-col>
+                        <v-col cols="auto" v-if="confirmacaoReveterAjuste">
+                          <v-btn color="var(--btn-deletar)" block dark @click="confirmacaoReveterAjuste = false">
+                            Não
+                          </v-btn>
                         </v-col>
                       </v-row>
                       <v-row>
@@ -580,7 +621,7 @@ import DialogBoleto from "../../components/Dialogs/DialogBoleto"
 import {setValue} from "vue-currency-input"
 import DialogDeletar from "../../components/shared/DialogDeletar"
 import DialogCarregando from "../../components/shared/DialogCarregando";
-
+import CabecalhoDialog from "@/components/shared/Dialog/CabecalhoDialog";
 
 export default {
   name: "DialogContrato",
@@ -590,7 +631,8 @@ export default {
     AlertaAcoes,
     DialogBoleto,
     DialogDeletar,
-    DialogCarregando
+    DialogCarregando,
+    CabecalhoDialog
   },
   data() {
     return {
@@ -640,7 +682,8 @@ export default {
         multa: '',
         reajuste: '',
         valor_reajustado: '',
-        ultimo_reajuste: null
+        ultimo_reajuste: null,
+        valor_anterior_reajustado:null
       },
       boletos: [],
       fiadores: [],
@@ -668,7 +711,8 @@ export default {
       ativo_data_termino: false,
       textoInputImportarContrato: '',
       textoInputImportarAditivo: '',
-      dialogCarregando: false
+      dialogCarregando: false,
+      confirmacaoReveterAjuste: false
     }
   },
   created() {
@@ -676,6 +720,11 @@ export default {
     this.buscarResponsaveis()
     this.buscarImoveis()
     this.buscarStatusContrato()
+  },
+  computed:{
+    podeReveter(){
+      return this.contrato.valor_anterior_reajustado !== null && this.contrato.valor_anterior_reajustado !== ""
+    }
   },
   methods: {
     async buscarResponsaveis() {
@@ -883,10 +932,25 @@ export default {
       await api.patch('/contrato/reajuste', {
         reajuste: reajusteFormatado, valor: valorFormatado, valor_reajustado: valorReajustadoFormatado, id: id
       }).then(resp => {
+        let {valor_reajustado, ultimo_reajuste, valor_anterior} = resp.data
+        setValue(this.$refs.valor_reajustado, valor_reajustado)
+        setValue(this.$refs.valor_anterior, valor_anterior)
+        this.contrato.ultimo_reajuste = ultimo_reajuste
+        this.contrato.reajuste = ''
+      })
+    },
+
+    async reverterReajuste(){
+      let { valor_anterior_reajustado, id } = this.contrato
+
+      let valor_anterior_formatado = this.$converterDinherioFloat(valor_anterior_reajustado)
+
+      await api.patch("/contrato/reverter_reajuste", { valor_anterior: valor_anterior_formatado, id }).then(resp => {
         let {valor_reajustado, ultimo_reajuste} = resp.data
         setValue(this.$refs.valor_reajustado, valor_reajustado)
         this.contrato.ultimo_reajuste = ultimo_reajuste
         this.contrato.reajuste = ''
+        this.confirmacaoReveterAjuste = false
       })
     },
 
@@ -925,6 +989,7 @@ export default {
             this.dialogCarregando = true
           })
           await api.get('/contrato', {params: {id: this.idContrato}}).then(resp => {
+
             this.dialogCarregando = false
             let {contrato} = resp.data
             this.contrato = contrato
@@ -933,6 +998,10 @@ export default {
             }
             setValue(this.$refs.valor_boleto, contrato.valor_boleto)
             setValue(this.$refs.valor_reajustado, contrato.valor_reajustado)
+
+            if(contrato.valor_anterior_reajustado) {
+              setValue(this.$refs.valor_anterior, contrato.valor_anterior_reajustado)
+            }
             setValue(this.$refs.multa, contrato.multa)
             setValue(this.$refs.juros, contrato.juros_mes)
             this.editando = true
