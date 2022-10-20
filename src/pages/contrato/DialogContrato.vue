@@ -468,13 +468,15 @@
                               hide-default-footer
                               fixed-header
                               item-key="id"
+                              single-expand
+                              :expanded="expanded"
                           >
                             <template v-slot:item="{ item }">
                               <tr>
-                                <td class="text-center">{{ item.nome }}</td>
-                                <td class="text-center">{{ item.telefone }}</td>
-                                <td class="text-center">{{ item.email }}</td>
-                                <td class="text-center">{{ item.cpf_cnpj }}</td>
+                                <td class="text-center" @click.prevent="abrirDetalhes(item, $event)">{{ item.nome }}</td>
+                                <td class="text-center" @click.prevent="abrirDetalhes(item, $event)">{{ item.telefone }}</td>
+                                <td class="text-center" @click.prevent="abrirDetalhes(item, $event)">{{ item.email }}</td>
+                                <td class="text-center" @click.prevent="abrirDetalhes(item, $event)">{{ item.cpf_cnpj }}</td>
                                 <td class="acoes text-center">
                                   <v-tooltip top>
                                     <template v-slot:activator="{ on, attrs }">
@@ -506,6 +508,22 @@
                                 </td>
                               </tr>
                             </template>
+                            <template v-slot:expanded-item="{ headers, item }">
+                              <td :colspan="headers.length" style="background-color: #d5e6fd">
+                                <ul class="pa-3" style="list-style-type: none">
+                                  <li>
+                                    <span><strong>Endereço: </strong> {{ item.rua}}, N°{{ item.numero}}, {{ item.complemento}}, {{ item.cep }}, {{ item.bairro}}, {{ item.cidade}}, {{ item.estado }}</span>
+                                  </li>
+                                  <li>
+                                    <span><strong>E-mail: </strong>{{ item.email}}</span>
+                                  </li>
+                                  <li>
+                                    <span><strong>Identidade: </strong>{{ item.identidade}}</span>
+                                  </li>
+                                </ul>
+                              </td>
+                            </template>
+
                           </v-data-table>
                         </v-col>
                       </v-row>
@@ -712,7 +730,8 @@ export default {
       textoInputImportarContrato: '',
       textoInputImportarAditivo: '',
       dialogCarregando: false,
-      confirmacaoReveterAjuste: false
+      confirmacaoReveterAjuste: false,
+      expanded: [],
     }
   },
   created() {
@@ -979,7 +998,21 @@ export default {
         this.contrato.nome_aditivo = resp.data[0].nome
         this.aditivoPDF = []
       })
-    }
+    },
+    abrirDetalhes(item, evento) {
+      let removerClass = document.querySelector(".aberto")
+      if (removerClass) removerClass.classList.remove("aberto")
+
+      let tr = evento.target.parentElement
+
+      if (this.expanded[0] === item) {
+        this.expanded = []
+      } else {
+        this.expanded = []
+        tr.classList.add("aberto")
+        this.expanded.push(item)
+      }
+    },
   },
   watch: {
     mostrar: async function (valor) {
