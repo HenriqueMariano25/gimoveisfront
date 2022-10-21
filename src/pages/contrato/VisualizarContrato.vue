@@ -71,9 +71,9 @@
                       >
                     </li>
                     <li>
-                      <span
-                        ><strong>Data de vencimento: </strong
-                        >{{ item.data_vencimento }}</span
+                      <span>
+                        <strong>Data de vencimento: </strong
+                        >{{ dayjs(item.data_vencimento, 'YYYY-MM-DD').isValid() ? $dayjs(item.data_vencimento).format("DD/MM/YYYY") : "" }}</span
                       >
                     </li>
                     <li>
