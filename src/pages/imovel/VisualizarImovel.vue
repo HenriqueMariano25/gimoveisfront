@@ -1,9 +1,21 @@
 <template>
   <v-row no-gutters>
-    <barra-topo-busca titulo="Imóvel"></barra-topo-busca>
+    <BarraTopoBusca
+        titulo="Imóvel"
+        :btnAdicionar="true"
+        @clickBtnAdicionar="dialogImovel = true"
+    />
+
+    <BarraBuscaRelatorio
+        :btn-gerar-relatorio="true"
+        :input-busca="true"
+        @buscar="buscar"
+        @limparBusca="buscarImoveis"
+        @clickBtnImprimirRelatorio="gerarRelatorio"
+    />
     <v-col>
       <v-row class="mt-0">
-        <v-col>
+        <v-col class="pt-2">
           <v-card>
             <v-data-table
               @update:page="$paraTopo"
@@ -15,37 +27,31 @@
               }"
               class="tabela pointer"
               :height="
-                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 180px)'
+                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 184px)'
               "
               single-expand
               :expanded="expanded"
               mobile-breakpoint="0"
               item-key="id"
               dense
+              :loading="carregando"
             >
-              <template v-slot:[`header.nome`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por nome"
-                    @enviar-filtro="buscaNome = $event"
-                    @limpar-filtro="buscaNome = null"
-                />
-              </template>
-              <template v-slot:[`header.rua`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por endereço"
-                    @enviar-filtro="buscaEndereco = $event"
-                    @limpar-filtro="buscaEndereco = null"
-                />
-              </template>
-              <template v-slot:[`header.status`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por status"
-                    @enviar-filtro="buscaStatus = $event"
-                    @limpar-filtro="buscaStatus = null"
-                />
+              <template v-slot:[`loading`]>
+                <v-row
+                    style="margin-top: 2px; padding-botton: 100px"
+                    justify="center"
+                    align="center"
+                >
+                  <v-col cols="auto" class="pb-5">
+                    <v-progress-circular
+                        indeterminate
+                        color="primary"
+                    ></v-progress-circular>
+                  </v-col>
+                  <v-col cols="auto" class="pb-5">
+                    <h2>Recebendo informações... Favor aguarde !</h2>
+                  </v-col>
+                </v-row>
               </template>
               <template v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length" style="background-color: #d5e6fd">
@@ -170,13 +176,6 @@
       </v-row>
     </v-col>
 
-    <barra-bottom-botoes
-      :btn-adicionar="true"
-      @clickBtnAdicionar="dialogImovel = true"
-      @clickBtnImprimirRelatorio="gerarRelatorio"
-      :btn-gerar-relatorio="true"
-    ></barra-bottom-botoes>
-
     <dialog-imovel
       :mostrar="dialogImovel"
       @cancelar="cancelar"
@@ -216,22 +215,20 @@ import "jspdf-autotable"
 import dayjs from "dayjs"
 
 import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
-import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
 import DialogImovel from "./DialogImovel"
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import DialogDeletar from "../../components/shared/DialogDeletar"
-import FiltroSimples from "@/components/shared/Filtros/FiltroSimples"
+import BarraBuscaRelatorio from "@/components/shared/BarraBuscaRelatorio";
 
 export default {
 
   name: "VisualizarImovel",
   components: {
     BarraTopoBusca,
-    BarraBottomBotoes,
     DialogImovel,
     AlertaAcoes,
     DialogDeletar,
-    FiltroSimples
+    BarraBuscaRelatorio
   },
   data() {
     return {
@@ -262,44 +259,39 @@ export default {
       buscaNome: null,
       buscaEndereco: null,
       buscaStatus: null,
+      carregando: false,
     }
   },
 
   computed: {
     filtrarImovel() {
-      let condicoes = []
-
-      if (this.buscaNome) {
-        condicoes.push(this.filtrarNome)
-      }
-
-      if (this.buscaEndereco) {
-        condicoes.push(this.filtrarEndereco)
-      }
-
-      if (this.buscaStatus) {
-        condicoes.push(this.filtrarStatus)
-      }
-
-      if (condicoes.length > 0) {
-        return this.items.filter((cliente) => {
-          return condicoes.every((condicao) => {
-            return condicao(cliente)
-          })
-        })
-      }
-
       return this.items
     },
   },
 
   methods: {
+    async buscar(valor){
+      this.carregando = true;
+
+      await api.get("/imoveis/busca", { params: { busca:valor } }).then((consulta) => {
+        this.items = consulta.data
+        this.filtrados = consulta.data
+        this.carregando = false;
+        if(consulta.data.length > 0){
+          this.totalItens = parseInt(consulta.data[0].total_itens)
+        }
+      })
+    },
+
     async buscarImoveis() {
+      this.carregando = true;
+
       await api
         .get("/imoveis")
         .then((response) => {
           this.items = response.data
           this.filtrados = response.data
+          this.carregando = false;
         })
         .catch((erro) => {
           console.log(erro)
@@ -426,25 +418,6 @@ export default {
           this.textoAlerta = mensagem
           this.mostrarAlerta = true
         })
-    },
-
-    filtrarNome(item) {
-      return item.nome.toLowerCase().includes(this.buscaNome.toLowerCase())
-    },
-
-    filtrarEndereco(item) {
-
-      if(item.rua)
-        return item.rua
-            .toLowerCase()
-            .includes(this.buscaEndereco.toLowerCase())
-    },
-
-    filtrarStatus(item) {
-      if(item.status)
-        return item.status
-            .toLowerCase()
-            .includes(this.buscaStatus.toLowerCase())
     },
   },
   async mounted() {

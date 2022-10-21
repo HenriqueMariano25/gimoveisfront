@@ -1,9 +1,19 @@
 <template>
   <v-row no-gutters>
-    <barra-topo-busca titulo="Usuário"></barra-topo-busca>
+    <BarraTopoBusca titulo="Usuário"
+                    :btnAdicionar="true"
+                    @clickBtnAdicionar="dialogUsuario = true" />
+
+    <BarraBuscaRelatorio
+        :btn-gerar-relatorio="true"
+        :input-busca="true"
+        @buscar="buscar"
+        @limparBusca="buscarUsuarios"
+        @clickBtnImprimirRelatorio="gerarRelatorio"
+    />
     <v-col>
       <v-row class="mt-0">
-        <v-col>
+        <v-col class="pt-2">
           <v-card>
             <v-data-table
               :search="busca"
@@ -16,45 +26,31 @@
               }"
               class="tabela pointer"
               :height="
-                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 180px)'
+                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 184px)'
               "
               single-expand
               :expanded="expanded"
               mobile-breakpoint="0"
               item-key="id"
               dense
+              :loading="carregando"
             >
-              <template v-slot:[`header.nome`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por nome"
-                    @enviar-filtro="buscaNome = $event"
-                    @limpar-filtro="buscaNome = null"
-                />
-              </template>
-              <template v-slot:[`header.email`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por email"
-                    @enviar-filtro="buscaEmail = $event"
-                    @limpar-filtro="buscaEmail = null"
-                />
-              </template>
-              <template v-slot:[`header.usuario`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por usuário"
-                    @enviar-filtro="buscaUsuario = $event"
-                    @limpar-filtro="buscaUsuario = null"
-                />
-              </template>
-              <template v-slot:[`header.permissao`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por permissão"
-                    @enviar-filtro="buscaPermissao = $event"
-                    @limpar-filtro="buscaPermissao = null"
-                />
+              <template v-slot:[`loading`]>
+                <v-row
+                    style="margin-top: 2px; padding-botton: 100px"
+                    justify="center"
+                    align="center"
+                >
+                  <v-col cols="auto" class="pb-5">
+                    <v-progress-circular
+                        indeterminate
+                        color="primary"
+                    ></v-progress-circular>
+                  </v-col>
+                  <v-col cols="auto" class="pb-5">
+                    <h2>Recebendo informações... Favor aguarde !</h2>
+                  </v-col>
+                </v-row>
               </template>
               <template v-slot:item="{ item }">
                 <tr>
@@ -106,13 +102,6 @@
       </v-row>
     </v-col>
 
-    <barra-bottom-botoes
-      :btn-adicionar="true"
-      @clickBtnAdicionar="dialogUsuario = true"
-      @clickBtnImprimirRelatorio="gerarRelatorio"
-      :btn-gerar-relatorio="true"
-    ></barra-bottom-botoes>
-
     <dialog-usuario
       :mostrar="dialogUsuario"
       @cancelar="cancelar"
@@ -148,7 +137,6 @@
 <script>
 import api from "../../services/api"
 import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
-import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
 import { jsPDF } from "jspdf"
 import dayjs from "dayjs"
 import "jspdf-autotable"
@@ -156,17 +144,16 @@ import "jspdf-autotable"
 import DialogUsuario from "./DialogUsuario"
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import DialogDeletar from "../../components/shared/DialogDeletar"
-import FiltroSimples from "@/components/shared/Filtros/FiltroSimples"
+import BarraBuscaRelatorio from "@/components/shared/BarraBuscaRelatorio";
 
 export default {
   name: "VisualizarUsuario",
   components: {
     BarraTopoBusca,
-    BarraBottomBotoes,
     DialogUsuario,
     AlertaAcoes,
     DialogDeletar,
-    FiltroSimples
+    BarraBuscaRelatorio
   },
 
   data() {
@@ -203,6 +190,7 @@ export default {
       buscaEmail: null,
       buscaUsuario: null,
       buscaPermissao: null,
+      carregando: false,
     }
   },
   async mounted() {
@@ -210,42 +198,32 @@ export default {
   },
   computed: {
     filtrarUsuarios() {
-      let condicoes = []
-
-      if (this.buscaNome) {
-        condicoes.push(this.filtrarNome)
-      }
-
-      if (this.buscaEmail) {
-        condicoes.push(this.filtrarEmail)
-      }
-
-      if (this.buscaUsuario) {
-        condicoes.push(this.filtrarUsuario)
-      }
-
-      if (this.buscaPermissao) {
-        condicoes.push(this.filtrarPermissao)
-      }
-
-      if (condicoes.length > 0) {
-        return this.items.filter((usuario) => {
-          return condicoes.every((condicao) => {
-            return condicao(usuario)
-          })
-        })
-      }
-
       return this.items
     },
   },
 
   methods: {
+    async buscar(valor){
+      this.carregando = true;
+
+      await api.get("/usuarios/busca", { params: { busca:valor } }).then((consulta) => {
+        this.items = consulta.data
+        this.filtrados = consulta.data
+        this.carregando = false;
+        if(consulta.data.length > 0){
+          this.totalItens = parseInt(consulta.data[0].total_itens)
+        }
+      })
+    },
+
     async buscarUsuarios() {
+      this.carregando = true;
+
       await api
         .get("/usuarios")
         .then((response) => {
           this.items = response.data
+          this.carregando = false;
         })
         .catch((erro) => {
           console.log(erro)

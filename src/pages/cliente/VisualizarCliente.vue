@@ -1,9 +1,20 @@
 <template>
   <v-row no-gutters>
-    <barra-topo-busca titulo="Cliente"></barra-topo-busca>
+    <BarraTopoBusca titulo="Cliente"
+      :btnAdicionar="true"
+      @clickBtnAdicionar="dialogCliente = true" />
+
+    <BarraBuscaRelatorio
+        :btn-gerar-relatorio="true"
+        :input-busca="true"
+        @buscar="buscar"
+        @limparBusca="buscarClientes"
+        @clickBtnImprimirRelatorio="gerarRelatorio"
+    />
+
     <v-col>
       <v-row class="mt-0">
-        <v-col>
+        <v-col class="pt-2">
           <v-card>
             <v-data-table
               @update:page="$paraTopo"
@@ -15,47 +26,32 @@
               }"
               class="tabela pointer"
               :height="
-                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 180px)'
+                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 184px)'
               "
               single-expand
               :expanded="expanded"
               mobile-breakpoint="0"
               item-key="id"
               dense
+              :loading="carregando"
             >
-              <template v-slot:[`header.nome`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por nome"
-                    @enviar-filtro="buscaNome = $event"
-                    @limpar-filtro="buscaNome = null"
-                />
+              <template v-slot:[`loading`]>
+                <v-row
+                    style="margin-top: 2px; padding-botton: 100px"
+                    justify="center"
+                    align="center"
+                >
+                  <v-col cols="auto" class="pb-5">
+                    <v-progress-circular
+                        indeterminate
+                        color="primary"
+                    ></v-progress-circular>
+                  </v-col>
+                  <v-col cols="auto" class="pb-5">
+                    <h2>Recebendo informações... Favor aguarde !</h2>
+                  </v-col>
+                </v-row>
               </template>
-              <template v-slot:[`header.telefone`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por telefone"
-                    @enviar-filtro="buscaTelefone = $event"
-                    @limpar-filtro="buscaTelefone = null"
-                />
-              </template>
-              <template v-slot:[`header.cpf_cnpj`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por cpf/cnpj"
-                    @enviar-filtro="buscaCpfCnpj = $event"
-                    @limpar-filtro="buscaCpfCnpj = null"
-                />
-              </template>
-              <template v-slot:[`header.status`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por status"
-                    @enviar-filtro="buscaStatus = $event"
-                    @limpar-filtro="buscaStatus = null"
-                />
-              </template>
-
               <template v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length" style="background-color: #d5e6fd">
                   <ul class="pa-3" style="list-style-type: none">
@@ -172,13 +168,6 @@
       </v-row>
     </v-col>
 
-    <barra-bottom-botoes
-      :btn-adicionar="true"
-      @clickBtnAdicionar="dialogCliente = true"
-      @clickBtnImprimirRelatorio="gerarRelatorio"
-      :btn-gerar-relatorio="true"
-    ></barra-bottom-botoes>
-
     <dialog-cliente
       :mostrar="dialogCliente"
       @cancelar="cancelar"
@@ -212,11 +201,11 @@
 
 <script>
 import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
-import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
 import DialogCliente from "./DialogCliente"
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import DialogDeletar from "../../components/shared/DialogDeletar"
-import FiltroSimples from "@/components/shared/Filtros/FiltroSimples"
+
+import BarraBuscaRelatorio from "@/components/shared/BarraBuscaRelatorio";
 
 import api from "../../services/api"
 import { jsPDF } from "jspdf"
@@ -227,11 +216,10 @@ export default {
   name: "VisualizarCliente",
   components: {
     BarraTopoBusca,
-    BarraBottomBotoes,
     AlertaAcoes,
     DialogDeletar,
     DialogCliente,
-    FiltroSimples
+    BarraBuscaRelatorio
   },
   data() {
     return {
@@ -261,49 +249,39 @@ export default {
       buscaTelefone: null,
       buscaCpfCnpj: null,
       buscaStatus: null,
+      carregando: false,
     }
   },
 
   computed: {
     filtrarCliente() {
-      let condicoes = []
-
-      if (this.buscaNome) {
-        condicoes.push(this.filtrarNome)
-      }
-
-      if (this.buscaTelefone) {
-        condicoes.push(this.filtrarTelefone)
-      }
-
-      if (this.buscaCpfCnpj) {
-        condicoes.push(this.filtrarCpfCnpj)
-      }
-
-      if (this.buscaStatus) {
-        condicoes.push(this.filtrarStatus)
-      }
-
-      if (condicoes.length > 0) {
-        return this.items.filter((cliente) => {
-          return condicoes.every((condicao) => {
-            return condicao(cliente)
-          })
-        })
-      }
-
       return this.items
     },
   },
 
   methods: {
+    async buscar(valor){
+      this.carregando = true;
+
+      await api.get("/cliente/busca", { params: { busca:valor } }).then((consulta) => {
+        this.items = consulta.data
+        this.filtrados = consulta.data
+        this.carregando = false;
+        if(consulta.data.length > 0){
+          this.totalItens = parseInt(consulta.data[0].total_itens)
+        }
+      })
+    },
+
     async buscarClientes() {
-      this.carregandoTableCliente = true
+      this.carregando = true;
+
       await api
         .get("/clientes")
         .then((resp) => {
           this.items = resp.data
           this.filtrados = resp.data
+          this.carregando = false;
         })
         .catch((erro) => {
           console.log(erro)
@@ -426,29 +404,6 @@ export default {
         )
       }
       window.open(doc.output("bloburl", { filename: "tabela_clientes.pdf" }))
-    },
-
-    filtrarNome(item) {
-      return item.nome.toLowerCase().includes(this.buscaNome.toLowerCase())
-    },
-
-    filtrarTelefone(item) {
-
-      if(item.numero_telefone[0])
-        return item.numero_telefone[0]
-              .toLowerCase()
-              .includes(this.buscaTelefone.toLowerCase())
-    },
-
-    filtrarCpfCnpj(item) {
-      return item.cpf_cnpj.toLowerCase().includes(this.buscaCpfCnpj.toLowerCase())
-    },
-
-    filtrarStatus(item) {
-      if(item.status)
-        return item.status
-            .toLowerCase()
-            .includes(this.buscaStatus.toLowerCase())
     },
   },
   mounted() {

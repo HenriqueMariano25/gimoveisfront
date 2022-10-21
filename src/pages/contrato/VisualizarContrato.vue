@@ -1,9 +1,19 @@
 <template>
   <v-row no-gutters>
-    <barra-topo-busca titulo="Contratos"></barra-topo-busca>
+    <BarraTopoBusca titulo="Contratos"
+                    :btnAdicionar="true"
+                    @clickBtnAdicionar="dialogContrato = true" />
+
+    <BarraBuscaRelatorio
+        :btn-gerar-relatorio="true"
+        :input-busca="true"
+        @buscar="buscar"
+        @limparBusca="buscarContratos"
+        @clickBtnImprimirRelatorio="gerarRelatorio"
+    />
     <v-col>
       <v-row class="mt-0">
-        <v-col>
+        <v-col class="pt-2">
           <v-card>
             <v-data-table
               @update:page="$paraTopo"
@@ -15,7 +25,7 @@
               }"
               class="tabela pointer"
               :height="
-                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 180px)'
+                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 184px)'
               "
               single-expand
               :expanded="expanded"
@@ -24,46 +34,24 @@
               dense
               calculate-widths
               some-items
+              :loading="carregando"
             >
-              <template v-slot:[`header.nome_imovel`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por imovel"
-                    @enviar-filtro="buscaImovel = $event"
-                    @limpar-filtro="buscaImovel = null"
-                />
-              </template>
-              <template v-slot:[`header.id`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por código"
-                    @enviar-filtro="buscaCodigo = $event"
-                    @limpar-filtro="buscaCodigo = null"
-                />
-              </template>
-              <template v-slot:[`header.nome_cliente`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por cliente"
-                    @enviar-filtro="buscaCliente = $event"
-                    @limpar-filtro="buscaCliente = null"
-                />
-              </template>
-              <template v-slot:[`header.nome_responsavel`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por responsável"
-                    @enviar-filtro="buscaResponsavel = $event"
-                    @limpar-filtro="buscaResponsavel = null"
-                />
-              </template>
-              <template v-slot:[`header.status`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por status"
-                    @enviar-filtro="buscaStatus = $event"
-                    @limpar-filtro="buscaStatus = null"
-                />
+              <template v-slot:[`loading`]>
+                <v-row
+                    style="margin-top: 2px; padding-botton: 100px"
+                    justify="center"
+                    align="center"
+                >
+                  <v-col cols="auto" class="pb-5">
+                    <v-progress-circular
+                        indeterminate
+                        color="primary"
+                    ></v-progress-circular>
+                  </v-col>
+                  <v-col cols="auto" class="pb-5">
+                    <h2>Recebendo informações... Favor aguarde !</h2>
+                  </v-col>
+                </v-row>
               </template>
               <template v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length" style="background-color: #d5e6fd">
@@ -226,13 +214,6 @@
       </v-row>
     </v-col>
 
-    <barra-bottom-botoes
-      :btn-adicionar="true"
-      @clickBtnAdicionar="dialogContrato = true"
-      @clickBtnImprimirRelatorio="gerarRelatorio"
-      :btn-gerar-relatorio="true"
-    ></barra-bottom-botoes>
-
     <dialog-contrato
       :mostrar="dialogContrato"
       @cancelar="cancelar"
@@ -269,23 +250,21 @@ import api from "../../services/api"
 import dayjs from "dayjs"
 
 import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
-import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
 import DialogContrato from "./DialogContrato"
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import { jsPDF } from "jspdf"
 import "jspdf-autotable"
 import DialogDeletar from "../../components/shared/DialogDeletar"
-import FiltroSimples from "@/components/shared/Filtros/FiltroSimples"
+import BarraBuscaRelatorio from "@/components/shared/BarraBuscaRelatorio";
 
 export default {
   name: "VisualizarContrato",
   components: {
     BarraTopoBusca,
-    BarraBottomBotoes,
+    BarraBuscaRelatorio,
     DialogContrato,
     AlertaAcoes,
     DialogDeletar,
-    FiltroSimples
   },
   data() {
     return {
@@ -320,49 +299,36 @@ export default {
       buscaResponsavel: null,
       buscaCodigo: null,
       buscaStatus: null,
+      carregando: false,
     }
   },
 
   computed: {
     filtrarContrato() {
-      let condicoes = []
-
-      if (this.buscaCodigo) {
-        condicoes.push(this.filtrarCodigo)
-      }
-
-      if (this.buscaImovel) {
-        condicoes.push(this.filtrarImovel)
-      }
-
-      if (this.buscaCliente) {
-        condicoes.push(this.filtrarCliente)
-      }
-
-      if (this.buscaResponsavel) {
-        condicoes.push(this.filtrarResponsavel)
-      }
-
-      if (this.buscaStatus) {
-        condicoes.push(this.filtrarStatus)
-      }
-
-      if (condicoes.length > 0) {
-        return this.items.filter((contrato) => {
-          return condicoes.every((condicao) => {
-            return condicao(contrato)
-          })
-        })
-      }
-
       return this.items
     },
   },
 
   methods: {
+    async buscar(valor){
+      this.carregando = true;
+
+      await api.get("/contrato/busca", { params: { busca:valor } }).then((consulta) => {
+        this.items = consulta.data
+        this.filtrados = consulta.data
+        this.carregando = false;
+        if(consulta.data.length > 0){
+          this.totalItens = parseInt(consulta.data[0].total_itens)
+        }
+      })
+    },
+
     async buscarContratos() {
+      this.carregando = true;
+
       await api.get("/contratos").then((resp) => {
         this.items = resp.data
+        this.carregando = false;
       })
     },
 
@@ -483,33 +449,6 @@ export default {
         this.mostrarAlerta = true
         this.contrato = {}
       })
-    },
-
-    filtrarCodigo(item) {
-      return item.id.toString().toLowerCase().includes(this.buscaCodigo.toLowerCase())
-    },
-
-    filtrarImovel(item) {
-      return item.nome_imovel.toLowerCase().includes(this.buscaImovel.toLowerCase())
-    },
-
-    filtrarCliente(item) {
-        return item.nome_cliente
-            .toLowerCase()
-            .includes(this.buscaCliente.toLowerCase())
-    },
-
-    filtrarResponsavel(item) {
-        return item.nome_responsavel
-            .toLowerCase()
-            .includes(this.buscaResponsavel.toLowerCase())
-    },
-
-    filtrarStatus(item) {
-      if(item.status)
-      return item.status
-          .toLowerCase()
-          .includes(this.buscaStatus.toLowerCase())
     },
   },
   async mounted() {

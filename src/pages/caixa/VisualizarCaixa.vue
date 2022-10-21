@@ -1,19 +1,31 @@
 <template>
   <v-row no-gutters>
-    <barra-topo-busca titulo="Caixa"></barra-topo-busca>
-    <v-col>
+    <BarraTopoBusca
+        titulo="Caixa"
+        :btnAdicionar="true"
+        @clickBtnAdicionar="dialogCaixa = true"
+    />
+
+    <BarraBuscaRelatorio
+        :btn-gerar-relatorio="true"
+        :input-busca="true"
+        @buscar="buscar"
+        @limparBusca="buscarCaixa"
+        @clickBtnImprimirRelatorio="dialogRelatorioCaixa = true"
+    />
+
+    <v-col >
       <v-row class="mt-0">
-        <v-col>
+        <v-col class="pt-2">
           <v-card class="">
             <v-data-table
               @update:page="$paraTopo"
               fixed-header
               :headers="headers"
               :items="filtrarCaixa"
-
               class="tabela pointer"
               :height="
-                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 187px)'
+                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 192px)'
               "
               single-expand
               :expanded="expanded"
@@ -26,63 +38,25 @@
               @page-count="contadorPagina = $event"
               :server-items-length="totalItens"
               :items-per-page="itensPorPagina"
+              :search="busca"
+              :loading="carregando"
             >
-              <template v-slot:[`header.id`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                  textoFiltro="Buscar por lançamento"
-                  @enviar-filtro="buscaLancamento = $event"
-                  @limpar-filtro="buscaLancamento = null"
-                />
-              </template>
-              <template v-slot:[`header.descricao_historico`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                  textoFiltro="Buscar por histórico"
-                  @enviar-filtro="buscaHistorico = $event"
-                  @limpar-filtro="buscaHistorico = null"
-                />
-              </template>
-              <template v-slot:[`header.valor`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                  textoFiltro="Buscar por valor"
-                  @enviar-filtro="buscaValor = $event"
-                  @limpar-filtro="buscaValor = null"
-                />
-              </template>
-              <template v-slot:[`header.movimento`]="{ header }">
-                {{ header.text }}
-                <FiltroData
-                  textoFiltro="Buscar por movimento"
-                  @enviar-filtro="buscaMovimento = $event"
-                  @limpar-filtro="buscaMovimento = null"
-                />
-              </template>
-
-              <template v-slot:[`header.imovel_nome`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                  textoFiltro="Buscar por imóvel"
-                  @enviar-filtro="buscaImovel = $event"
-                  @limpar-filtro="buscaImovel = null"
-                />
-              </template>
-              <template v-slot:[`header.conta_nome`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                  textoFiltro="Buscar por conta"
-                  @enviar-filtro="buscaConta = $event"
-                  @limpar-filtro="buscaConta = null"
-                />
-              </template>
-              <template v-slot:[`header.id_debito_credito`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                  textoFiltro="Buscar por Debito/Crédito"
-                  @enviar-filtro="buscaDebitoCredito = $event"
-                  @limpar-filtro="buscaDebitoCredito = null"
-                />
+              <template v-slot:[`loading`]>
+                <v-row
+                    style="margin-top: 2px; padding-botton: 100px"
+                    justify="center"
+                    align="center"
+                >
+                  <v-col cols="auto" class="pb-5">
+                    <v-progress-circular
+                        indeterminate
+                        color="primary"
+                    ></v-progress-circular>
+                  </v-col>
+                  <v-col cols="auto" class="pb-5">
+                    <h2>Recebendo informações... Favor aguarde !</h2>
+                  </v-col>
+                </v-row>
               </template>
               <template v-slot:expanded-item="{ headers, item }">
                 <td :colspan="headers.length" style="background-color: #d5e6fd">
@@ -251,12 +225,7 @@
     >
     </dialog-caixa>
 
-    <barra-bottom-botoes
-      @clickBtnAdicionar="dialogCaixa = true"
-      @clickBtnImprimirRelatorio="dialogRelatorioCaixa = true"
-      :btn-adicionar="true"
-      :btn-gerar-relatorio="true"
-    ></barra-bottom-botoes>
+
 
     <dialog-deletar
       :texto="`Certeza que deseja deletar o caixa ${('000000' + caixa.id).slice(
@@ -286,14 +255,12 @@
 import api from "../../services/api"
 
 import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
-import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import DialogDeletar from "../../components/shared/DialogDeletar"
 import DialogCaixa from "./DialogCaixa"
 import DialogRelatorioCaixa from "@/pages/caixa/DialogRelatorioCaixa";
 
-import FiltroData from "@/components/shared/Filtros/FiltroData"
-import FiltroSimples from "@/components/shared/Filtros/FiltroSimples"
+import BarraBuscaRelatorio from "@/components/shared/BarraBuscaRelatorio";
 
 import dayjs from "dayjs"
 var isBetween = require("dayjs/plugin/isBetween")
@@ -303,13 +270,11 @@ export default {
   name: "VisualizarCaixa.vue",
   components: {
     BarraTopoBusca,
-    BarraBottomBotoes,
     AlertaAcoes,
     DialogDeletar,
     DialogCaixa,
-    FiltroSimples,
-    FiltroData,
-    DialogRelatorioCaixa
+    DialogRelatorioCaixa,
+    BarraBuscaRelatorio
   },
   data() {
     return {
@@ -333,7 +298,6 @@ export default {
       dayjs: dayjs,
       caixa: {},
       barraBuscaMobile: false,
-      carregandoTableCaixa: false,
       filtrados: [],
       historicos: [],
       dialogCaixa: false,
@@ -352,7 +316,9 @@ export default {
       contadorPagina: 1,
       itensPorPagina: 20,
       totalItens: 0,
-      dialogRelatorioCaixa: false
+      dialogRelatorioCaixa: false,
+      busca: '',
+      carregando: false,
     }
   },
   mounted() {
@@ -360,82 +326,24 @@ export default {
   },
   computed: {
     filtrarCaixa() {
-      let condicoes = []
-
-      if (this.buscaLancamento) {
-        condicoes.push(this.filtrarLancamento)
-      }
-
-      if (this.buscaHistorico) {
-        condicoes.push(this.filtrarHistorico)
-      }
-
-      if (this.buscaValor) {
-        condicoes.push(this.filtrarValor)
-      }
-
-      if (this.buscaMovimento) {
-        condicoes.push(this.filtrarMovimento)
-      }
-
-      if (this.buscaImovel) {
-        condicoes.push(this.filtrarImovel)
-      }
-
-      if (this.buscaConta) {
-        condicoes.push(this.filtrarConta)
-      }
-
-      if (this.buscaDebitoCredito) {
-        condicoes.push(this.filtrarDebitoCredito)
-      }
-
-      if (condicoes.length > 0) {
-        return this.items.filter((caixa) => {
-          return condicoes.every((condicao) => {
-            return condicao(caixa)
-          })
-        })
-      }
-
       return this.items
     },
   },
   methods: {
-    filtrarLancamento(item) {
-      return item.id.toLowerCase().includes(this.buscaLancamento.toLowerCase())
+    async buscar(valor){
+      this.carregando = true;
+
+      await api.get("/caixa/busca", { params: { busca:valor } }).then((consulta) => {
+        this.items = consulta.data
+        this.filtrados = consulta.data
+        this.carregando = false;
+        if(consulta.data.length > 0){
+          this.totalItens = parseInt(consulta.data[0].total_itens)
+        }
+      })
     },
-
-    filtrarHistorico(item) {
-      return item.descricao_historico
-        .toLowerCase()
-        .includes(this.buscaHistorico.toLowerCase())
-    },
-
-    filtrarValor(item) {
-      return item.valor.toLowerCase().includes(this.buscaValor.toLowerCase())
-    },
-
-    filtrarMovimento(item) {
-      let { inicio, fim } = this.buscaMovimento
-
-      return dayjs(item.movimento).isBetween(inicio, fim, "day", "[]")
-    },
-
-    filtrarImovel(item) {
-      return item.imovel_nome
-        .toLowerCase()
-        .includes(this.buscaImovel.toLowerCase())
-    },
-
-    filtrarConta(item) {
-      return item.conta_nome
-        .toLowerCase()
-        .includes(this.buscaConta.toLowerCase())
-    },
-
     async buscarCaixa() {
-      this.carregandoTableCaixa = true
+      this.carregando = true;
 
       let page = this.pagina - 1
       let size = this.itensPorPagina
@@ -443,7 +351,7 @@ export default {
       await api.get("/caixa", { params: { page, size } }).then((consulta) => {
         this.items = consulta.data
         this.filtrados = consulta.data
-        this.carregandoTableCaixa = false
+        this.carregando = false;
         if(consulta.data.length > 0){
           this.totalItens = parseInt(consulta.data[0].total_itens)
         }

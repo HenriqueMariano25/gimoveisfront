@@ -1,9 +1,21 @@
 <template>
   <v-row no-gutters>
-    <barra-topo-busca titulo="Responsável"></barra-topo-busca>
+    <BarraTopoBusca
+        titulo="Responsável"
+        :btnAdicionar="true"
+        @clickBtnAdicionar="dialogResponsavel = true" />
+
+    <BarraBuscaRelatorio
+        :btn-gerar-relatorio="true"
+        :input-busca="true"
+        @buscar="buscar"
+        @limparBusca="buscarResponsaveis"
+        @clickBtnImprimirRelatorio="gerarRelatorio"
+    />
+
     <v-col>
       <v-row class="mt-0">
-        <v-col>
+        <v-col class="pt-2">
           <v-card>
             <v-data-table
               @update:page="$paraTopo"
@@ -15,37 +27,31 @@
               }"
               class="tabela pointer"
               :height="
-                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 180px)'
+                $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 184px)'
               "
               single-expand
               :expanded="expanded"
               mobile-breakpoint="0"
               item-key="id"
               dense
+              :loading="carregando"
             >
-              <template v-slot:[`header.nome`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por nome"
-                    @enviar-filtro="buscaNome = $event"
-                    @limpar-filtro="buscaNome = null"
-                />
-              </template>
-              <template v-slot:[`header.endereco`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por endereço"
-                    @enviar-filtro="buscaEndereco = $event"
-                    @limpar-filtro="buscaEndereco = null"
-                />
-              </template>
-              <template v-slot:[`header.cpf_cnpj`]="{ header }">
-                {{ header.text }}
-                <FiltroSimples
-                    textoFiltro="Buscar por status"
-                    @enviar-filtro="buscaCpfCnpj = $event"
-                    @limpar-filtro="buscaCpfCnpj = null"
-                />
+              <template v-slot:[`loading`]>
+                <v-row
+                    style="margin-top: 2px; padding-botton: 100px"
+                    justify="center"
+                    align="center"
+                >
+                  <v-col cols="auto" class="pb-5">
+                    <v-progress-circular
+                        indeterminate
+                        color="primary"
+                    ></v-progress-circular>
+                  </v-col>
+                  <v-col cols="auto" class="pb-5">
+                    <h2>Recebendo informações... Favor aguarde !</h2>
+                  </v-col>
+                </v-row>
               </template>
               <template v-slot:item="{ item }">
                 <tr>
@@ -101,13 +107,6 @@
       </v-row>
     </v-col>
 
-    <barra-bottom-botoes
-      :btn-adicionar="true"
-      @clickBtnAdicionar="dialogResponsavel = true"
-      @clickBtnImprimirRelatorio="gerarRelatorio"
-      :btn-gerar-relatorio="true"
-    ></barra-bottom-botoes>
-
     <dialog-responsavel
       :mostrar="dialogResponsavel"
       @cancelar="cancelar"
@@ -142,12 +141,10 @@
 
 <script>
 import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
-import BarraBottomBotoes from "../../components/shared/BarraBottomBotoes"
-
 import DialogResponsavel from "./DialogResponsavel"
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
 import DialogDeletar from "../../components/shared/DialogDeletar"
-import FiltroSimples from "@/components/shared/Filtros/FiltroSimples"
+import BarraBuscaRelatorio from "@/components/shared/BarraBuscaRelatorio";
 
 import dayjs from "dayjs"
 import "jspdf-autotable"
@@ -158,11 +155,10 @@ export default {
   name: "VisualizarResponsavel",
   components: {
     BarraTopoBusca,
-    BarraBottomBotoes,
+    BarraBuscaRelatorio,
     DialogResponsavel,
     AlertaAcoes,
     DialogDeletar,
-    FiltroSimples
   },
   data() {
     return {
@@ -191,38 +187,30 @@ export default {
       buscaNome: null,
       buscaEndereco: null,
       buscaCpfCnpj: null,
+      carregando: false,
     }
   },
 
   computed: {
     filtrarResponsavel() {
-      let condicoes = []
-
-      if (this.buscaNome) {
-        condicoes.push(this.filtrarNome)
-      }
-
-      if (this.buscaEndereco) {
-        condicoes.push(this.filtrarEndereco)
-      }
-
-      if (this.buscaCpfCnpj) {
-        condicoes.push(this.filtrarCpfCnpj)
-      }
-
-      if (condicoes.length > 0) {
-        return this.items.filter((responsavel) => {
-          return condicoes.every((condicao) => {
-            return condicao(responsavel)
-          })
-        })
-      }
-
       return this.items
     },
   },
 
   methods: {
+    async buscar(valor){
+      this.carregando = true;
+
+      await api.get("/responsaveis/busca", { params: { busca:valor } }).then((consulta) => {
+        this.items = consulta.data
+        this.filtrados = consulta.data
+        this.carregando = false;
+        if(consulta.data.length > 0){
+          this.totalItens = parseInt(consulta.data[0].total_itens)
+        }
+      })
+    },
+
     gerarRelatorio() {
       let novosDados = JSON.parse(JSON.stringify(this.items))
       for (let dado of novosDados) {
@@ -334,31 +322,17 @@ export default {
         })
     },
     async buscarResponsaveis() {
+      this.carregando = true;
+
       await api
         .get("/responsaveis")
         .then((response) => {
           this.items = response.data
+          this.carregando = false;
         })
         .catch((erro) => {
           console.log(erro)
         })
-    },
-
-    filtrarNome(item) {
-      return item.nome.toLowerCase().includes(this.buscaNome.toLowerCase())
-    },
-
-    filtrarEndereco(item) {
-      if(item.rua)
-        return item.rua
-            .toLowerCase()
-            .includes(this.buscaEndereco.toLowerCase())
-    },
-
-    filtrarCpfCnpj(item) {
-        return item.cpf_cnpj
-            .toLowerCase()
-            .includes(this.buscaCpfCnpj.toLowerCase())
     },
   },
   async mounted() {
