@@ -213,6 +213,25 @@
                             Importar
                           </v-btn>
                         </v-col>
+                        <v-col cols="12" xl="auto" lg="auto" md="auto">
+                          <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-btn v-bind="attrs"
+                                     v-on="on"
+                                     color="var(--btn-deletar)"
+                                     :dark="editando && ( contrato.nome_pdf != null && contrato.nome_pdf != '')"
+                                     block
+                                     :disabled="!editando || ( contrato.nome_pdf == null || contrato.nome_pdf == '')"
+                                     @dblclick="removerPDF()">
+                                <v-icon>
+                                  mdi-delete
+                                </v-icon>
+                                Remover
+                              </v-btn>
+                            </template>
+                            <span>Clique duas vezes para remover</span>
+                          </v-tooltip>
+                        </v-col>
                       </v-row>
                       <v-row class="">
                         <v-col cols="12" xl="" lg="" md="">
@@ -237,6 +256,26 @@
                             </v-icon>
                             Importar
                           </v-btn>
+                        </v-col>
+                        <v-col cols="12" xl="auto" lg="auto" md="auto">
+                          <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-btn v-bind="attrs"
+                                     v-on="on"
+                                     color="var(--btn-deletar)"
+                                     :dark="editando && ( contrato.nome_aditivo != null && contrato.nome_aditivo != '')"
+                                     block
+                                     :disabled="!editando || ( contrato.nome_aditivo == null || contrato.nome_aditivo == '')"
+                                     @dblclick="removerAditivo()">
+                                <v-icon>
+                                  mdi-delete
+                                </v-icon>
+                                Remover
+                              </v-btn>
+                            </template>
+                            <span>Clique duas vezes para remover</span>
+                          </v-tooltip>
+
                         </v-col>
                       </v-row>
                       <v-row>
@@ -988,6 +1027,14 @@ export default {
           this.textoInputImportarAditivo = 'Escolha um ADITIVO para importar'
       })
     },
+    async removerPDF(){
+
+      await api.delete(`/contrato/${this.contrato.id}/remover/pdf`).then(() => {
+        this.contrato.nome_pdf = null
+        this.textoInputImportarContrato = 'Escolha um CONTRATO para importar'
+      })
+    },
+
     async importarAditivo() {
       const formData = new FormData();
       for (const i of Object.keys(this.aditivoPDF)) {
@@ -999,6 +1046,15 @@ export default {
         this.aditivoPDF = []
       })
     },
+
+    async removerAditivo(){
+
+      await api.delete(`/contrato/${this.contrato.id}/remover/aditivo`).then(() => {
+        this.contrato.nome_aditivo = null
+        this.textoInputImportarAditivo = 'Escolha um ADITIVO para importar'
+      })
+    },
+
     abrirDetalhes(item, evento) {
       let removerClass = document.querySelector(".aberto")
       if (removerClass) removerClass.classList.remove("aberto")
