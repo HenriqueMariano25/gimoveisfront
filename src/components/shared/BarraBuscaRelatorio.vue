@@ -14,6 +14,7 @@
             <span v-if="!$isMobile"> Imprimir relatório </span>
           </v-btn>
         </v-col>
+        <slot name="btnCustom"> </slot>
         <v-col v-if="inputBusca" >
           <v-row align="center" >
             <v-col class="pr-2">

@@ -2,7 +2,7 @@
   <v-row no-gutters>
     <BarraTopoBusca titulo="Contratos"
                     :btnAdicionar="true"
-                    @clickBtnAdicionar="dialogContrato = true" />
+                    @clickBtnAdicionar="dialogContrato = true"/>
 
     <BarraBuscaRelatorio
         :btn-gerar-relatorio="true"
@@ -10,31 +10,55 @@
         @buscar="buscar"
         @limparBusca="buscarContratos"
         @clickBtnImprimirRelatorio="gerarRelatorio"
-    />
+    >
+      <template v-slot:btnCustom>
+        <v-col cols="auto" class="pr-0">
+          <v-tooltip top>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                  depressed
+                  :color="'var(--preto-principal)'"
+                  dark
+                  v-bind="attrs"
+                  v-on="on"
+                  @click="buscarMostrarTodos"
+              >
+                <v-icon>
+                  {{ mostrarTodosBtn == true ? "mdi-eye" : "mdi-eye-off" }}
+                </v-icon>
+              </v-btn>
+            </template>
+            <span>{{ mostrarTodosBtn == true ? "Mostrar todos" : "Só mostrar ativos" }}</span>
+          </v-tooltip>
+
+        </v-col>
+      </template>
+    </BarraBuscaRelatorio>
+
     <v-col>
       <v-row class="mt-0">
         <v-col class="pt-2">
           <v-card>
             <v-data-table
-              @update:page="$paraTopo"
-              fixed-header
-              :headers="headers"
-              :items="filtrarContrato"
-              :footer-props="{
+                @update:page="$paraTopo"
+                fixed-header
+                :headers="headers"
+                :items="filtrarContrato"
+                :footer-props="{
                 itemsPerPageOptions: [50, 100, 220, -1],
               }"
-              class="tabela pointer"
-              :height="
+                class="tabela pointer"
+                :height="
                 $isMobile ? 'calc(100vh - 300px)' : 'calc(100vh - 184px)'
               "
-              single-expand
-              :expanded="expanded"
-              mobile-breakpoint="0"
-              item-key="id"
-              dense
-              calculate-widths
-              some-items
-              :loading="carregando"
+                single-expand
+                :expanded="expanded"
+                mobile-breakpoint="0"
+                item-key="id"
+                dense
+                calculate-widths
+                some-items
+                :loading="carregando"
             >
               <template v-slot:[`loading`]>
                 <v-row
@@ -58,33 +82,35 @@
                   <ul class="pa-3" style="list-style-type: none">
                     <li>
                       <span
-                        ><strong>Data de ínicio: </strong
-                        >{{
+                      ><strong>Data de ínicio: </strong
+                      >{{
                           $dayjs(item.data_inicio).format("DD/MM/YYYY")
                         }}</span
                       >
                     </li>
                     <li>
                       <span
-                        ><strong>Data de término: </strong
-                        >{{ $dayjs(item.data_fim).format("DD/MM/YYYY") }}</span
+                      ><strong>Data de término: </strong
+                      >{{ $dayjs(item.data_fim).format("DD/MM/YYYY") }}</span
                       >
                     </li>
                     <li>
                       <span>
                         <strong>Data de vencimento: </strong
-                        >{{ dayjs(item.data_vencimento, 'YYYY-MM-DD').isValid() ? $dayjs(item.data_vencimento).format("DD/MM/YYYY") : "" }}</span
+                        >{{
+                          dayjs(item.data_vencimento, 'YYYY-MM-DD').isValid() ? $dayjs(item.data_vencimento).format("DD/MM/YYYY") : ""
+                        }}</span
                       >
                     </li>
                     <li>
                       <span
-                        ><strong>Valor: </strong>R$
+                      ><strong>Valor: </strong>R$
                         {{ item.valor_boleto.replace(".", ",") }}</span
                       >
                     </li>
                     <li v-if="item.fiadores">
                       <span v-if="item.fiadores[0] !== null"
-                        ><strong>Fiadores:</strong></span
+                      ><strong>Fiadores:</strong></span
                       >
                       <ul style="list-style-type: none">
                         <li v-for="fiador in item.fiadores" :key="fiador">
@@ -94,13 +120,13 @@
                     </li>
                     <li v-if="item.carencia">
                       <span
-                        ><strong>Carência: </strong>{{ item.carencia }}</span
+                      ><strong>Carência: </strong>{{ item.carencia }}</span
                       >
                     </li>
                     <li>
                       <span
-                        ><strong>Vigência: </strong
-                        >{{
+                      ><strong>Vigência: </strong
+                      >{{
                           $dayjs(item.data_fim).diff(item.data_inicio, "month")
                         }}
                         meses</span
@@ -115,42 +141,42 @@
                     {{ ("0000" + item.id).slice(-4) }}
                   </td>
                   <td
-                    @click.prevent="abrirDetalhes(item, $event)"
-                    style="white-space: nowrap"
+                      @click.prevent="abrirDetalhes(item, $event)"
+                      style="white-space: nowrap"
                   >
                     {{ item.nome_imovel }}
                   </td>
                   <td
-                    @click.prevent="abrirDetalhes(item, $event)"
-                    style="white-space: nowrap"
+                      @click.prevent="abrirDetalhes(item, $event)"
+                      style="white-space: nowrap"
                   >
                     {{ item.nome_cliente }}
                   </td>
                   <td @click.prevent="abrirDetalhes(item, $event)">
                     <span style="white-space: nowrap">{{
-                      item.nome_responsavel
-                    }}</span>
+                        item.nome_responsavel
+                      }}</span>
                   </td>
                   <td @click.prevent="abrirDetalhes(item, $event)">
                     <span
-                      :class="{ 'falta-pdf': !item.nome_pdf }"
-                      class="text-capitalize"
-                      >{{ !item.nome_pdf ? "Falta PDF" : item.status }}</span
+                        :class="{ 'falta-pdf': !item.nome_pdf }"
+                        class="text-capitalize"
+                    >{{ !item.nome_pdf ? "Falta PDF" : item.status }}</span
                     >
                   </td>
                   <td class="acoes text-center">
                     <v-tooltip top :disabled="!item.url">
                       <template v-slot:activator="{ on, attrs }">
                         <v-btn
-                          icon
-                          v-bind="attrs"
-                          v-on="on"
-                          target="_blank"
-                          color="black"
-                          :disabled="!item.url"
-                          :href="item.url"
+                            icon
+                            v-bind="attrs"
+                            v-on="on"
+                            target="_blank"
+                            color="black"
+                            :disabled="!item.url"
+                            :href="item.url"
                         >
-                          <v-icon dark> mdi-file-document </v-icon>
+                          <v-icon dark> mdi-file-document</v-icon>
                         </v-btn>
                       </template>
                       <span>Mostrar contrato</span>
@@ -158,15 +184,15 @@
                     <v-tooltip top :disabled="!item.url_aditivo">
                       <template v-slot:activator="{ on, attrs }">
                         <v-btn
-                          icon
-                          v-bind="attrs"
-                          v-on="on"
-                          color="black"
-                          :href="item.url_aditivo"
-                          target="_blank"
-                          :disabled="!item.url_aditivo"
+                            icon
+                            v-bind="attrs"
+                            v-on="on"
+                            color="black"
+                            :href="item.url_aditivo"
+                            target="_blank"
+                            :disabled="!item.url_aditivo"
                         >
-                          <v-icon dark> mdi-file-edit </v-icon>
+                          <v-icon dark> mdi-file-edit</v-icon>
                         </v-btn>
                       </template>
                       <span>Mostrar aditivo</span>
@@ -174,16 +200,16 @@
                     <v-tooltip top>
                       <template v-slot:activator="{ on, attrs }">
                         <v-btn
-                          icon
-                          v-bind="attrs"
-                          v-on="on"
-                          color="black"
-                          @click="
+                            icon
+                            v-bind="attrs"
+                            v-on="on"
+                            color="black"
+                            @click="
                             dialogContrato = true
                             idContrato = item.id
                           "
                         >
-                          <v-icon dark> mdi-pencil </v-icon>
+                          <v-icon dark> mdi-pencil</v-icon>
                         </v-btn>
                       </template>
                       <span>Editar</span>
@@ -191,16 +217,16 @@
                     <v-tooltip top>
                       <template v-slot:activator="{ on, attrs }">
                         <v-btn
-                          icon
-                          v-bind="attrs"
-                          v-on="on"
-                          color="black"
-                          @click.prevent="
+                            icon
+                            v-bind="attrs"
+                            v-on="on"
+                            color="black"
+                            @click.prevent="
                             dialogDeletar = true
                             contrato = item
                           "
                         >
-                          <v-icon dark> mdi-delete </v-icon>
+                          <v-icon dark> mdi-delete</v-icon>
                         </v-btn>
                       </template>
                       <span>Deletar</span>
@@ -215,31 +241,31 @@
     </v-col>
 
     <dialog-contrato
-      :mostrar="dialogContrato"
-      @cancelar="cancelar"
-      @cadastrado="cadastrado"
-      @editado="editado"
-      :idContrato="idContrato"
+        :mostrar="dialogContrato"
+        @cancelar="cancelar"
+        @cadastrado="cadastrado"
+        @editado="editado"
+        :idContrato="idContrato"
     ></dialog-contrato>
 
     <alerta-acoes
-      :palavra-chave="palavraChave"
-      @sumir="mostrarAlerta = false"
-      v-bind:mostrar="mostrarAlerta"
-      :funcao="funcao"
+        :palavra-chave="palavraChave"
+        @sumir="mostrarAlerta = false"
+        v-bind:mostrar="mostrarAlerta"
+        :funcao="funcao"
     ></alerta-acoes>
 
     <dialog-deletar
-      :texto="`Certeza que deseja deletar o contrato: ${
+        :texto="`Certeza que deseja deletar o contrato: ${
         contrato ? ('0000' + contrato.id).slice(-4) : ''
       } ?`"
-      sub-texto="Após deletar esse contrato não é possivel recuperar!"
-      :mostrar="dialogDeletar"
-      @cancelar="
+        sub-texto="Após deletar esse contrato não é possivel recuperar!"
+        :mostrar="dialogDeletar"
+        @cancelar="
         dialogDeletar = !dialogDeletar
         responsavel = {}
       "
-      @deletar="deletar"
+        @deletar="deletar"
     >
     </dialog-deletar>
   </v-row>
@@ -252,7 +278,7 @@ import dayjs from "dayjs"
 import BarraTopoBusca from "../../components/shared/BarraTopoBusca"
 import DialogContrato from "./DialogContrato"
 import AlertaAcoes from "../../components/shared/AlertaAcoes"
-import { jsPDF } from "jspdf"
+import {jsPDF} from "jspdf"
 import "jspdf-autotable"
 import DialogDeletar from "../../components/shared/DialogDeletar"
 import BarraBuscaRelatorio from "@/components/shared/BarraBuscaRelatorio";
@@ -271,11 +297,11 @@ export default {
       busca: "",
       items: [],
       headers: [
-        { text: "Código", value: "id", width: "130px", fixed: true },
-        { text: "Imóvel", value: "nome_imovel", fixed: true },
-        { text: "Cliente", value: "nome_cliente" },
-        { text: "Responsável", value: "nome_responsavel", width: "160px"},
-        { text: "Status", value: "status", width: "128px" },
+        {text: "Código", value: "id", width: "130px", fixed: true},
+        {text: "Imóvel", value: "nome_imovel", fixed: true},
+        {text: "Cliente", value: "nome_cliente"},
+        {text: "Responsável", value: "nome_responsavel", width: "160px"},
+        {text: "Status", value: "status", width: "128px"},
         {
           text: "",
           value: "acoes",
@@ -300,6 +326,7 @@ export default {
       buscaCodigo: null,
       buscaStatus: null,
       carregando: false,
+      mostrarTodosBtn: true
     }
   },
 
@@ -310,23 +337,34 @@ export default {
   },
 
   methods: {
-    async buscar(valor){
+    async buscar(valor) {
       this.carregando = true;
 
-      await api.get("/contrato/busca", { params: { busca:valor } }).then((consulta) => {
+      await api.get("/contrato/busca", {params: {busca: valor}}).then((consulta) => {
         this.items = consulta.data
         this.filtrados = consulta.data
         this.carregando = false;
-        if(consulta.data.length > 0){
+        if (consulta.data.length > 0) {
           this.totalItens = parseInt(consulta.data[0].total_itens)
         }
       })
+    },
+    async buscarMostrarTodos(){
+      let todos = this.mostrarTodosBtn
+      this.mostrarTodosBtn = !this.mostrarTodosBtn
+      this.carregando = true;
+
+      let contratos = await api.get("/contratos", { params: { todos } }).then(resp => resp.data)
+
+      this.items = contratos
+      this.carregando = false;
+
     },
 
     async buscarContratos() {
       this.carregando = true;
 
-      await api.get("/contratos").then((resp) => {
+      await api.get("/contratos", { params: { todos: false } }).then((resp) => {
         this.items = resp.data
         this.carregando = false;
       })
@@ -368,11 +406,11 @@ export default {
       doc.autoTable({
         head: [["Código", "Imóvel", "Responsável", "Cliente", "Status"]],
         columns: [
-          { header: "Código", dataKey: "codigo" },
-          { header: "Imóvel", dataKey: "nome_imovel" },
-          { header: "Responsável", dataKey: "nome_responsavel" },
-          { header: "Cliente", dataKey: "nome_cliente" },
-          { header: "Status", dataKey: "status" },
+          {header: "Código", dataKey: "codigo"},
+          {header: "Imóvel", dataKey: "nome_imovel"},
+          {header: "Responsável", dataKey: "nome_responsavel"},
+          {header: "Cliente", dataKey: "nome_cliente"},
+          {header: "Status", dataKey: "status"},
         ],
         body: novosDados,
         theme: "striped",
@@ -381,22 +419,22 @@ export default {
         },
         startY: 25,
         pageBreak: "auto",
-        margin: { left: 10, right: 10, top: 10 },
+        margin: {left: 10, right: 10, top: 10},
       })
       const totalPaginas = doc.internal.getNumberOfPages()
       doc.setFontSize(8)
       for (var i = 1; i <= totalPaginas; i++) {
         doc.setPage(i)
         doc.text(
-          `Página ${String(i)} de ${String(totalPaginas)}`,
-          205,
-          293,
-          null,
-          null,
-          "right"
+            `Página ${String(i)} de ${String(totalPaginas)}`,
+            205,
+            293,
+            null,
+            null,
+            "right"
         )
       }
-      window.open(doc.output("bloburl", { filename: "tabela_contrato.pdf" }))
+      window.open(doc.output("bloburl", {filename: "tabela_contrato.pdf"}))
     },
 
     cancelar(contrato) {
@@ -408,7 +446,7 @@ export default {
     },
 
     cadastrado(dados) {
-      let { contrato, notificar } = dados
+      let {contrato, notificar} = dados
       if (notificar) {
         this.items.push(contrato)
         this.mostrarAlerta = true
@@ -437,9 +475,9 @@ export default {
     },
 
     async deletar() {
-      let { id } = this.contrato
+      let {id} = this.contrato
       await api.delete(`/contrato/deletar/${id}`).then((resp) => {
-        let { id } = resp.data.contrato
+        let {id} = resp.data.contrato
         let index = this.items.findIndex((obj) => {
           return obj.id === id
         })
@@ -457,7 +495,7 @@ export default {
 }
 </script>
 
-<style scoped src="../../css/dataTableVuetifyCustom.css" />
+<style scoped src="../../css/dataTableVuetifyCustom.css"/>
 
 <style>
 .falta-pdf {
