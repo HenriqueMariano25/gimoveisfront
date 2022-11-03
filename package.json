@@ -55,7 +55,8 @@
     "rules": {}
   },
   "engines": {
-    "node": ">=16"
+    "node": "16.x",
+    "npm": ">= 3"
   },
   "browserslist": [
     "> 1%",
