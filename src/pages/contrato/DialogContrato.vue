@@ -1074,6 +1074,8 @@ export default {
     mostrar: async function (valor) {
       if (valor === true) {
         if (this.idContrato) {
+          console.log(this.idContrato)
+
           this.$nextTick(() => {
             this.dialogCarregando = true
           })
