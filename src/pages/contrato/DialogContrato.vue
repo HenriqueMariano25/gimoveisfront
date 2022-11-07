@@ -1079,6 +1079,8 @@ export default {
           })
           await api.get('/contrato', {params: {id: this.idContrato}}).then(resp => {
 
+            console.log(resp.data)
+
             this.dialogCarregando = false
             let {contrato} = resp.data
             this.contrato = contrato
