@@ -375,7 +375,7 @@ export default {
       })
     },
     async boletoEditado(boleto) {
-      if (boleto.data_quitacao) {
+      if (boleto.data_quitacao || boleto.status == "Pago") {
         let index = this.boletosVencendo.findIndex((obj) => {
           return obj.id === boleto.id
         })
