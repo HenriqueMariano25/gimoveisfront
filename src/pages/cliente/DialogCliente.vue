@@ -417,7 +417,7 @@
         </v-col>
       </v-row>
 
-      <RodapeDialog @cancelar="cancelar()" :editando="editando" @salvar="cadastrar()" @editar="editar()">
+      <RodapeDialog @cancelar="cancelar()" :editando="editando" @salvar="cadastrarCliente()" @editar="editarCliente()">
       </RodapeDialog>
 
       <alerta-acoes
