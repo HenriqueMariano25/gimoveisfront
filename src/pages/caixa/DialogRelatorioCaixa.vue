@@ -121,6 +121,7 @@ export default {
         novosDados[i].movimento = movimentoFormatada
         novosDados[i].id = codigoFormatado
       }
+      novosDados.push({ valor: valorTotal.toFixed(2).replace('.', ',')})
       var doc = new jsPDF()
       doc.page = 1
       doc.setProperties({
@@ -129,50 +130,61 @@ export default {
       doc.setFontSize(10)
       doc.text(hojeAgr, 200, 10, null, null, "right")
       doc.line(10, 12, 200, 12)
-      doc.setFontSize(24)
+      doc.setFontSize(22)
       doc.text(`Relátorio de Caixa`, 10, 22)
       doc.setFontSize(14)
       doc.text(`Total: ${lancamentos.length}`, 200, 21, null, null, "right")
 
-      doc.setFontSize(18)
+      doc.setFontSize(16)
       doc.setTextColor(16, 90, 185);
-      doc.text(`Crédito: ${credito.toFixed(2).replace('.',',')} `, 10, 32)
+      doc.text(`Crédito: ${credito.toFixed(2).replace('.',',')} `, 10, 30)
 
       doc.setTextColor(255, 0, 0);
-      doc.text(`Débito: ${debito.toFixed(2).replace('.',',')} `, 90, 32)
+      doc.text(`Débito: ${debito.toFixed(2).replace('.',',')} `, 90, 30)
 
       doc.setTextColor(0,0,0);
-      doc.text(`Saldo: ${valorTotal.toFixed(2).replace('.',',')} `, 200, 32, null, null, "right")
+      doc.text(`Saldo: ${valorTotal.toFixed(2).replace('.',',')} `, 200, 30, null, null, "right")
 
       doc.autoTable({
         head: [
           [
             "Código",
-            "Histórico",
-            "Valor",
             "Movimento",
-            "Imóvel",
             "Conta",
+            "Histórico",
+            "Imóvel",
+            "Valor",
             "D/C",
           ],
         ],
         columns: [
           { header: "Código", dataKey: "id" },
-          { header: "Histórico", dataKey: "descricao_historico" },
-          { header: "Valor", dataKey: "valor" },
           { header: "Movimento", dataKey: "movimento" },
-          { header: "Imóvel", dataKey: "imovel_nome" },
           { header: "Conta", dataKey: "conta_nome" },
+          { header: "Histórico", dataKey: "descricao_historico" },
+          { header: "Imóvel", dataKey: "imovel_nome" },
+          { header: "Valor", dataKey: "valor" },
         ],
-        columnStyles: { id: { halign: "center" } },
+        columnStyles: { id: { halign: "center" }, valor: { halign: "right"} },
         body: novosDados,
         theme: "striped",
         headStyles: {
           fillColor: [50, 50, 50],
         },
-        startY: 36,
+        styles: {
+          fontSize:8,
+        },
+        startY: 34,
         pageBreak: "auto",
         margin: { left: 10, right: 10, top: 10, bottom: 13 },
+        didParseCell: function (data) {
+          var rows = data.table.body;
+          if (data.row.index === rows.length - 1) {
+            data.cell.styles.fillColor = [210, 210, 210];
+            data.cell.styles.fontStyle = "bold";
+            data.cell.styles.fontSize = 10;
+          }
+        }
       })
 
 
@@ -191,15 +203,15 @@ export default {
             "right"
         )
 
-        doc.setFontSize(16)
-        if(valorTotal < 0){
-          doc.setTextColor(255,0,0);
-        }else if(valorTotal > 0){
-          doc.setTextColor(1,71,154);
-        }
-        doc.text(`R$: ${valorTotal.toFixed(2).replace(".", ",")}`, 10, 290)
-        doc.setFontSize(8)
-        doc.setTextColor(0,0,0);
+        // doc.setFontSize(16)
+        // if(valorTotal < 0){
+        //   doc.setTextColor(255,0,0);
+        // }else if(valorTotal > 0){
+        //   doc.setTextColor(1,71,154);
+        // }
+        // doc.text(`R$: ${valorTotal.toFixed(2).replace(".", ",")}`, 10, 290)
+        // doc.setFontSize(8)
+        // doc.setTextColor(0,0,0);
       }
       window.open(doc.output("bloburl", { filename: "tabela_imovel.pdf" }))
     }
