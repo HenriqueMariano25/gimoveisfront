@@ -182,11 +182,19 @@ export default {
         pageBreak: "auto",
         margin: { left: 10, right: 10, top: 10, bottom: 13 },
         didParseCell: function (data) {
+
           var rows = data.table.body;
           if (data.row.index === rows.length - 1) {
+            console.log(data)
+            console.log(data.cell.text[0])
+            console.log(parseFloat(data.cell.text[0].replace(",", ".")))
             data.cell.styles.fillColor = [210, 210, 210];
             data.cell.styles.fontStyle = "bold";
             data.cell.styles.fontSize = 10;
+            if(parseFloat(data.cell.text[0].replace(",", ".")) > 0)
+              data.cell.styles.textColor = [16, 90, 185];
+            else
+              data.cell.styles.textColor = [255, 0, 0];
           }
         }
       })
