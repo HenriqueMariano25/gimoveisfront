@@ -99,26 +99,11 @@
                   </td>
                   <td @click.prevent="abrirDetalhes(item, $event)">
                     <span style="white-space: nowrap">
-                      {{ item.descricao_historico }}
-                    </span>
-                  </td>
-                  <td @click.prevent="abrirDetalhes(item, $event)">
-                    <span style="white-space: nowrap">
-                      R$ {{ item.valor.replace(".", ",") }}
-                    </span>
-                  </td>
-                  <td @click.prevent="abrirDetalhes(item, $event)">
-                    <span style="white-space: nowrap">
                       {{
                         item.movimento
-                          ? dayjs(item.movimento).format("DD/MM/YYYY")
-                          : ""
+                            ? dayjs(item.movimento).format("DD/MM/YYYY")
+                            : ""
                       }}
-                    </span>
-                  </td>
-                  <td @click.prevent="abrirDetalhes(item, $event)">
-                    <span style="white-space: nowrap">
-                      {{ item.imovel_nome }}
                     </span>
                   </td>
                   <td @click.prevent="abrirDetalhes(item, $event)">
@@ -126,9 +111,19 @@
                       {{ item.conta_nome }}
                     </span>
                   </td>
+                  <td @click.prevent="abrirDetalhes(item, $event)">
+                    <span style="white-space: nowrap">
+                      {{ item.descricao_historico }}
+                    </span>
+                  </td>
+                  <td @click.prevent="abrirDetalhes(item, $event)">
+                    <span style="white-space: nowrap">
+                      {{ item.imovel_nome }}
+                    </span>
+                  </td>
                   <td
-                    @click.prevent="abrirDetalhes(item, $event)"
-                    :class="{
+                      @click.prevent="abrirDetalhes(item, $event)"
+                      :class="{
                       debito: item.id_debito_credito === 1,
                       credito: item.id_debito_credito === 2,
                     }"
@@ -136,11 +131,16 @@
                     <span style="white-space: nowrap">
                       {{
                         item.id_debito_credito === 1
-                          ? "Débito"
-                          : item.id_debito_credito === 2
-                          ? "Crédito"
-                          : ""
+                            ? "Débito"
+                            : item.id_debito_credito === 2
+                                ? "Crédito"
+                                : ""
                       }}
+                    </span>
+                  </td>
+                  <td @click.prevent="abrirDetalhes(item, $event)">
+                    <span style="white-space: nowrap">
+                      R$ {{ item.valor.replace(".", ",") }}
                     </span>
                   </td>
                   <td class="acoes text-center">
@@ -281,12 +281,12 @@ export default {
       items: [],
       headers: [
         { text: "Lançamento", value: "id", align: "center", width: "165px" },
-        { text: "Histórico", value: "descricao_historico", width: "143px" },
-        { text: "Valor", value: "valor", width: "130px" },
         { text: "Movimento", value: "movimento", width: "155px" },
-        { text: "Imóvel", value: "imovel_nome", width: "130px" },
         { text: "Conta", value: "conta_nome", width: "130px" },
+        { text: "Histórico", value: "descricao_historico", width: "143px" },
+        { text: "Imóvel", value: "imovel_nome", width: "130px" },
         { text: "D/C", value: "id_debito_credito", width: "115px" },
+        { text: "Valor", value: "valor", width: "130px" },
         {
           text: "",
           value: "acoes",
