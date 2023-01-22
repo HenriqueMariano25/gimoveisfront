@@ -142,7 +142,11 @@ export default {
       doc.setTextColor(255, 0, 0);
       doc.text(`Débito: ${debito.toFixed(2).replace('.',',')} `, 90, 30)
 
-      doc.setTextColor(0,0,0);
+
+      if(valorTotal >= 0)
+        doc.setTextColor(16, 90, 185);
+      else
+        doc.setTextColor(255, 0, 0);
       doc.text(`Saldo: ${valorTotal.toFixed(2).replace('.',',')} `, 200, 30, null, null, "right")
 
       doc.autoTable({
