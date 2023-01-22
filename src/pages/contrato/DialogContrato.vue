@@ -1074,14 +1074,11 @@ export default {
     mostrar: async function (valor) {
       if (valor === true) {
         if (this.idContrato) {
-          console.log(this.idContrato)
 
           this.$nextTick(() => {
             this.dialogCarregando = true
           })
           await api.get('/contrato', {params: {id: this.idContrato}}).then(resp => {
-
-            console.log(resp.data)
 
             this.dialogCarregando = false
             let {contrato} = resp.data
