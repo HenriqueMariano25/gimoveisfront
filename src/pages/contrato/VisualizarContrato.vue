@@ -476,17 +476,22 @@ export default {
 
     async deletar() {
       let {id} = this.contrato
-      await api.delete(`/contrato/deletar/${id}`).then((resp) => {
-        let {id} = resp.data.contrato
+      let id_usuario = this.$store.state.usuario.id
+
+      let resp = await api.delete(`/contrato/deletar/${id}`, { params: {id_usuario} }).then(resp => resp.data)
+
+      if(!resp.falha){
+        let idContrato = parseInt(resp.dados.contrato)
         let index = this.items.findIndex((obj) => {
-          return obj.id === id
+          return obj.id === idContrato
         })
         this.dialogDeletar = false
         this.items.splice(index, 1)
         this.funcao = "deletado"
         this.mostrarAlerta = true
         this.contrato = {}
-      })
+      }
+
     },
   },
   async mounted() {
